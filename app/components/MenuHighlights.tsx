@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence, useMotionValue, animate } from "framer-motion";
-import { Fire, Wine, CookingPot, Leaf, Star, BowlFood, ForkKnife, Pepper, Gift, Drop, Cookie } from "@phosphor-icons/react";
+import { Fire, Wine, CookingPot, Leaf, Star, BowlFood, ForkKnife, Pepper, Gift, Drop, Cookie, CaretRight } from "@phosphor-icons/react";
 import { menuData } from "../data/menu";
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -92,20 +92,38 @@ function CategoryTab({
 function DishRow({
   item,
   index,
+  isHighlighted = false,
 }: {
   item: { name: string; price: string; desc?: string; spicy?: boolean; popular?: boolean };
   index: number;
+  isHighlighted?: boolean;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: Math.min(index * 0.04, 0.6), ease }}
-      className="group py-4 first:pt-0 last:pb-0"
+      animate={{
+        opacity: 1,
+        y: 0,
+        backgroundColor: isHighlighted
+          ? "rgba(180, 35, 24, 0.08)"
+          : "rgba(180, 35, 24, 0)",
+      }}
+      transition={{
+        opacity: { duration: 0.35, delay: Math.min(index * 0.04, 0.6), ease },
+        y: { duration: 0.35, delay: Math.min(index * 0.04, 0.6), ease },
+        backgroundColor: { duration: 0.6, ease },
+      }}
+      className="group py-4 first:pt-0 last:pb-0 -mx-3 px-3 rounded-lg"
     >
       <div className="flex items-center justify-between gap-3 mb-1">
         <div className="flex items-center gap-2 min-w-0">
-          <h4 className="text-[14px] font-500 text-char-50 group-hover:text-vermillion transition-colors duration-300 truncate">
+          <h4
+            className={`text-[14px] font-500 transition-colors duration-300 truncate ${
+              isHighlighted
+                ? "text-vermillion"
+                : "text-char-50 group-hover:text-vermillion"
+            }`}
+          >
             {item.name}
           </h4>
           {item.spicy && (
@@ -131,13 +149,109 @@ function DishRow({
   );
 }
 
+/* ─── Popular Pick Chip ─── */
+function PopularPickChip({
+  name,
+  price,
+  catShort,
+  onClick,
+}: {
+  name: string;
+  price: string;
+  catShort: string;
+  onClick: () => void;
+}) {
+  return (
+    <motion.button
+      onClick={onClick}
+      whileTap={{ scale: 0.97 }}
+      className="
+        group shrink-0 snap-start flex items-center gap-3 pl-3 pr-4 py-2.5
+        rounded-xl bg-char-50/[0.03] backdrop-blur-xl
+        border border-char-50/[0.06]
+        hover:border-vermillion/40 hover:bg-vermillion/[0.04]
+        shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.04)]
+        transition-colors duration-300
+      "
+    >
+      <div className="shrink-0 w-7 h-7 rounded-lg bg-vermillion/10 border border-vermillion/20 flex items-center justify-center">
+        <Star size={12} weight="fill" className="text-vermillion" />
+      </div>
+      <div className="flex flex-col items-start text-left min-w-0">
+        <span className="text-[12.5px] font-500 text-char-50 whitespace-nowrap leading-tight">
+          {name}
+        </span>
+        <span className="text-[9px] font-500 tracking-[0.15em] uppercase text-char-500 mt-0.5">
+          {catShort}
+        </span>
+      </div>
+      <div className="flex items-center gap-1 ml-1">
+        <span className="text-[12.5px] font-600 text-vermillion tabular-nums">
+          £{price}
+        </span>
+        <CaretRight
+          size={10}
+          weight="bold"
+          className="text-char-500 group-hover:text-vermillion group-hover:translate-x-0.5 transition-all duration-300"
+        />
+      </div>
+    </motion.button>
+  );
+}
+
 /* ─── Main Menu Component ─── */
 export default function MenuHighlights() {
   const [activeIdx, setActiveIdx] = useState(0);
+  const [highlightedItem, setHighlightedItem] = useState<string | null>(null);
   const category = menuData[activeIdx];
   const wrapperRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const menuContentRef = useRef<HTMLDivElement>(null);
+
+  // Cross-category popular picks — quick-access chips at the top of the menu
+  const popularPicks = useMemo(() => {
+    const picks: Array<{ name: string; price: string; catIdx: number; catShort: string }> = [];
+    menuData.forEach((cat, catIdx) => {
+      cat.items.forEach((item) => {
+        if (item.popular) {
+          picks.push({ name: item.name, price: item.price, catIdx, catShort: cat.shortTitle });
+        }
+      });
+    });
+    return picks;
+  }, []);
+
+  // Category content signals — computed once per render, reused by the mobile
+  // indicator row under the tab bar and the desktop legend at the bottom.
+  const categorySignals = useMemo(() => {
+    const hasSpicy = category.items.some((i) => i.spicy);
+    const hasPopular = category.items.some((i) => i.popular);
+    const vegRegex = /vegetar|veg\b|tofu|mushroom|vegetable/i;
+    const hasVeg =
+      (category.description && vegRegex.test(category.description)) ||
+      category.items.some(
+        (i) => vegRegex.test(i.name) || (i.desc && vegRegex.test(i.desc))
+      );
+    return { hasSpicy, hasPopular, hasVeg };
+  }, [category]);
+
+  // Clear the pick highlight after a short glow
+  useEffect(() => {
+    if (!highlightedItem) return;
+    const t = setTimeout(() => setHighlightedItem(null), 2500);
+    return () => clearTimeout(t);
+  }, [highlightedItem]);
+
+  // Tap a Popular Pick → jump to category, flash the dish, scroll menu into view
+  const handlePickClick = useCallback((catIdx: number, itemName: string) => {
+    setActiveIdx(catIdx);
+    setHighlightedItem(itemName);
+    // Give the category transition a beat before scrolling
+    requestAnimationFrame(() => {
+      menuContentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, []);
 
   // Motion value for wok X position — updates instantly on scroll, animated on click
   const wokX = useMotionValue(0);
@@ -258,6 +372,45 @@ export default function MenuHighlights() {
           available through Just Eat.
         </motion.p>
 
+        {/* Popular Picks — cross-category quick-access chips. Solves the mobile
+            pre-click visibility problem: customers can tap their usual order
+            without hunting through icons. Desktop also benefits. */}
+        {popularPicks.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.7, delay: 0.15, ease }}
+            className="mb-7 md:mb-10"
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <Star size={11} weight="fill" className="text-vermillion" />
+              <p className="text-[10px] font-500 tracking-[0.3em] uppercase text-char-400">
+                Popular right now
+              </p>
+              <div className="flex-1 h-px bg-gradient-to-r from-char-800/60 to-transparent" />
+              <span className="text-[10px] font-400 text-char-600 tabular-nums">
+                {popularPicks.length} picks
+              </span>
+            </div>
+            {/* Bleed to viewport edges on mobile so scroll feels native */}
+            <div className="-mx-6 md:mx-0 px-6 md:px-0">
+              <div className="flex gap-2.5 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-1">
+                {popularPicks.map((pick) => (
+                  <PopularPickChip
+                    key={`${pick.catIdx}-${pick.name}`}
+                    name={pick.name}
+                    price={pick.price}
+                    catShort={pick.catShort}
+                    onClick={() => handlePickClick(pick.catIdx, pick.name)}
+                  />
+                ))}
+                <div className="shrink-0 w-2 md:hidden" aria-hidden="true" />
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Mobile-only floating category label — replaces the wok tether on small screens
             since icons alone aren't descriptive enough. Cross-fades as user taps. */}
         <div className="md:hidden relative h-6 mb-2 overflow-hidden">
@@ -352,15 +505,80 @@ export default function MenuHighlights() {
           )}
         </motion.div>
 
+        {/* Mobile-only compact indicator row — sits directly below the tab bar
+            so the conditional brightness reacts visibly as users tap through
+            categories. Desktop keeps the fuller legend at the bottom. */}
+        <div className="md:hidden mt-3 flex items-center justify-center gap-5 text-[10px] font-400">
+          <motion.div
+            animate={{ opacity: categorySignals.hasSpicy ? 1 : 0.32 }}
+            transition={{ duration: 0.3, ease }}
+            className="flex items-center gap-1.5"
+          >
+            <div
+              className={`w-1 h-1 rounded-full ${
+                categorySignals.hasSpicy
+                  ? "bg-vermillion shadow-[0_0_5px_rgba(180,35,24,0.9)]"
+                  : "bg-vermillion/50"
+              }`}
+            />
+            <span
+              className={`tracking-[0.15em] uppercase ${
+                categorySignals.hasSpicy ? "text-char-200" : "text-char-500"
+              }`}
+            >
+              Chilli
+            </span>
+          </motion.div>
+
+          <motion.div
+            animate={{ opacity: categorySignals.hasPopular ? 1 : 0.32 }}
+            transition={{ duration: 0.3, ease }}
+            className="flex items-center gap-1.5"
+          >
+            <Star
+              size={10}
+              weight={categorySignals.hasPopular ? "fill" : "regular"}
+              className={categorySignals.hasPopular ? "text-vermillion" : "text-char-500"}
+            />
+            <span
+              className={`tracking-[0.15em] uppercase ${
+                categorySignals.hasPopular ? "text-char-200" : "text-char-500"
+              }`}
+            >
+              Popular
+            </span>
+          </motion.div>
+
+          <motion.div
+            animate={{ opacity: categorySignals.hasVeg ? 1 : 0.32 }}
+            transition={{ duration: 0.3, ease }}
+            className="flex items-center gap-1.5"
+          >
+            <Leaf
+              size={10}
+              weight={categorySignals.hasVeg ? "fill" : "regular"}
+              className={categorySignals.hasVeg ? "text-emerald-400" : "text-char-500"}
+            />
+            <span
+              className={`tracking-[0.15em] uppercase ${
+                categorySignals.hasVeg ? "text-char-200" : "text-char-500"
+              }`}
+            >
+              Veg
+            </span>
+          </motion.div>
+        </div>
+
         {/* Category content */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeIdx}
+            ref={menuContentRef}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.35, ease }}
-            className="mt-6 md:mt-8"
+            className="mt-6 md:mt-8 scroll-mt-20"
           >
             {/* Category title + description */}
             <div className="flex flex-wrap items-baseline gap-2 md:gap-4 mb-6">
@@ -383,14 +601,24 @@ export default function MenuHighlights() {
                 <GlassCard className="p-4 md:p-6">
                   <div className="divide-y divide-char-800/20">
                     {category.items.slice(0, Math.ceil(category.items.length / 2)).map((item, idx) => (
-                      <DishRow key={item.name} item={item} index={idx} />
+                      <DishRow
+                        key={item.name}
+                        item={item}
+                        index={idx}
+                        isHighlighted={highlightedItem === item.name}
+                      />
                     ))}
                   </div>
                 </GlassCard>
                 <GlassCard className="p-4 md:p-6">
                   <div className="divide-y divide-char-800/20">
                     {category.items.slice(Math.ceil(category.items.length / 2)).map((item, idx) => (
-                      <DishRow key={item.name} item={item} index={idx + Math.ceil(category.items.length / 2)} />
+                      <DishRow
+                        key={item.name}
+                        item={item}
+                        index={idx + Math.ceil(category.items.length / 2)}
+                        isHighlighted={highlightedItem === item.name}
+                      />
                     ))}
                   </div>
                 </GlassCard>
@@ -399,7 +627,12 @@ export default function MenuHighlights() {
               <GlassCard className="p-4 md:p-8">
                 <div className="divide-y divide-char-800/20 max-w-[700px]">
                   {category.items.map((item, idx) => (
-                    <DishRow key={item.name} item={item} index={idx} />
+                    <DishRow
+                      key={item.name}
+                      item={item}
+                      index={idx}
+                      isHighlighted={highlightedItem === item.name}
+                    />
                   ))}
                 </div>
               </GlassCard>
@@ -407,72 +640,65 @@ export default function MenuHighlights() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Legend — indicators brighten when the active category contains matching items */}
-        {(() => {
-          const hasSpicy = category.items.some((i) => i.spicy);
-          const hasPopular = category.items.some((i) => i.popular);
-          const vegRegex = /vegetar|veg\b|tofu|mushroom|vegetable/i;
-          const hasVeg =
-            (category.description && vegRegex.test(category.description)) ||
-            category.items.some(
-              (i) => vegRegex.test(i.name) || (i.desc && vegRegex.test(i.desc))
-            );
+        {/* Full legend — desktop only. Mobile has the compact row above the menu content. */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="hidden md:flex mt-8 flex-wrap items-center gap-6 text-[11px] font-300"
+        >
+          <motion.div
+            animate={{ opacity: categorySignals.hasSpicy ? 1 : 0.35 }}
+            transition={{ duration: 0.3, ease }}
+            className="flex items-center gap-2"
+          >
+            <div
+              className={`w-1.5 h-1.5 rounded-full ${
+                categorySignals.hasSpicy
+                  ? "bg-vermillion shadow-[0_0_6px_rgba(180,35,24,0.6)]"
+                  : "bg-vermillion/50"
+              }`}
+            />
+            <span className={categorySignals.hasSpicy ? "text-char-200" : "text-char-400"}>
+              Contains chilli
+            </span>
+          </motion.div>
 
-          return (
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-8 flex flex-wrap items-center gap-6 text-[11px] font-300"
+          <motion.div
+            animate={{ opacity: categorySignals.hasPopular ? 1 : 0.35 }}
+            transition={{ duration: 0.3, ease }}
+            className="flex items-center gap-2"
+          >
+            <span
+              className={`text-[10px] font-500 tracking-wider uppercase rounded px-1.5 py-0.5 border ${
+                categorySignals.hasPopular
+                  ? "text-vermillion border-vermillion/40 bg-vermillion/[0.06]"
+                  : "text-vermillion/40 border-vermillion/15"
+              }`}
             >
-              <motion.div
-                animate={{ opacity: hasSpicy ? 1 : 0.35 }}
-                transition={{ duration: 0.3, ease }}
-                className="flex items-center gap-2"
-              >
-                <div
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    hasSpicy ? "bg-vermillion shadow-[0_0_6px_rgba(180,35,24,0.6)]" : "bg-vermillion/50"
-                  }`}
-                />
-                <span className={hasSpicy ? "text-char-200" : "text-char-400"}>Contains chilli</span>
-              </motion.div>
+              Popular
+            </span>
+            <span className={categorySignals.hasPopular ? "text-char-200" : "text-char-400"}>
+              Customer favourite
+            </span>
+          </motion.div>
 
-              <motion.div
-                animate={{ opacity: hasPopular ? 1 : 0.35 }}
-                transition={{ duration: 0.3, ease }}
-                className="flex items-center gap-2"
-              >
-                <span
-                  className={`text-[10px] font-500 tracking-wider uppercase rounded px-1.5 py-0.5 border ${
-                    hasPopular
-                      ? "text-vermillion border-vermillion/40 bg-vermillion/[0.06]"
-                      : "text-vermillion/40 border-vermillion/15"
-                  }`}
-                >
-                  Popular
-                </span>
-                <span className={hasPopular ? "text-char-200" : "text-char-400"}>Customer favourite</span>
-              </motion.div>
-
-              <motion.div
-                animate={{ opacity: hasVeg ? 1 : 0.35 }}
-                transition={{ duration: 0.3, ease }}
-                className="flex items-center gap-2"
-              >
-                <Leaf
-                  size={12}
-                  weight={hasVeg ? "fill" : "regular"}
-                  className={hasVeg ? "text-emerald-400" : "text-char-400/50"}
-                />
-                <span className={hasVeg ? "text-char-200" : "text-char-400"}>
-                  Vegetarian options available
-                </span>
-              </motion.div>
-            </motion.div>
-          );
-        })()}
+          <motion.div
+            animate={{ opacity: categorySignals.hasVeg ? 1 : 0.35 }}
+            transition={{ duration: 0.3, ease }}
+            className="flex items-center gap-2"
+          >
+            <Leaf
+              size={12}
+              weight={categorySignals.hasVeg ? "fill" : "regular"}
+              className={categorySignals.hasVeg ? "text-emerald-400" : "text-char-400/50"}
+            />
+            <span className={categorySignals.hasVeg ? "text-char-200" : "text-char-400"}>
+              Vegetarian options available
+            </span>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
