@@ -3,11 +3,11 @@
 import { motion } from "framer-motion";
 
 const images = [
-  { src: "https://images.unsplash.com/photo-1563379926898?w=600&h=800&q=85&auto=format&fit=crop", span: "md:row-span-2", alt: "Wok-fried noodles with chilli and herbs" },
-  { src: "https://images.unsplash.com/photo-1563245372?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Steamed dim sum in bamboo baskets" },
-  { src: "https://images.unsplash.com/photo-1517248135467?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Restaurant interior" },
-  { src: "https://images.unsplash.com/photo-1544025162?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Atmospheric dining room" },
-  { src: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&h=800&q=85&auto=format&fit=crop", span: "md:row-span-2", alt: "Wok-fried noodles" },
+  { src: "https://images.pexels.com/photos/36921226/pexels-photo-36921226.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&dpr=2", span: "md:row-span-2", alt: "Wok cooking with flame" },
+  { src: "https://images.pexels.com/photos/35069186/pexels-photo-35069186.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=2", span: "", alt: "Dim sum in bamboo steamers" },
+  { src: "https://images.pexels.com/photos/35015157/pexels-photo-35015157.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=2", span: "", alt: "Restaurant interior" },
+  { src: "https://images.pexels.com/photos/30080895/pexels-photo-30080895.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=2", span: "", alt: "Night market fire cooking" },
+  { src: "https://images.pexels.com/photos/31256391/pexels-photo-31256391.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&dpr=2", span: "md:row-span-2", alt: "Plated dumplings" },
   { src: "https://images.unsplash.com/photo-1512003867696-6d5ce6835040?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Thai green curry" },
 ];
 

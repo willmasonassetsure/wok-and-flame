@@ -20,7 +20,7 @@ export default function About() {
           <motion.div {...fadeUp} className="md:col-span-5 md:col-start-1">
             <div className="relative aspect-[16/9] md:aspect-[3/4] overflow-hidden rounded-2xl">
               <img
-                src="https://images.unsplash.com/photo-1547592166?w=800&h=1067&q=85&auto=format&fit=crop"
+                src="https://images.pexels.com/photos/33145258/pexels-photo-33145258.jpeg?auto=compress&cs=tinysrgb&w=800&h=1067&dpr=2"
                 alt="Wok & Flame kitchen"
                 className="w-full h-full object-cover"
               />
