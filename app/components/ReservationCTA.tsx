@@ -12,7 +12,7 @@ export default function ReservationCTA() {
       {/* Background image with overlay */}
       <div className="absolute inset-0">
         <img
-          src="https://picsum.photos/seed/charsmoke/1920/800"
+          src="https://images.unsplash.com/photo-1455619452474?w=1920&h=800&q=85&auto=format&fit=crop"
           alt=""
           className="w-full h-full object-cover opacity-20"
         />

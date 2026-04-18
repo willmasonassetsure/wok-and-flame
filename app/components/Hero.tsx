@@ -11,7 +11,7 @@ export default function Hero() {
       {/* Background image */}
       <div className="absolute inset-0">
         <img
-          src="https://picsum.photos/seed/wokflame/1920/1080"
+          src="https://images.unsplash.com/photo-1617196034796?w=1920&h=1080&q=90&auto=format&fit=crop"
           alt=""
           className="w-full h-full object-cover opacity-40"
         />

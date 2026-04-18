@@ -3,12 +3,12 @@
 import { motion } from "framer-motion";
 
 const images = [
-  { src: "https://picsum.photos/seed/charfire/600/800", span: "md:row-span-2" },
-  { src: "https://picsum.photos/seed/chardim/600/400", span: "" },
-  { src: "https://picsum.photos/seed/charbar/600/400", span: "" },
-  { src: "https://picsum.photos/seed/charneon/600/400", span: "" },
-  { src: "https://picsum.photos/seed/charplating/600/800", span: "md:row-span-2" },
-  { src: "https://picsum.photos/seed/charinterior/600/400", span: "" },
+  { src: "https://images.unsplash.com/photo-1563379926898?w=600&h=800&q=85&auto=format&fit=crop", span: "md:row-span-2", alt: "Wok-fried noodles with chilli and herbs" },
+  { src: "https://images.unsplash.com/photo-1563245372?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Steamed dim sum in bamboo baskets" },
+  { src: "https://images.unsplash.com/photo-1517248135467?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Restaurant interior" },
+  { src: "https://images.unsplash.com/photo-1544025162?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Atmospheric dining room" },
+  { src: "https://images.unsplash.com/photo-1559847844?w=600&h=800&q=85&auto=format&fit=crop", span: "md:row-span-2", alt: "Plated dishes" },
+  { src: "https://images.unsplash.com/photo-1569050467447?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Chef's selection" },
 ];
 
 export default function Gallery() {
@@ -56,7 +56,7 @@ export default function Gallery() {
             >
               <img
                 src={img.src}
-                alt=""
+                alt={img.alt}
                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-char-950/20 group-hover:bg-transparent transition-colors duration-500" />
