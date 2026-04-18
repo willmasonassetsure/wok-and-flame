@@ -10,9 +10,9 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Wok & Flame | West Didsbury | Chinese & Thai Takeaway",
+  title: "Wok & Flame | Chinese Takeaway in West Didsbury, Manchester",
   description:
-    "Authentic Chinese and Thai dishes, wok-fired in West Didsbury, Manchester. Delivery and collection. 9,999+ five-star reviews on Just Eat.",
+    "Authentic Chinese takeaway, wok-fired in West Didsbury, Manchester. Salt & pepper, crispy duck, chow mein and a handful of Thai favourites. Delivery and collection — 11,375 reviews on Just Eat.",
 };
 
 export default function RootLayout({

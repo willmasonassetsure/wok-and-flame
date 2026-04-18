@@ -56,8 +56,7 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 0.55, ease }}
               className="text-lg md:text-xl font-300 text-char-400 leading-relaxed max-w-[50ch] mb-4"
             >
-              Authentic Chinese and Thai, wok-fired fresh in
-              West Didsbury. Delivery and collection.
+              Authentic Chinese takeaway, wok-fired fresh in West Didsbury. Delivery and collection.
             </motion.p>
 
             {/* Rating badge */}

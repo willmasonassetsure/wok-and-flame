@@ -173,7 +173,7 @@ export default function LoadingScreen() {
                 style={{ boxShadow: "0 0 12px rgba(217,45,32,0.9)" }}
               />
               <span className="text-[11px] font-400 tracking-[0.35em] uppercase text-char-400">
-                Chinese &middot; Thai
+                Chinese Takeaway
               </span>
               <motion.div
                 animate={{

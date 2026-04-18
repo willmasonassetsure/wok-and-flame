@@ -13,33 +13,33 @@ export type MenuCategory = {
   items: MenuItem[];
 };
 
+// Ordered by how UK Chinese takeaway customers typically browse:
+// value first (Set Meals), then signature draws (Specials), then starters,
+// soups, the UK hero category (Salt & Pepper), then proteins and carbs,
+// finishing with extras, desserts and drinks.
 export const menuData: MenuCategory[] = [
   {
-    title: "Drinks (Cans)",
-    shortTitle: "Drinks",
+    title: "Set Meals & Banquets",
+    shortTitle: "Set Meals",
+    description: "Meat or vegetarian",
     items: [
-      { name: "Coca-Cola Original Taste 330ml", price: "1.20" },
-      { name: "Diet Coke 330ml", price: "1.20" },
-      { name: "Tango Orange 330ml", price: "1.20" },
-      { name: "7UP Lemon & Lime 330ml", price: "1.20" },
-      { name: "Rubicon Sparkling Mango 330ml", price: "1.20" },
+      { name: "Set Meal A for 1", price: "11.80", desc: "Starter, main, rice or noodles" },
+      { name: "Set Meal B for 1", price: "13.50", desc: "Starter, main, side, rice or noodles" },
+      { name: "Set Meal C for 2", price: "22.80", desc: "2 starters, 2 mains, rice" },
+      { name: "Set Meal D for 2", price: "26.50", desc: "2 starters, 2 mains, side, rice" },
+      { name: "Vegetarian Set Meal for 1", price: "10.80", desc: "Starter, main, rice" },
+      { name: "Vegetarian Set Meal for 2", price: "20.50", desc: "2 starters, 2 mains, rice" },
+      { name: "Family Banquet for 4", price: "48.00", desc: "4 starters, 4 mains, sides, rice", popular: true },
     ],
   },
   {
-    title: "Soups",
-    shortTitle: "Soups",
-    description: "Meat, seafood, vegetarian",
+    title: "Wok & Flame Specials",
+    shortTitle: "Specials",
+    description: "Something different but proper good",
     items: [
-      { name: "Wonton Soup", price: "3.80", desc: "Prawn and meat parcels" },
-      { name: "Chicken Sweetcorn Soup", price: "3.60" },
-      { name: "Chicken Noodle Soup", price: "3.60" },
-      { name: "Hot & Sour Soup", price: "3.60", desc: "Chicken, char sui, shrimp", spicy: true },
-      { name: "Tom Yum Soup", price: "3.80", desc: "Thai spiced broth, prawns, lemongrass", spicy: true },
-      { name: "Crab Meat & Sweetcorn Soup", price: "3.80" },
-      { name: "Mushroom Soup", price: "3.40" },
-      { name: "Mixed Vegetable Soup", price: "3.40" },
-      { name: "Tofu & Vegetable Soup", price: "3.40" },
-      { name: "Sweetcorn Soup", price: "3.40" },
+      { name: "Wok & Flame Special Chow Mein", price: "8.50", desc: "Chicken, beef, king prawns", popular: true },
+      { name: "Wok & Flame Special Fried Rice", price: "7.90", desc: "Chicken, beef, king prawns", popular: true },
+      { name: "Wok & Flame Special Curry", price: "8.80", desc: "Chicken, beef, king prawns", spicy: true },
     ],
   },
   {
@@ -65,6 +65,23 @@ export const menuData: MenuCategory[] = [
       { name: "Tempura King Prawns (6)", price: "6.20" },
       { name: "Mixed Starter Platter for 2", price: "9.80", popular: true },
       { name: "Aromatic Crispy Duck (Quarter)", price: "9.50", popular: true },
+    ],
+  },
+  {
+    title: "Soups",
+    shortTitle: "Soups",
+    description: "Meat, seafood, vegetarian",
+    items: [
+      { name: "Wonton Soup", price: "3.80", desc: "Prawn and meat parcels" },
+      { name: "Chicken Sweetcorn Soup", price: "3.60" },
+      { name: "Chicken Noodle Soup", price: "3.60" },
+      { name: "Hot & Sour Soup", price: "3.60", desc: "Chicken, char sui, shrimp", spicy: true },
+      { name: "Tom Yum Soup", price: "3.80", desc: "Thai spiced broth, prawns, lemongrass", spicy: true },
+      { name: "Crab Meat & Sweetcorn Soup", price: "3.80" },
+      { name: "Mushroom Soup", price: "3.40" },
+      { name: "Mixed Vegetable Soup", price: "3.40" },
+      { name: "Tofu & Vegetable Soup", price: "3.40" },
+      { name: "Sweetcorn Soup", price: "3.40" },
     ],
   },
   {
@@ -163,32 +180,6 @@ export const menuData: MenuCategory[] = [
     ],
   },
   {
-    title: "Wok & Flame Specials",
-    shortTitle: "Specials",
-    description: "Something different but proper good",
-    items: [
-      { name: "Wok & Flame Special Chow Mein", price: "8.50", desc: "Chicken, beef, king prawns", popular: true },
-      { name: "Wok & Flame Special Fried Rice", price: "7.90", desc: "Chicken, beef, king prawns", popular: true },
-      { name: "Wok & Flame Special Curry", price: "8.80", desc: "Chicken, beef, king prawns", spicy: true },
-    ],
-  },
-  {
-    title: "Fried Rice Dishes",
-    shortTitle: "Fried Rice",
-    description: "Meat, seafood, vegetarian",
-    items: [
-      { name: "Wok & Flame Special Egg Fried Rice", price: "7.90", popular: true },
-      { name: "Chicken Egg Fried Rice", price: "7.60" },
-      { name: "Beef Egg Fried Rice", price: "7.80" },
-      { name: "King Prawn Egg Fried Rice", price: "8.30" },
-      { name: "Vegetable Egg Fried Rice", price: "6.50" },
-      { name: "Egg Fried Rice", price: "3.80" },
-      { name: "Steamed Rice", price: "3.20" },
-      { name: "Mushroom Fried Rice", price: "6.50" },
-      { name: "Singapore Fried Rice", price: "7.80", spicy: true },
-    ],
-  },
-  {
     title: "Noodle Dishes",
     shortTitle: "Noodles",
     description: "Chow Mein, Vermicelli, Pad Thai, Udon",
@@ -216,6 +207,22 @@ export const menuData: MenuCategory[] = [
       { name: "Mock Chicken Pad Thai", price: "8.00" },
       { name: "Mock Chicken Udon", price: "8.00" },
       { name: "Tofu Udon Noodles", price: "7.80" },
+    ],
+  },
+  {
+    title: "Fried Rice Dishes",
+    shortTitle: "Fried Rice",
+    description: "Meat, seafood, vegetarian",
+    items: [
+      { name: "Wok & Flame Special Egg Fried Rice", price: "7.90", popular: true },
+      { name: "Chicken Egg Fried Rice", price: "7.60" },
+      { name: "Beef Egg Fried Rice", price: "7.80" },
+      { name: "King Prawn Egg Fried Rice", price: "8.30" },
+      { name: "Vegetable Egg Fried Rice", price: "6.50" },
+      { name: "Egg Fried Rice", price: "3.80" },
+      { name: "Steamed Rice", price: "3.20" },
+      { name: "Mushroom Fried Rice", price: "6.50" },
+      { name: "Singapore Fried Rice", price: "7.80", spicy: true },
     ],
   },
   {
@@ -252,25 +259,22 @@ export const menuData: MenuCategory[] = [
     ],
   },
   {
-    title: "Set Meals & Banquets",
-    shortTitle: "Set Meals",
-    description: "Meat or vegetarian",
-    items: [
-      { name: "Set Meal A for 1", price: "11.80", desc: "Starter, main, rice or noodles" },
-      { name: "Set Meal B for 1", price: "13.50", desc: "Starter, main, side, rice or noodles" },
-      { name: "Set Meal C for 2", price: "22.80", desc: "2 starters, 2 mains, rice" },
-      { name: "Set Meal D for 2", price: "26.50", desc: "2 starters, 2 mains, side, rice" },
-      { name: "Vegetarian Set Meal for 1", price: "10.80", desc: "Starter, main, rice" },
-      { name: "Vegetarian Set Meal for 2", price: "20.50", desc: "2 starters, 2 mains, rice" },
-      { name: "Family Banquet for 4", price: "48.00", desc: "4 starters, 4 mains, sides, rice", popular: true },
-    ],
-  },
-  {
     title: "Desserts",
     shortTitle: "Desserts",
     items: [
       { name: "Banana Fritters", price: "4.50", desc: "With honey and sesame" },
       { name: "Pineapple Fritters", price: "4.50", desc: "With honey and sesame" },
+    ],
+  },
+  {
+    title: "Drinks (Cans)",
+    shortTitle: "Drinks",
+    items: [
+      { name: "Coca-Cola Original Taste 330ml", price: "1.20" },
+      { name: "Diet Coke 330ml", price: "1.20" },
+      { name: "Tango Orange 330ml", price: "1.20" },
+      { name: "7UP Lemon & Lime 330ml", price: "1.20" },
+      { name: "Rubicon Sparkling Mango 330ml", price: "1.20" },
     ],
   },
 ];

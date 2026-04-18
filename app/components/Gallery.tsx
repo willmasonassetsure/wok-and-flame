@@ -8,7 +8,7 @@ const images = [
   { src: "https://images.pexels.com/photos/35015157/pexels-photo-35015157.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=2", span: "", alt: "Restaurant interior" },
   { src: "https://images.pexels.com/photos/30080895/pexels-photo-30080895.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=2", span: "", alt: "Night market fire cooking" },
   { src: "https://images.pexels.com/photos/31256391/pexels-photo-31256391.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&dpr=2", span: "md:row-span-2", alt: "Plated dumplings" },
-  { src: "https://images.unsplash.com/photo-1512003867696-6d5ce6835040?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Thai green curry" },
+  { src: "https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=2", span: "", alt: "Salt and pepper chicken" },
 ];
 
 export default function Gallery() {

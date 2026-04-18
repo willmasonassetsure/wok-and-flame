@@ -52,9 +52,9 @@ export default function About() {
               transition={{ ...fadeUp.transition, delay: 0.2 }}
               className="text-base font-300 text-char-400 leading-relaxed max-w-[55ch] mb-8"
             >
-              Wok & Flame brings authentic Chinese and Thai cooking to West
-              Didsbury. Every dish is cooked to order over high heat in a
-              traditional wok, keeping flavours sharp and ingredients fresh.
+              Wok & Flame is a proper Chinese takeaway in West Didsbury. Every
+              dish is cooked to order over high heat in a traditional wok,
+              keeping flavours sharp and ingredients fresh.
             </motion.p>
 
             <motion.p
@@ -62,10 +62,10 @@ export default function About() {
               transition={{ ...fadeUp.transition, delay: 0.3 }}
               className="text-base font-300 text-char-400 leading-relaxed max-w-[55ch] mb-10"
             >
-              From classic salt and pepper dishes and hand-folded dim sum to
-              rich Thai curries and stir-fried noodles, every plate is made with
-              care. We keep things simple: good ingredients, real fire, no
-              shortcuts.
+              Classic salt and pepper dishes, crispy aromatic duck, chow mein
+              and sweet & sour done right — with a handful of Thai favourites
+              like green curry and pad Thai for regulars who ask. Good
+              ingredients, real fire, no shortcuts.
             </motion.p>
 
             {/* Stats */}

@@ -13,7 +13,7 @@ export default function Footer() {
               WOK & FLAME
             </p>
             <p className="text-sm font-300 text-char-400 leading-relaxed max-w-[35ch]">
-              Authentic Chinese and Thai, wok-fired fresh in West Didsbury.
+              Authentic Chinese takeaway, wok-fired fresh in West Didsbury.
               Delivery and collection via Just Eat.
             </p>
           </div>
