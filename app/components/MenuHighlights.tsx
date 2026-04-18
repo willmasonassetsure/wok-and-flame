@@ -209,14 +209,25 @@ export default function MenuHighlights() {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const menuContentRef = useRef<HTMLDivElement>(null);
 
-  // Quick Browse grid (mobile) shows the meal-building 12 — not the utility
-  // categories (Sauces, Drinks, Desserts) which customers treat as add-ons
-  // rather than browse destinations. The icon bar still has all 15.
+  // Quick Browse grid (mobile) — an explicit, curated 9 for a clean 3×3. These
+  // are the meal-building destinations customers actually browse: openers,
+  // centrepieces, and fillers. The icon bar still exposes all 15 for users
+  // who want Soups, Curries, Fried Rice, Sauces, Drinks or Desserts.
   const quickBrowseCategories = useMemo(() => {
-    const excluded = new Set(["Sauces", "Drinks", "Desserts"]);
+    const included = new Set([
+      "Set Meals",
+      "Specials",
+      "Appetisers",
+      "Salt & Pepper",
+      "Mains",
+      "Sweet & Sour",
+      "Deep Fried",
+      "Noodles",
+      "Sides",
+    ]);
     return menuData
       .map((cat, idx) => ({ cat, idx }))
-      .filter(({ cat }) => !excluded.has(cat.shortTitle));
+      .filter(({ cat }) => included.has(cat.shortTitle));
   }, []);
 
   // Cross-category popular picks — quick-access chips at the top of the menu
@@ -382,16 +393,18 @@ export default function MenuHighlights() {
           available through Just Eat.
         </motion.p>
 
-        {/* Popular Picks — cross-category quick-access chips. Solves the mobile
-            pre-click visibility problem: customers can tap their usual order
-            without hunting through icons. Desktop also benefits. */}
+        {/* Popular Picks — cross-category quick-access chips. Desktop only:
+            on mobile, the icon nav + Quick Browse grid + indicator row already
+            stack tall enough that adding another scroll strip would push the
+            actual dishes out of view. Mobile users get pre-click visibility
+            from the Jump To grid instead. */}
         {popularPicks.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.7, delay: 0.15, ease }}
-            className="mb-7 md:mb-10"
+            className="hidden md:block mb-10"
           >
             <div className="flex items-center gap-2 mb-3">
               <Star size={11} weight="fill" className="text-vermillion" />
@@ -420,27 +433,6 @@ export default function MenuHighlights() {
             </div>
           </motion.div>
         )}
-
-        {/* Mobile-only floating category label — replaces the wok tether on small screens
-            since icons alone aren't descriptive enough. Cross-fades as user taps. */}
-        <div className="md:hidden relative h-6 mb-2 overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeIdx}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.28, ease }}
-              className="absolute inset-x-0 flex items-center justify-center gap-2"
-            >
-              <div className="w-1 h-1 rounded-full bg-vermillion" />
-              <span className="text-[11px] font-500 tracking-[0.2em] uppercase text-char-50">
-                {category.shortTitle}
-              </span>
-              <div className="w-1 h-1 rounded-full bg-vermillion" />
-            </motion.div>
-          </AnimatePresence>
-        </div>
 
         {/* Tab bar wrapper — relative parent; wok sits in reserved pt-9 space on desktop */}
         <motion.div
@@ -480,9 +472,34 @@ export default function MenuHighlights() {
             </motion.div>
           )}
 
-          {/* Glass tab bar — the only scrollable element */}
-          <GlassCard className="rounded-xl p-1">
-            <div ref={scrollRef} className="overflow-x-auto hide-scrollbar">
+          {/* Glass tab bar — unified slider card. On mobile, the card also
+              contains a title row above the icon row (separated by a hairline
+              divider) so the active category name is never ambiguous — icons
+              alone don't read pre-click. Title row is hidden on desktop
+              where the floating wok tether does the same job. */}
+          <GlassCard className="rounded-xl overflow-hidden">
+            {/* Mobile-only title row — cross-fades as the user taps */}
+            <div className="md:hidden relative h-9 flex items-center justify-center overflow-hidden border-b border-char-50/[0.06] px-3">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeIdx}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.28, ease }}
+                  className="absolute inset-0 flex items-center justify-center gap-2"
+                >
+                  <div className="w-1 h-1 rounded-full bg-vermillion shadow-[0_0_5px_rgba(180,35,24,0.8)]" />
+                  <span className="text-[11px] font-500 tracking-[0.2em] uppercase text-char-50">
+                    {category.shortTitle}
+                  </span>
+                  <div className="w-1 h-1 rounded-full bg-vermillion shadow-[0_0_5px_rgba(180,35,24,0.8)]" />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Icon scroll row — the only scrollable element */}
+            <div ref={scrollRef} className="overflow-x-auto hide-scrollbar p-1">
               <div className="flex gap-0.5 min-w-max">
                 {menuData.map((cat, idx) => (
                   <CategoryTab
@@ -515,82 +532,21 @@ export default function MenuHighlights() {
           )}
         </motion.div>
 
-        {/* Mobile-only compact indicator row — sits directly below the tab bar
-            so the conditional brightness reacts visibly as users tap through
-            categories. Desktop keeps the fuller legend at the bottom. */}
-        <div className="md:hidden mt-3 flex items-center justify-center gap-5 text-[10px] font-400">
-          <motion.div
-            animate={{ opacity: categorySignals.hasSpicy ? 1 : 0.32 }}
-            transition={{ duration: 0.3, ease }}
-            className="flex items-center gap-1.5"
-          >
-            <div
-              className={`w-1 h-1 rounded-full ${
-                categorySignals.hasSpicy
-                  ? "bg-vermillion shadow-[0_0_5px_rgba(180,35,24,0.9)]"
-                  : "bg-vermillion/50"
-              }`}
-            />
-            <span
-              className={`tracking-[0.15em] uppercase ${
-                categorySignals.hasSpicy ? "text-char-200" : "text-char-500"
-              }`}
-            >
-              Chilli
-            </span>
-          </motion.div>
-
-          <motion.div
-            animate={{ opacity: categorySignals.hasPopular ? 1 : 0.32 }}
-            transition={{ duration: 0.3, ease }}
-            className="flex items-center gap-1.5"
-          >
-            <Star
-              size={10}
-              weight={categorySignals.hasPopular ? "fill" : "regular"}
-              className={categorySignals.hasPopular ? "text-vermillion" : "text-char-500"}
-            />
-            <span
-              className={`tracking-[0.15em] uppercase ${
-                categorySignals.hasPopular ? "text-char-200" : "text-char-500"
-              }`}
-            >
-              Popular
-            </span>
-          </motion.div>
-
-          <motion.div
-            animate={{ opacity: categorySignals.hasVeg ? 1 : 0.32 }}
-            transition={{ duration: 0.3, ease }}
-            className="flex items-center gap-1.5"
-          >
-            <Leaf
-              size={10}
-              weight={categorySignals.hasVeg ? "fill" : "regular"}
-              className={categorySignals.hasVeg ? "text-emerald-400" : "text-char-500"}
-            />
-            <span
-              className={`tracking-[0.15em] uppercase ${
-                categorySignals.hasVeg ? "text-char-200" : "text-char-500"
-              }`}
-            >
-              Veg
-            </span>
-          </motion.div>
-        </div>
-
-        {/* Quick Browse — mobile-only readable category grid, sits between the
-            icon nav cluster and the dish list. Shows the meal-building 12
-            (Sauces/Drinks/Desserts stay reachable via the icon bar). Each
-            pill has a category icon + short title; the active pill fills
-            with a vermillion gradient that slides between tiles via a shared
-            layoutId, matching the icon bar's own active-pill language. */}
+        {/* Quick Browse — mobile-only readable 3×3 category grid. Sits
+            directly below the integrated slider card so the top of the menu
+            reads as: category name → icon bar → named destinations, with
+            no vertical waste. Nine curated meal-building categories; the
+            remaining six (Soups, Curries, Fried Rice, Sauces, Drinks,
+            Desserts) stay reachable via the icon bar above. Each tile has
+            an icon + short title; the active tile fills with a vermillion
+            gradient that slides between tiles via a shared layoutId,
+            matching the icon bar's own active-pill language. */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.6, delay: 0.1, ease }}
-          className="md:hidden mt-7"
+          className="md:hidden mt-4"
         >
           <div className="flex items-center gap-2 mb-3.5">
             <div className="w-1 h-1 rounded-full bg-vermillion shadow-[0_0_5px_rgba(180,35,24,0.8)]" />
@@ -667,6 +623,73 @@ export default function MenuHighlights() {
             })}
           </div>
         </motion.div>
+
+        {/* Mobile-only compact indicator row — sits below the Jump To grid,
+            so by the time a user reaches it they've already confirmed their
+            category. The conditional brightness then acts as a quick "what's
+            in this category" summary (spicy? popular dishes? veg options?)
+            before they scan the full dish list. Desktop keeps the fuller
+            legend below the menu instead. */}
+        <div className="md:hidden mt-5 flex items-center justify-center gap-5 text-[10px] font-400">
+          <motion.div
+            animate={{ opacity: categorySignals.hasSpicy ? 1 : 0.32 }}
+            transition={{ duration: 0.3, ease }}
+            className="flex items-center gap-1.5"
+          >
+            <div
+              className={`w-1 h-1 rounded-full ${
+                categorySignals.hasSpicy
+                  ? "bg-vermillion shadow-[0_0_5px_rgba(180,35,24,0.9)]"
+                  : "bg-vermillion/50"
+              }`}
+            />
+            <span
+              className={`tracking-[0.15em] uppercase ${
+                categorySignals.hasSpicy ? "text-char-200" : "text-char-500"
+              }`}
+            >
+              Chilli
+            </span>
+          </motion.div>
+
+          <motion.div
+            animate={{ opacity: categorySignals.hasPopular ? 1 : 0.32 }}
+            transition={{ duration: 0.3, ease }}
+            className="flex items-center gap-1.5"
+          >
+            <Star
+              size={10}
+              weight={categorySignals.hasPopular ? "fill" : "regular"}
+              className={categorySignals.hasPopular ? "text-vermillion" : "text-char-500"}
+            />
+            <span
+              className={`tracking-[0.15em] uppercase ${
+                categorySignals.hasPopular ? "text-char-200" : "text-char-500"
+              }`}
+            >
+              Popular
+            </span>
+          </motion.div>
+
+          <motion.div
+            animate={{ opacity: categorySignals.hasVeg ? 1 : 0.32 }}
+            transition={{ duration: 0.3, ease }}
+            className="flex items-center gap-1.5"
+          >
+            <Leaf
+              size={10}
+              weight={categorySignals.hasVeg ? "fill" : "regular"}
+              className={categorySignals.hasVeg ? "text-emerald-400" : "text-char-500"}
+            />
+            <span
+              className={`tracking-[0.15em] uppercase ${
+                categorySignals.hasVeg ? "text-char-200" : "text-char-500"
+              }`}
+            >
+              Veg
+            </span>
+          </motion.div>
+        </div>
 
         {/* Category content */}
         <AnimatePresence mode="wait">
