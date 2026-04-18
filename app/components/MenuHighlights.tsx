@@ -63,8 +63,8 @@ function CategoryTab({
       onClick={onClick}
       whileTap={{ scale: 0.96 }}
       className={`
-        relative flex items-center gap-2 px-4 py-2.5 rounded-lg whitespace-nowrap
-        text-xs font-500 tracking-wide transition-colors duration-300
+        relative flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg whitespace-nowrap
+        text-[11px] sm:text-xs font-500 tracking-wide transition-colors duration-300
         ${isActive ? "text-char-50" : "text-char-400 hover:text-char-200"}
       `}
     >
@@ -84,7 +84,7 @@ function CategoryTab({
       >
         <Icon size={14} weight={isActive ? "fill" : "regular"} />
       </motion.span>
-      <span className="relative z-10">{shortTitle}</span>
+      <span className="relative z-10 hidden sm:inline">{shortTitle}</span>
     </motion.button>
   );
 }
@@ -165,7 +165,7 @@ export default function MenuHighlights() {
   }, [updateWokX]);
 
   return (
-    <section id="menu" className="py-16 md:py-40 border-t border-char-800/50">
+    <section id="menu" className="py-10 md:py-40 border-t border-char-800/50">
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
         {/* Header */}
         <motion.p
@@ -193,7 +193,7 @@ export default function MenuHighlights() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, delay: 0.15, ease }}
-          className="text-base font-300 text-char-400 leading-relaxed max-w-[55ch] mb-10"
+          className="text-base font-300 text-char-400 leading-relaxed max-w-[55ch] mb-6 md:mb-10"
         >
           Every dish wok-fired fresh to order. Delivery and collection
           available through Just Eat.
@@ -206,10 +206,11 @@ export default function MenuHighlights() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.7, delay: 0.2, ease }}
-          className="relative mb-8"
+          className="relative mb-8 md:pt-14"
         >
-          {/* Floating wok — sits ON the page background, 16px above tab bar */}
+          {/* Floating wok — desktop only, sits ON the page background, 16px above tab bar */}
           {wokX !== null && (
+            <div className="hidden md:block">
             <motion.div
               className="absolute pointer-events-none z-20"
               style={{ top: -44 }}
@@ -236,18 +237,21 @@ export default function MenuHighlights() {
                 </svg>
               </motion.div>
             </motion.div>
+            </div>
           )}
 
-          {/* Vermillion glow — 4px below the tab bar */}
+          {/* Vermillion glow — 4px below the tab bar, desktop only */}
           {wokX !== null && (
-            <motion.div
-              className="absolute pointer-events-none z-20"
-              style={{ bottom: -6 }}
-              animate={{ x: wokX - 16 }}
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            >
-              <div className="w-8 h-px rounded-full bg-vermillion/50 blur-[2px]" />
-            </motion.div>
+            <div className="hidden md:block">
+              <motion.div
+                className="absolute pointer-events-none z-20"
+                style={{ bottom: -6 }}
+                animate={{ x: wokX - 16 }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              >
+                <div className="w-8 h-px rounded-full bg-vermillion/50 blur-[2px]" />
+              </motion.div>
+            </div>
           )}
 
           {/* Glass tab bar — the only scrollable element */}

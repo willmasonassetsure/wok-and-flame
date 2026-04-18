@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import Reviews from "./components/Reviews";
 import About from "./components/About";
 import MenuHighlights from "./components/MenuHighlights";
 import Gallery from "./components/Gallery";
@@ -16,6 +17,7 @@ export default function Home() {
       <Navbar />
       <main className="relative z-10">
         <Hero />
+        <Reviews />
         <About />
         <MenuHighlights />
         <Gallery />

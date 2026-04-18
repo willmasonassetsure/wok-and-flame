@@ -13,7 +13,7 @@ const images = [
 
 export default function Gallery() {
   return (
-    <section id="gallery" className="py-16 md:py-40 border-t border-char-800/50">
+    <section id="gallery" className="py-10 md:py-40 border-t border-char-800/50">
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
         <motion.p
           initial={{ opacity: 0, y: 30 }}
@@ -22,7 +22,7 @@ export default function Gallery() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] as const }}
           className="text-vermillion text-xs font-500 tracking-[0.3em] uppercase mb-5"
         >
-          Inside CHAR
+          Gallery
         </motion.p>
 
         <motion.h2

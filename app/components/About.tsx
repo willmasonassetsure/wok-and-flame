@@ -13,12 +13,12 @@ const fadeUp = {
 
 export default function About() {
   return (
-    <section id="about" className="py-16 md:py-40">
+    <section id="about" className="py-10 md:py-40">
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-20 items-center">
           {/* Image */}
           <motion.div {...fadeUp} className="md:col-span-5 md:col-start-1">
-            <div className="relative aspect-[3/4] overflow-hidden rounded-2xl">
+            <div className="relative aspect-[16/9] md:aspect-[3/4] overflow-hidden rounded-2xl">
               <img
                 src="https://picsum.photos/seed/wokfire/800/1067"
                 alt="Wok & Flame kitchen"

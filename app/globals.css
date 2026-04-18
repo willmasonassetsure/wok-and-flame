@@ -59,3 +59,20 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-char-400);
 }
+
+/* Reviews marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 50s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
