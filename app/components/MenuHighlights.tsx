@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, animate } from "framer-motion";
 import { Fire, Wine, CookingPot, Leaf, Star, BowlFood, ForkKnife, Pepper, Gift, Drop, Cookie } from "@phosphor-icons/react";
 import { menuData } from "../data/menu";
 
@@ -44,7 +44,6 @@ function GlassCard({ children, className = "" }: { children: React.ReactNode; cl
 
 /* ─── Category Tab ─── */
 function CategoryTab({
-  label,
   shortTitle,
   isActive,
   onClick,
@@ -139,30 +138,90 @@ export default function MenuHighlights() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const [wokX, setWokX] = useState<number | null>(null);
 
-  // Track active tab position via getBoundingClientRect — always accurate
-  const updateWokX = useCallback(() => {
+  // Motion value for wok X position — updates instantly on scroll, animated on click
+  const wokX = useMotionValue(0);
+  const [wokReady, setWokReady] = useState(false);
+
+  // Custom iOS-style scrollbar metrics
+  const [scrollMetrics, setScrollMetrics] = useState({ ratio: 0, visibleRatio: 1 });
+
+  // Compute the active tab's center X relative to wrapper
+  const computeTargetX = useCallback(() => {
     const tab = tabRefs.current[activeIdx];
     const wrapper = wrapperRef.current;
-    if (tab && wrapper) {
-      const tabRect = tab.getBoundingClientRect();
-      const wrapperRect = wrapper.getBoundingClientRect();
-      setWokX(tabRect.left - wrapperRect.left + tabRect.width / 2);
-    }
+    if (!tab || !wrapper) return null;
+    const tabRect = tab.getBoundingClientRect();
+    const wrapperRect = wrapper.getBoundingClientRect();
+    // Center of tab relative to wrapper, minus half the wok SVG width (18)
+    return tabRect.left - wrapperRect.left + tabRect.width / 2 - 18;
   }, [activeIdx]);
 
+  // Update scrollbar metrics
+  const updateScrollMetrics = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const visibleRatio = el.scrollWidth > 0 ? Math.min(1, el.clientWidth / el.scrollWidth) : 1;
+    const scrollable = el.scrollWidth - el.clientWidth;
+    const ratio = scrollable > 0 ? el.scrollLeft / scrollable : 0;
+    setScrollMetrics({ ratio, visibleRatio });
+  }, []);
+
+  // Click transition: animate wok with spring to new tab
   useEffect(() => {
-    updateWokX();
-    // Re-calc on scroll (horizontal tab drag) and window resize
+    const target = computeTargetX();
+    if (target === null) return;
+    if (!wokReady) {
+      wokX.set(target);
+      setWokReady(true);
+      return;
+    }
+    const controls = animate(wokX, target, {
+      type: "spring",
+      stiffness: 380,
+      damping: 32,
+    });
+    return () => controls.stop();
+  }, [activeIdx, computeTargetX, wokX, wokReady]);
+
+  // Scroll tracking: instant update, no spring lag. Wok is visually tethered to the tab.
+  useEffect(() => {
     const scrollEl = scrollRef.current;
-    if (scrollEl) scrollEl.addEventListener("scroll", updateWokX, { passive: true });
-    window.addEventListener("resize", updateWokX);
-    return () => {
-      if (scrollEl) scrollEl.removeEventListener("scroll", updateWokX);
-      window.removeEventListener("resize", updateWokX);
+    if (!scrollEl) return;
+
+    const onScroll = () => {
+      const x = computeTargetX();
+      if (x !== null) wokX.set(x);
+      updateScrollMetrics();
     };
-  }, [updateWokX]);
+
+    const onResize = () => {
+      const x = computeTargetX();
+      if (x !== null) wokX.set(x);
+      updateScrollMetrics();
+    };
+
+    // Observe content size changes (e.g., font load, viewport change)
+    const resizeObserver = new ResizeObserver(onResize);
+    resizeObserver.observe(scrollEl);
+
+    scrollEl.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+
+    // Initial sync
+    updateScrollMetrics();
+
+    return () => {
+      scrollEl.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      resizeObserver.disconnect();
+    };
+  }, [computeTargetX, wokX, updateScrollMetrics]);
+
+  // Scrollbar thumb sizing
+  const thumbPct = Math.max(scrollMetrics.visibleRatio * 100, 18);
+  const thumbLeftPct = scrollMetrics.ratio * (100 - thumbPct);
+  const showScrollbar = scrollMetrics.visibleRatio < 0.999;
 
   return (
     <section id="menu" className="py-10 md:py-40 border-t border-char-800/50">
@@ -199,36 +258,55 @@ export default function MenuHighlights() {
           available through Just Eat.
         </motion.p>
 
-        {/* Tab bar wrapper — single relative parent, wok positioned via live getBoundingClientRect */}
+        {/* Mobile-only floating category label — replaces the wok tether on small screens
+            since icons alone aren't descriptive enough. Cross-fades as user taps. */}
+        <div className="md:hidden relative h-6 mb-2 overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeIdx}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.28, ease }}
+              className="absolute inset-x-0 flex items-center justify-center gap-2"
+            >
+              <div className="w-1 h-1 rounded-full bg-vermillion" />
+              <span className="text-[11px] font-500 tracking-[0.2em] uppercase text-char-50">
+                {category.shortTitle}
+              </span>
+              <div className="w-1 h-1 rounded-full bg-vermillion" />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Tab bar wrapper — relative parent; wok sits in reserved pt-9 space on desktop */}
         <motion.div
           ref={wrapperRef}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.7, delay: 0.2, ease }}
-          className="relative mb-8 md:pt-14"
+          className="relative mb-4 md:pt-9"
         >
-          {/* Floating wok — desktop only, sits ON the page background, 16px above tab bar */}
-          {wokX !== null && (
-            <div className="hidden md:block">
+          {/* Floating wok — desktop only. Tethered to active tab via motion value
+              that updates INSTANTLY on scroll (no spring lag) and springs on click. */}
+          {wokReady && (
             <motion.div
-              className="absolute pointer-events-none z-20"
-              style={{ top: -44 }}
-              animate={{ x: wokX - 18 }}
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              className="hidden md:block absolute pointer-events-none z-20 left-0"
+              style={{ top: 0, x: wokX }}
             >
               <motion.div
                 animate={{ y: [0, -3, 0] }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
               >
-                <svg width="36" height="40" viewBox="0 0 40 44" fill="none" overflow="visible" className="drop-shadow-[0_0_10px_rgba(180,35,24,0.5)]">
+                <svg width="36" height="30" viewBox="0 0 40 33" fill="none" overflow="visible" className="drop-shadow-[0_0_10px_rgba(180,35,24,0.5)]">
                   <ellipse cx="18" cy="17" rx="13" ry="7" fill="#1c1917" stroke="#44403c" strokeWidth="0.8" />
                   <ellipse cx="18" cy="16" rx="11" ry="5.5" fill="#292524" />
-                  <motion.g animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }} style={{ transformOrigin: "18px 30px" }}>
-                    <ellipse cx="13" cy="27" rx="2.5" ry="4" fill="#b42318" opacity="0.8" />
-                    <ellipse cx="18" cy="26" rx="3" ry="5" fill="#d92d20" opacity="0.7" />
-                    <ellipse cx="23" cy="27" rx="2.5" ry="4" fill="#b42318" opacity="0.8" />
-                    <ellipse cx="18" cy="27.5" rx="1.8" ry="2.5" fill="#fbbf24" opacity="0.35" />
+                  <motion.g animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }} style={{ transformOrigin: "18px 28px" }}>
+                    <ellipse cx="13" cy="26" rx="2.5" ry="4" fill="#b42318" opacity="0.8" />
+                    <ellipse cx="18" cy="25" rx="3" ry="5" fill="#d92d20" opacity="0.7" />
+                    <ellipse cx="23" cy="26" rx="2.5" ry="4" fill="#b42318" opacity="0.8" />
+                    <ellipse cx="18" cy="26.5" rx="1.8" ry="2.5" fill="#fbbf24" opacity="0.35" />
                   </motion.g>
                   <motion.path d="M13 11 Q13.5 7 12.5 3" stroke="#555" strokeWidth="0.6" strokeLinecap="round" fill="none" animate={{ opacity: [0, 0.4, 0] }} transition={{ duration: 2, repeat: Infinity }} />
                   <motion.path d="M18 10 Q17.5 6 18.5 2" stroke="#555" strokeWidth="0.6" strokeLinecap="round" fill="none" animate={{ opacity: [0, 0.3, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 0.5 }} />
@@ -237,21 +315,6 @@ export default function MenuHighlights() {
                 </svg>
               </motion.div>
             </motion.div>
-            </div>
-          )}
-
-          {/* Vermillion glow — 4px below the tab bar, desktop only */}
-          {wokX !== null && (
-            <div className="hidden md:block">
-              <motion.div
-                className="absolute pointer-events-none z-20"
-                style={{ bottom: -6 }}
-                animate={{ x: wokX - 16 }}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              >
-                <div className="w-8 h-px rounded-full bg-vermillion/50 blur-[2px]" />
-              </motion.div>
-            </div>
           )}
 
           {/* Glass tab bar — the only scrollable element */}
@@ -271,6 +334,22 @@ export default function MenuHighlights() {
               </div>
             </div>
           </GlassCard>
+
+          {/* iOS-style custom scrollbar — silicon pill with soft shadows */}
+          {showScrollbar && (
+            <div className="mt-3 mx-auto w-[70%] sm:w-[50%] md:w-[32%] h-[5px] rounded-full bg-char-900/70 relative shadow-[inset_0_1px_2px_rgba(0,0,0,0.6),inset_0_-1px_0_rgba(255,255,255,0.03)]">
+              <div
+                className="absolute top-[1px] bottom-[1px] rounded-full"
+                style={{
+                  width: `calc(${thumbPct}% - 2px)`,
+                  left: `calc(${thumbLeftPct}% + 1px)`,
+                  background: "linear-gradient(180deg, rgba(250,250,249,0.5) 0%, rgba(250,250,249,0.2) 55%, rgba(250,250,249,0.15) 100%)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.5)",
+                  transition: "left 0.08s linear, width 0.25s ease",
+                }}
+              />
+            </div>
+          )}
         </motion.div>
 
         {/* Category content */}
@@ -281,6 +360,7 @@ export default function MenuHighlights() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.35, ease }}
+            className="mt-6 md:mt-8"
           >
             {/* Category title + description */}
             <div className="flex flex-wrap items-baseline gap-2 md:gap-4 mb-6">
@@ -327,29 +407,72 @@ export default function MenuHighlights() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Legend */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-8 flex flex-wrap items-center gap-6 text-[11px] font-300 text-char-400/50"
-        >
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-vermillion/50" />
-            <span>Contains chilli</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-500 tracking-wider uppercase text-vermillion/40 border border-vermillion/15 rounded px-1.5 py-0.5">
-              Popular
-            </span>
-            <span>Customer favourite</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Leaf size={12} weight="regular" className="text-char-400/50" />
-            <span>Vegetarian options available</span>
-          </div>
-        </motion.div>
+        {/* Legend — indicators brighten when the active category contains matching items */}
+        {(() => {
+          const hasSpicy = category.items.some((i) => i.spicy);
+          const hasPopular = category.items.some((i) => i.popular);
+          const vegRegex = /vegetar|veg\b|tofu|mushroom|vegetable/i;
+          const hasVeg =
+            (category.description && vegRegex.test(category.description)) ||
+            category.items.some(
+              (i) => vegRegex.test(i.name) || (i.desc && vegRegex.test(i.desc))
+            );
+
+          return (
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-8 flex flex-wrap items-center gap-6 text-[11px] font-300"
+            >
+              <motion.div
+                animate={{ opacity: hasSpicy ? 1 : 0.35 }}
+                transition={{ duration: 0.3, ease }}
+                className="flex items-center gap-2"
+              >
+                <div
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    hasSpicy ? "bg-vermillion shadow-[0_0_6px_rgba(180,35,24,0.6)]" : "bg-vermillion/50"
+                  }`}
+                />
+                <span className={hasSpicy ? "text-char-200" : "text-char-400"}>Contains chilli</span>
+              </motion.div>
+
+              <motion.div
+                animate={{ opacity: hasPopular ? 1 : 0.35 }}
+                transition={{ duration: 0.3, ease }}
+                className="flex items-center gap-2"
+              >
+                <span
+                  className={`text-[10px] font-500 tracking-wider uppercase rounded px-1.5 py-0.5 border ${
+                    hasPopular
+                      ? "text-vermillion border-vermillion/40 bg-vermillion/[0.06]"
+                      : "text-vermillion/40 border-vermillion/15"
+                  }`}
+                >
+                  Popular
+                </span>
+                <span className={hasPopular ? "text-char-200" : "text-char-400"}>Customer favourite</span>
+              </motion.div>
+
+              <motion.div
+                animate={{ opacity: hasVeg ? 1 : 0.35 }}
+                transition={{ duration: 0.3, ease }}
+                className="flex items-center gap-2"
+              >
+                <Leaf
+                  size={12}
+                  weight={hasVeg ? "fill" : "regular"}
+                  className={hasVeg ? "text-emerald-400" : "text-char-400/50"}
+                />
+                <span className={hasVeg ? "text-char-200" : "text-char-400"}>
+                  Vegetarian options available
+                </span>
+              </motion.div>
+            </motion.div>
+          );
+        })()}
       </div>
     </section>
   );

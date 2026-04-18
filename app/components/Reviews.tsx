@@ -117,7 +117,7 @@ export default function Reviews() {
     <section className="py-10 md:py-16 border-t border-char-800/50 overflow-hidden">
       {/* Header */}
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 mb-7 md:mb-10">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -135,24 +135,34 @@ export default function Reviews() {
               transition={{ duration: 0.6, delay: 0.1, ease }}
               className="text-2xl md:text-4xl font-700 tracking-tighter text-char-50"
             >
-              9,999+ five-star reviews
+              What our regulars say
             </motion.h2>
           </div>
+
+          {/* Stat pills — real numbers, credible */}
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex items-center gap-2 shrink-0 pb-1"
+            className="flex items-center gap-2 shrink-0 pb-1 flex-wrap"
           >
-            <div className="flex gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} size={13} weight="fill" className="text-vermillion" />
-              ))}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-char-50/[0.03] border border-char-50/[0.06] backdrop-blur-xl">
+              <div className="flex gap-0.5">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={11} weight="fill" className="text-vermillion" />
+                ))}
+              </div>
+              <span className="text-[11px] font-500 text-char-200 tabular-nums">5.0</span>
+              <span className="text-[11px] font-300 text-char-400">·</span>
+              <span className="text-[11px] font-400 text-char-200 tabular-nums">11,375</span>
+              <span className="text-[11px] font-300 text-char-400">on Just Eat</span>
             </div>
-            <span className="text-xs font-300 text-char-400">5.0 on</span>
-            <GoogleIcon />
-            <span className="text-xs font-300 text-char-400">Business</span>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-char-50/[0.03] border border-char-50/[0.06] backdrop-blur-xl">
+              <GoogleIcon />
+              <span className="text-[11px] font-400 text-char-200 tabular-nums">256</span>
+              <span className="text-[11px] font-300 text-char-400">Google reviews</span>
+            </div>
           </motion.div>
         </div>
       </div>

@@ -84,10 +84,10 @@ export default function About() {
               </div>
               <div>
                 <p className="text-2xl md:text-3xl font-700 text-char-50 tracking-tight">
-                  9,999+
+                  11,375
                 </p>
                 <p className="text-xs font-400 text-char-400 tracking-wider uppercase mt-1">
-                  Reviews
+                  Just Eat Reviews
                 </p>
               </div>
               <div>

@@ -73,7 +73,7 @@ export default function Hero() {
                 ))}
               </div>
               <span className="text-sm font-400 text-char-400">
-                5.0 &middot; 9,999+ reviews on Just Eat
+                5.0 &middot; 11,375 reviews on Just Eat
               </span>
             </motion.div>
 
