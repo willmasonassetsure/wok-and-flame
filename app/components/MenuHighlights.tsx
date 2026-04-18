@@ -209,6 +209,16 @@ export default function MenuHighlights() {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const menuContentRef = useRef<HTMLDivElement>(null);
 
+  // Quick Browse grid (mobile) shows the meal-building 12 — not the utility
+  // categories (Sauces, Drinks, Desserts) which customers treat as add-ons
+  // rather than browse destinations. The icon bar still has all 15.
+  const quickBrowseCategories = useMemo(() => {
+    const excluded = new Set(["Sauces", "Drinks", "Desserts"]);
+    return menuData
+      .map((cat, idx) => ({ cat, idx }))
+      .filter(({ cat }) => !excluded.has(cat.shortTitle));
+  }, []);
+
   // Cross-category popular picks — quick-access chips at the top of the menu
   const popularPicks = useMemo(() => {
     const picks: Array<{ name: string; price: string; catIdx: number; catShort: string }> = [];
@@ -371,62 +381,6 @@ export default function MenuHighlights() {
           Every dish wok-fired fresh to order. Delivery and collection
           available through Just Eat.
         </motion.p>
-
-        {/* Quick Browse — mobile-only text grid of every category. Gives pre-click
-            visibility the icon bar alone can't provide. The vermillion "active"
-            fill uses a shared layoutId so it slides between tiles, matching the
-            icon bar's own active-pill animation language. Taps delegate to
-            setActiveIdx — same handler as the icon tabs — so both stays synced. */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.6, delay: 0.1, ease }}
-          className="md:hidden mb-6"
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-1 h-1 rounded-full bg-vermillion" />
-            <p className="text-[10px] font-500 tracking-[0.3em] uppercase text-char-400">
-              Browse categories
-            </p>
-            <div className="flex-1 h-px bg-gradient-to-r from-char-800/60 to-transparent" />
-            <span className="text-[10px] font-400 text-char-600 tabular-nums">
-              {menuData.length}
-            </span>
-          </div>
-          <div className="grid grid-cols-3 gap-1.5">
-            {menuData.map((cat, idx) => {
-              const isActive = activeIdx === idx;
-              return (
-                <motion.button
-                  key={cat.shortTitle}
-                  onClick={() => setActiveIdx(idx)}
-                  whileTap={{ scale: 0.96 }}
-                  className={`
-                    relative py-2.5 px-2 rounded-lg text-[11px] font-500
-                    whitespace-nowrap overflow-hidden
-                    transition-colors duration-300
-                    ${isActive
-                      ? "text-char-50"
-                      : "text-char-300 bg-char-50/[0.03] border border-char-50/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
-                    }
-                  `}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeBrowseTile"
-                      className="absolute inset-0 rounded-lg bg-vermillion shadow-[0_4px_14px_-4px_rgba(180,35,24,0.55),inset_0_1px_0_rgba(255,255,255,0.18)]"
-                      transition={{ type: "spring", stiffness: 320, damping: 30 }}
-                    />
-                  )}
-                  <span className="relative z-10 tracking-wide">
-                    {cat.shortTitle}
-                  </span>
-                </motion.button>
-              );
-            })}
-          </div>
-        </motion.div>
 
         {/* Popular Picks — cross-category quick-access chips. Solves the mobile
             pre-click visibility problem: customers can tap their usual order
@@ -624,6 +578,95 @@ export default function MenuHighlights() {
             </span>
           </motion.div>
         </div>
+
+        {/* Quick Browse — mobile-only readable category grid, sits between the
+            icon nav cluster and the dish list. Shows the meal-building 12
+            (Sauces/Drinks/Desserts stay reachable via the icon bar). Each
+            pill has a category icon + short title; the active pill fills
+            with a vermillion gradient that slides between tiles via a shared
+            layoutId, matching the icon bar's own active-pill language. */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, delay: 0.1, ease }}
+          className="md:hidden mt-7"
+        >
+          <div className="flex items-center gap-2 mb-3.5">
+            <div className="w-1 h-1 rounded-full bg-vermillion shadow-[0_0_5px_rgba(180,35,24,0.8)]" />
+            <p className="text-[10px] font-600 tracking-[0.32em] uppercase text-char-300">
+              Jump to
+            </p>
+            <div className="flex-1 h-px bg-gradient-to-r from-char-700/60 via-char-800/30 to-transparent" />
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {quickBrowseCategories.map(({ cat, idx }) => {
+              const isActive = activeIdx === idx;
+              const Icon = categoryIcons[cat.shortTitle] || ForkKnife;
+              return (
+                <motion.button
+                  key={cat.shortTitle}
+                  onClick={() => setActiveIdx(idx)}
+                  whileTap={{ scale: 0.95 }}
+                  className={`
+                    relative py-2.5 px-2 rounded-xl overflow-hidden
+                    flex items-center justify-center gap-1.5
+                    transition-colors duration-300
+                    ${isActive ? "text-char-50" : "text-char-300"}
+                  `}
+                >
+                  {/* Inactive glass layer — subtle vertical gradient + inset highlight */}
+                  {!isActive && (
+                    <div
+                      className="absolute inset-0 rounded-xl backdrop-blur-xl border border-char-50/[0.07]"
+                      style={{
+                        background:
+                          "linear-gradient(160deg, rgba(250,250,249,0.04) 0%, rgba(250,250,249,0.015) 55%, rgba(250,250,249,0.025) 100%)",
+                        boxShadow:
+                          "inset 0 1px 0 rgba(255,255,255,0.07), 0 2px 10px -4px rgba(0,0,0,0.35)",
+                      }}
+                    />
+                  )}
+
+                  {/* Active layer — vermillion gradient + glow, slides between tiles via layoutId */}
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeBrowseTile"
+                      className="absolute inset-0 rounded-xl"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #d92d20 0%, #b42318 60%, #912218 100%)",
+                        boxShadow:
+                          "0 8px 24px -8px rgba(217,45,32,0.7), 0 2px 6px -2px rgba(180,35,24,0.45), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.18)",
+                      }}
+                      transition={{ type: "spring", stiffness: 320, damping: 32 }}
+                    >
+                      {/* Soft highlight sheen on the top-left of the active tile */}
+                      <div
+                        className="absolute inset-0 rounded-xl pointer-events-none"
+                        style={{
+                          background:
+                            "radial-gradient(ellipse at top left, rgba(255,255,255,0.18) 0%, transparent 55%)",
+                        }}
+                      />
+                    </motion.div>
+                  )}
+
+                  <Icon
+                    size={12}
+                    weight={isActive ? "fill" : "regular"}
+                    className={`relative z-10 shrink-0 transition-colors duration-300 ${
+                      isActive ? "text-char-50" : "text-char-500"
+                    }`}
+                  />
+                  <span className="relative z-10 text-[11px] font-600 tracking-[0.02em] whitespace-nowrap">
+                    {cat.shortTitle}
+                  </span>
+                </motion.button>
+              );
+            })}
+          </div>
+        </motion.div>
 
         {/* Category content */}
         <AnimatePresence mode="wait">
