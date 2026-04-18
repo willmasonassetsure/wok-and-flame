@@ -7,8 +7,8 @@ const images = [
   { src: "https://images.unsplash.com/photo-1563245372?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Steamed dim sum in bamboo baskets" },
   { src: "https://images.unsplash.com/photo-1517248135467?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Restaurant interior" },
   { src: "https://images.unsplash.com/photo-1544025162?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Atmospheric dining room" },
-  { src: "https://images.unsplash.com/photo-1559847844?w=600&h=800&q=85&auto=format&fit=crop", span: "md:row-span-2", alt: "Plated dishes" },
-  { src: "https://images.unsplash.com/photo-1569050467447?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Chef's selection" },
+  { src: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&h=800&q=85&auto=format&fit=crop", span: "md:row-span-2", alt: "Wok-fried noodles" },
+  { src: "https://images.unsplash.com/photo-1512003867696-6d5ce6835040?w=600&h=400&q=85&auto=format&fit=crop", span: "", alt: "Thai green curry" },
 ];
 
 export default function Gallery() {
