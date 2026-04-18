@@ -136,42 +136,33 @@ function DishRow({
 export default function MenuHighlights() {
   const [activeIdx, setActiveIdx] = useState(0);
   const category = menuData[activeIdx];
-  const tabBarRef = useRef<HTMLDivElement>(null);
-  const wokTrackRef = useRef<HTMLDivElement>(null);
-  const glowTrackRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const [wokPos, setWokPos] = useState({ x: 0, visible: false });
+  const [wokX, setWokX] = useState<number | null>(null);
 
-  const updateWokPosition = useCallback(() => {
+  // Track active tab position via getBoundingClientRect — always accurate
+  const updateWokX = useCallback(() => {
     const tab = tabRefs.current[activeIdx];
-    if (tab) {
-      setWokPos({
-        x: tab.offsetLeft + tab.offsetWidth / 2,
-        visible: true,
-      });
+    const wrapper = wrapperRef.current;
+    if (tab && wrapper) {
+      const tabRect = tab.getBoundingClientRect();
+      const wrapperRect = wrapper.getBoundingClientRect();
+      setWokX(tabRect.left - wrapperRect.left + tabRect.width / 2);
     }
   }, [activeIdx]);
 
   useEffect(() => {
-    updateWokPosition();
-    window.addEventListener("resize", updateWokPosition);
-    return () => window.removeEventListener("resize", updateWokPosition);
-  }, [updateWokPosition]);
-
-  // Sync horizontal scroll across wok track, tab bar, and glow track
-  useEffect(() => {
-    const tabBar = tabBarRef.current;
-    if (!tabBar) return;
-
-    const syncScroll = () => {
-      const s = tabBar.scrollLeft;
-      if (wokTrackRef.current) wokTrackRef.current.scrollLeft = s;
-      if (glowTrackRef.current) glowTrackRef.current.scrollLeft = s;
+    updateWokX();
+    // Re-calc on scroll (horizontal tab drag) and window resize
+    const scrollEl = scrollRef.current;
+    if (scrollEl) scrollEl.addEventListener("scroll", updateWokX, { passive: true });
+    window.addEventListener("resize", updateWokX);
+    return () => {
+      if (scrollEl) scrollEl.removeEventListener("scroll", updateWokX);
+      window.removeEventListener("resize", updateWokX);
     };
-
-    tabBar.addEventListener("scroll", syncScroll, { passive: true });
-    return () => tabBar.removeEventListener("scroll", syncScroll);
-  }, []);
+  }, [updateWokX]);
 
   return (
     <section id="menu" className="py-16 md:py-40 border-t border-char-800/50">
@@ -208,52 +199,60 @@ export default function MenuHighlights() {
           available through Just Eat.
         </motion.p>
 
-        {/* Scrollable tab bar with floating wok */}
-        {/* Wok — floats on site background, 16px above the tab bar, scroll-synced */}
-        <div
-          ref={wokTrackRef}
-          className="overflow-x-auto pointer-events-none h-10 mb-2 hide-scrollbar"
-        >
-          <div className="relative min-w-max h-10">
-            {wokPos.visible && (
-              <motion.div
-                className="absolute top-0"
-                animate={{ x: wokPos.x - 18 }}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              >
-                <motion.div
-                  animate={{ y: [0, -3, 0] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <svg width="36" height="40" viewBox="0 0 40 40" fill="none" className="drop-shadow-[0_0_10px_rgba(180,35,24,0.5)]" overflow="visible">
-                    <ellipse cx="18" cy="19" rx="13" ry="7" fill="#1c1917" stroke="#44403c" strokeWidth="0.8" />
-                    <ellipse cx="18" cy="18" rx="11" ry="5.5" fill="#292524" />
-                    <motion.g animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }} style={{ transformOrigin: "18px 30px" }}>
-                      <ellipse cx="13" cy="28" rx="2.5" ry="4" fill="#b42318" opacity="0.8" />
-                      <ellipse cx="18" cy="27" rx="3" ry="5" fill="#d92d20" opacity="0.7" />
-                      <ellipse cx="23" cy="28" rx="2.5" ry="4" fill="#b42318" opacity="0.8" />
-                      <ellipse cx="18" cy="28.5" rx="1.8" ry="2.5" fill="#fbbf24" opacity="0.35" />
-                    </motion.g>
-                    <motion.path d="M13 13 Q13.5 9 12.5 5" stroke="#555" strokeWidth="0.6" strokeLinecap="round" fill="none" animate={{ opacity: [0, 0.4, 0] }} transition={{ duration: 2, repeat: Infinity }} />
-                    <motion.path d="M18 12 Q17.5 8 18.5 4" stroke="#555" strokeWidth="0.6" strokeLinecap="round" fill="none" animate={{ opacity: [0, 0.3, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 0.5 }} />
-                    <motion.path d="M23 13 Q22.5 9 23.5 5" stroke="#555" strokeWidth="0.6" strokeLinecap="round" fill="none" animate={{ opacity: [0, 0.4, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 1 }} />
-                    <rect x="30" y="17" width="4" height="2" rx="1" fill="#44403c" />
-                  </svg>
-                </motion.div>
-              </motion.div>
-            )}
-          </div>
-        </div>
-
-        {/* Tab bar — tight glass pill, scrollable, drives scroll sync */}
+        {/* Tab bar wrapper — single relative parent, wok positioned via live getBoundingClientRect */}
         <motion.div
+          ref={wrapperRef}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.7, delay: 0.2, ease }}
+          className="relative mb-8"
         >
+          {/* Floating wok — sits ON the page background, 16px above tab bar */}
+          {wokX !== null && (
+            <motion.div
+              className="absolute pointer-events-none z-20"
+              style={{ top: -44 }}
+              animate={{ x: wokX - 18 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            >
+              <motion.div
+                animate={{ y: [0, -3, 0] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <svg width="36" height="40" viewBox="0 0 40 44" fill="none" overflow="visible" className="drop-shadow-[0_0_10px_rgba(180,35,24,0.5)]">
+                  <ellipse cx="18" cy="17" rx="13" ry="7" fill="#1c1917" stroke="#44403c" strokeWidth="0.8" />
+                  <ellipse cx="18" cy="16" rx="11" ry="5.5" fill="#292524" />
+                  <motion.g animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }} style={{ transformOrigin: "18px 30px" }}>
+                    <ellipse cx="13" cy="27" rx="2.5" ry="4" fill="#b42318" opacity="0.8" />
+                    <ellipse cx="18" cy="26" rx="3" ry="5" fill="#d92d20" opacity="0.7" />
+                    <ellipse cx="23" cy="27" rx="2.5" ry="4" fill="#b42318" opacity="0.8" />
+                    <ellipse cx="18" cy="27.5" rx="1.8" ry="2.5" fill="#fbbf24" opacity="0.35" />
+                  </motion.g>
+                  <motion.path d="M13 11 Q13.5 7 12.5 3" stroke="#555" strokeWidth="0.6" strokeLinecap="round" fill="none" animate={{ opacity: [0, 0.4, 0] }} transition={{ duration: 2, repeat: Infinity }} />
+                  <motion.path d="M18 10 Q17.5 6 18.5 2" stroke="#555" strokeWidth="0.6" strokeLinecap="round" fill="none" animate={{ opacity: [0, 0.3, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 0.5 }} />
+                  <motion.path d="M23 11 Q22.5 7 23.5 3" stroke="#555" strokeWidth="0.6" strokeLinecap="round" fill="none" animate={{ opacity: [0, 0.4, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 1 }} />
+                  <rect x="30" y="15" width="4" height="2" rx="1" fill="#44403c" />
+                </svg>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {/* Vermillion glow — 4px below the tab bar */}
+          {wokX !== null && (
+            <motion.div
+              className="absolute pointer-events-none z-20"
+              style={{ bottom: -6 }}
+              animate={{ x: wokX - 16 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            >
+              <div className="w-8 h-px rounded-full bg-vermillion/50 blur-[2px]" />
+            </motion.div>
+          )}
+
+          {/* Glass tab bar — the only scrollable element */}
           <GlassCard className="rounded-xl p-1">
-            <div ref={tabBarRef} className="overflow-x-auto hide-scrollbar">
+            <div ref={scrollRef} className="overflow-x-auto hide-scrollbar">
               <div className="flex gap-0.5 min-w-max">
                 {menuData.map((cat, idx) => (
                   <CategoryTab
@@ -269,24 +268,6 @@ export default function MenuHighlights() {
             </div>
           </GlassCard>
         </motion.div>
-
-        {/* Thin vermillion glow — 4px below the tab bar */}
-        <div
-          ref={glowTrackRef}
-          className="overflow-x-auto h-2 mt-1 mb-8 hide-scrollbar"
-        >
-          <div className="relative min-w-max h-2">
-            {wokPos.visible && (
-              <motion.div
-                className="absolute top-0 h-px"
-                animate={{ x: wokPos.x - 16, width: 32 }}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              >
-                <div className="w-full h-full rounded-full bg-vermillion/50 blur-[2px]" />
-              </motion.div>
-            )}
-          </div>
-        </div>
 
         {/* Category content */}
         <AnimatePresence mode="wait">
