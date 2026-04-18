@@ -372,6 +372,62 @@ export default function MenuHighlights() {
           available through Just Eat.
         </motion.p>
 
+        {/* Quick Browse — mobile-only text grid of every category. Gives pre-click
+            visibility the icon bar alone can't provide. The vermillion "active"
+            fill uses a shared layoutId so it slides between tiles, matching the
+            icon bar's own active-pill animation language. Taps delegate to
+            setActiveIdx — same handler as the icon tabs — so both stays synced. */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, delay: 0.1, ease }}
+          className="md:hidden mb-6"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-1 h-1 rounded-full bg-vermillion" />
+            <p className="text-[10px] font-500 tracking-[0.3em] uppercase text-char-400">
+              Browse categories
+            </p>
+            <div className="flex-1 h-px bg-gradient-to-r from-char-800/60 to-transparent" />
+            <span className="text-[10px] font-400 text-char-600 tabular-nums">
+              {menuData.length}
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {menuData.map((cat, idx) => {
+              const isActive = activeIdx === idx;
+              return (
+                <motion.button
+                  key={cat.shortTitle}
+                  onClick={() => setActiveIdx(idx)}
+                  whileTap={{ scale: 0.96 }}
+                  className={`
+                    relative py-2.5 px-2 rounded-lg text-[11px] font-500
+                    whitespace-nowrap overflow-hidden
+                    transition-colors duration-300
+                    ${isActive
+                      ? "text-char-50"
+                      : "text-char-300 bg-char-50/[0.03] border border-char-50/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+                    }
+                  `}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeBrowseTile"
+                      className="absolute inset-0 rounded-lg bg-vermillion shadow-[0_4px_14px_-4px_rgba(180,35,24,0.55),inset_0_1px_0_rgba(255,255,255,0.18)]"
+                      transition={{ type: "spring", stiffness: 320, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10 tracking-wide">
+                    {cat.shortTitle}
+                  </span>
+                </motion.button>
+              );
+            })}
+          </div>
+        </motion.div>
+
         {/* Popular Picks — cross-category quick-access chips. Solves the mobile
             pre-click visibility problem: customers can tap their usual order
             without hunting through icons. Desktop also benefits. */}
