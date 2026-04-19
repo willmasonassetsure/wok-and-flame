@@ -209,26 +209,13 @@ export default function MenuHighlights() {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const menuContentRef = useRef<HTMLDivElement>(null);
 
-  // Quick Browse grid (mobile) — an explicit, curated 9 for a clean 3×3. These
-  // are the meal-building destinations customers actually browse: openers,
-  // centrepieces, and fillers. The icon bar still exposes all 15 for users
-  // who want Soups, Curries, Fried Rice, Sauces, Drinks or Desserts.
-  const quickBrowseCategories = useMemo(() => {
-    const included = new Set([
-      "Set Meals",
-      "Specials",
-      "Appetisers",
-      "Salt & Pepper",
-      "Mains",
-      "Sweet & Sour",
-      "Deep Fried",
-      "Noodles",
-      "Sides",
-    ]);
-    return menuData
-      .map((cat, idx) => ({ cat, idx }))
-      .filter(({ cat }) => included.has(cat.shortTitle));
-  }, []);
+  // Quick Browse / Jump To — now the primary mobile navigation point, so it
+  // surfaces ALL 15 categories. The icon bar above is demoted to a visual
+  // confirmation strip that auto-scrolls to whichever category is active.
+  const quickBrowseCategories = useMemo(
+    () => menuData.map((cat, idx) => ({ cat, idx })),
+    []
+  );
 
   // Cross-category popular picks — quick-access chips at the top of the menu
   const popularPicks = useMemo(() => {
@@ -318,6 +305,23 @@ export default function MenuHighlights() {
     });
     return () => controls.stop();
   }, [activeIdx, computeTargetX, wokX, wokReady]);
+
+  // Auto-center the active icon inside the slider card. Since Jump To is the
+  // primary mobile nav, the slider becomes a "you are here" strip — when
+  // activeIdx changes (via Jump To tap, icon tap, or Popular Pick on desktop),
+  // we scroll the container so the active icon is centred. Uses container
+  // scrollTo (not scrollIntoView) to avoid scrolling the whole page.
+  useEffect(() => {
+    const tab = tabRefs.current[activeIdx];
+    const container = scrollRef.current;
+    if (!tab || !container) return;
+    const target =
+      tab.offsetLeft - container.clientWidth / 2 + tab.offsetWidth / 2;
+    container.scrollTo({
+      left: Math.max(0, target),
+      behavior: "smooth",
+    });
+  }, [activeIdx]);
 
   // Scroll tracking: instant update, no spring lag. Wok is visually tethered to the tab.
   useEffect(() => {
@@ -515,9 +519,12 @@ export default function MenuHighlights() {
             </div>
           </GlassCard>
 
-          {/* iOS-style custom scrollbar — silicon pill with soft shadows */}
+          {/* iOS-style custom scrollbar — desktop only. On mobile the slider
+              card is now a "you are here" strip (auto-scrolled), so a visible
+              scrollbar just adds noise to a surface the user isn't expected
+              to scroll manually. */}
           {showScrollbar && (
-            <div className="mt-3 mx-auto w-[70%] sm:w-[50%] md:w-[32%] h-[5px] rounded-full bg-char-900/70 relative shadow-[inset_0_1px_2px_rgba(0,0,0,0.6),inset_0_-1px_0_rgba(255,255,255,0.03)]">
+            <div className="hidden md:block mt-3 mx-auto md:w-[32%] h-[5px] rounded-full bg-char-900/70 relative shadow-[inset_0_1px_2px_rgba(0,0,0,0.6),inset_0_-1px_0_rgba(255,255,255,0.03)]">
               <div
                 className="absolute top-[1px] bottom-[1px] rounded-full"
                 style={{
@@ -532,15 +539,13 @@ export default function MenuHighlights() {
           )}
         </motion.div>
 
-        {/* Quick Browse — mobile-only readable 3×3 category grid. Sits
-            directly below the integrated slider card so the top of the menu
-            reads as: category name → icon bar → named destinations, with
-            no vertical waste. Nine curated meal-building categories; the
-            remaining six (Soups, Curries, Fried Rice, Sauces, Drinks,
-            Desserts) stay reachable via the icon bar above. Each tile has
-            an icon + short title; the active tile fills with a vermillion
-            gradient that slides between tiles via a shared layoutId,
-            matching the icon bar's own active-pill language. */}
+        {/* Jump To — mobile-only primary navigation. Full set of 15 named
+            categories in a 3-column grid, so every menu destination is one
+            tap away with no icon guessing. The slider card above becomes a
+            "you are here" strip that auto-scrolls to centre on whichever
+            tile is active. Active tile fills with a vermillion gradient
+            that slides between tiles via a shared layoutId, matching the
+            icon bar's own active-pill language. */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
