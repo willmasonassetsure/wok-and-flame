@@ -63,8 +63,8 @@ export default function About() {
               className="text-base font-300 text-char-400 leading-relaxed max-w-[55ch] mb-10"
             >
               Classic salt and pepper dishes, crispy aromatic duck, chow mein
-              and sweet & sour done right — with a handful of Thai favourites
-              like green curry and pad Thai for regulars who ask. Good
+              and sweet & sour done right. A shorter Thai section sits
+              alongside — pad Thai, tom yum, green and red curries. Good
               ingredients, real fire, no shortcuts.
             </motion.p>
 

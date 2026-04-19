@@ -232,15 +232,12 @@ export default function MenuHighlights() {
 
   // Category content signals — computed once per render, reused by the mobile
   // indicator row under the tab bar and the desktop legend at the bottom.
+  // All three now read directly from explicit item flags in menu.ts (no more
+  // regex-based veg guessing), so the indicators map to real data.
   const categorySignals = useMemo(() => {
     const hasSpicy = category.items.some((i) => i.spicy);
     const hasPopular = category.items.some((i) => i.popular);
-    const vegRegex = /vegetar|veg\b|tofu|mushroom|vegetable/i;
-    const hasVeg =
-      (category.description && vegRegex.test(category.description)) ||
-      category.items.some(
-        (i) => vegRegex.test(i.name) || (i.desc && vegRegex.test(i.desc))
-      );
+    const hasVeg = category.items.some((i) => i.vegetarian);
     return { hasSpicy, hasPopular, hasVeg };
   }, [category]);
 
