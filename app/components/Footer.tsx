@@ -48,9 +48,6 @@ export default function Footer() {
               <a href="#find-us" className="text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300">
                 Collection
               </a>
-              <a href="#" className="text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300">
-                Allergens
-              </a>
             </div>
           </div>
 
