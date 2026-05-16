@@ -1,7 +1,10 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Clock, NavigationArrow } from "@phosphor-icons/react";
+
+const LocationMap = dynamic(() => import("./LocationMap"), { ssr: false });
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -38,19 +41,10 @@ export default function MapSection() {
             transition={{ duration: 0.7, delay: 0.15, ease }}
             className="md:col-span-8 relative rounded-2xl overflow-hidden aspect-[4/3] md:aspect-auto md:min-h-[480px]"
           >
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2378.8!2d-2.2312!3d53.4229!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTPCsDI1JzIyLjQiTiAywrAxMyc1Mi4zIlc!5e0!3m2!1sen!2suk!4v1"
-              width="100%"
-              height="100%"
-              style={{ border: 0, filter: "invert(0.9) hue-rotate(180deg) saturate(0.3) brightness(0.6)" }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Wok & Flame location in West Didsbury"
-              className="absolute inset-0 w-full h-full"
-            />
-            {/* Map overlay gradient */}
-            <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-char-950/30 to-transparent" />
+            <LocationMap />
+            {/* Map overlay gradient — pointer-events-none so the map underneath
+                stays interactive (zoom / drag / popup) */}
+            <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-char-950/30 to-transparent z-[400]" />
           </motion.div>
 
           {/* Info */}
@@ -113,18 +107,24 @@ export default function MapSection() {
                   <p className="text-xs font-500 tracking-[0.2em] text-char-400 uppercase mb-2">
                     Order
                   </p>
-                  <p className="text-sm font-300 text-char-200">
-                    Min. order: &pound;15.00
+                  <a
+                    href="tel:+441614346318"
+                    className="block text-sm font-400 text-char-50 hover:text-vermillion transition-colors duration-300 tabular-nums"
+                  >
+                    0161 434 6318
+                  </a>
+                  <p className="text-xs font-300 text-char-400 mt-1.5">
+                    Min. order &pound;15.00 &middot; Delivery &pound;1.70
                   </p>
-                  <p className="text-xs font-300 text-char-400 mt-1">
-                    Delivery &pound;1.70 &middot; Collection from 17:00
+                  <p className="text-xs font-300 text-char-400">
+                    Collection from 17:00
                   </p>
                 </div>
               </div>
             </div>
 
             <a
-              href="https://www.google.com/maps/dir/?api=1&destination=53.4229,-2.2312"
+              href="https://www.google.com/maps/dir/?api=1&destination=53.4266560,-2.2429775&destination_place_id=Wok+%26+Flame+Burton+Road+M20+2LW"
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center justify-center gap-3 mt-8 md:mt-10 px-8 py-4 bg-vermillion text-char-50 text-sm font-500 tracking-wider uppercase hover:bg-vermillion-light transition-all duration-300 active:scale-[0.98] rounded-xl w-full md:w-auto"

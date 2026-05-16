@@ -442,7 +442,7 @@ export default function MenuHighlights() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.7, delay: 0.2, ease }}
-          className="relative mb-4 md:pt-9"
+          className="relative mb-4 md:pt-9 hidden md:block"
         >
           {/* Floating wok — desktop only. Tethered to active tab via motion value
               that updates INSTANTLY on scroll (no spring lag) and springs on click. */}
@@ -548,7 +548,7 @@ export default function MenuHighlights() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.6, delay: 0.1, ease }}
-          className="md:hidden mt-4"
+          className="md:hidden mb-2"
         >
           <div className="flex items-center gap-2 mb-3.5">
             <div className="w-1 h-1 rounded-full bg-vermillion shadow-[0_0_5px_rgba(180,35,24,0.8)]" />
@@ -625,73 +625,6 @@ export default function MenuHighlights() {
             })}
           </div>
         </motion.div>
-
-        {/* Mobile-only compact indicator row — sits below the Jump To grid,
-            so by the time a user reaches it they've already confirmed their
-            category. The conditional brightness then acts as a quick "what's
-            in this category" summary (spicy? popular dishes? veg options?)
-            before they scan the full dish list. Desktop keeps the fuller
-            legend below the menu instead. */}
-        <div className="md:hidden mt-5 flex items-center justify-center gap-5 text-[10px] font-400">
-          <motion.div
-            animate={{ opacity: categorySignals.hasSpicy ? 1 : 0.32 }}
-            transition={{ duration: 0.3, ease }}
-            className="flex items-center gap-1.5"
-          >
-            <div
-              className={`w-1 h-1 rounded-full ${
-                categorySignals.hasSpicy
-                  ? "bg-vermillion shadow-[0_0_5px_rgba(180,35,24,0.9)]"
-                  : "bg-vermillion/50"
-              }`}
-            />
-            <span
-              className={`tracking-[0.15em] uppercase ${
-                categorySignals.hasSpicy ? "text-char-200" : "text-char-500"
-              }`}
-            >
-              Chilli
-            </span>
-          </motion.div>
-
-          <motion.div
-            animate={{ opacity: categorySignals.hasPopular ? 1 : 0.32 }}
-            transition={{ duration: 0.3, ease }}
-            className="flex items-center gap-1.5"
-          >
-            <Star
-              size={10}
-              weight={categorySignals.hasPopular ? "fill" : "regular"}
-              className={categorySignals.hasPopular ? "text-vermillion" : "text-char-500"}
-            />
-            <span
-              className={`tracking-[0.15em] uppercase ${
-                categorySignals.hasPopular ? "text-char-200" : "text-char-500"
-              }`}
-            >
-              Popular
-            </span>
-          </motion.div>
-
-          <motion.div
-            animate={{ opacity: categorySignals.hasVeg ? 1 : 0.32 }}
-            transition={{ duration: 0.3, ease }}
-            className="flex items-center gap-1.5"
-          >
-            <Leaf
-              size={10}
-              weight={categorySignals.hasVeg ? "fill" : "regular"}
-              className={categorySignals.hasVeg ? "text-emerald-400" : "text-char-500"}
-            />
-            <span
-              className={`tracking-[0.15em] uppercase ${
-                categorySignals.hasVeg ? "text-char-200" : "text-char-500"
-              }`}
-            >
-              Veg
-            </span>
-          </motion.div>
-        </div>
 
         {/* Category content */}
         <AnimatePresence mode="wait">

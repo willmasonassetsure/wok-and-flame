@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c0a09">
+<title>Wok & Flame — Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --char-950: #0c0a09;
+    --char-900: #1c1917;
+    --char-800: #292524;
+    --char-700: #44403c;
+    --char-500: #78716c;
+    --char-400: #a8a29e;
+    --char-200: #e7e5e4;
+    --char-100: #f5f5f4;
+    --char-50:  #fafaf9;
+    --vermillion: #b42318;
+    --vermillion-light: #d92d20;
+    --vermillion-dark: #912018;
+    --ember: #f59e0b;
+    --border: rgba(231,229,228,0.10);
+    --border-strong: rgba(231,229,228,0.20);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    background: var(--char-950);
+    color: var(--char-100);
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  body { min-height: 100vh; min-height: 100dvh; }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(180,35,24,0.10) 0%, transparent 50%),
+      radial-gradient(circle at 88% 92%, rgba(245,158,11,0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 20px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Header */
+  .header { padding: 26px 0 0; text-align: center; }
+
+  .wordmark {
+    font-weight: 800;
+    font-size: 26px;
+    letter-spacing: 0.32em;
+    color: var(--char-50);
+    text-transform: uppercase;
+    padding-left: 0.32em;
+  }
+  .wordmark .amp { color: var(--vermillion-light); font-weight: 500; }
+
+  .wordmark-sub {
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--char-400);
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  .progress {
+    margin: 22px auto 0;
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    max-width: 360px;
+    flex-wrap: wrap;
+  }
+
+  .progress-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--char-700);
+    transition: all 0.35s cubic-bezier(.4,0,.2,1);
+  }
+  .progress-dot.active {
+    background: var(--vermillion-light);
+    width: 28px;
+    border-radius: 3px;
+  }
+  .progress-dot.complete { background: var(--char-200); }
+
+  /* Sections */
+  .section {
+    flex: 1;
+    padding: 32px 0 28px;
+    display: none;
+    animation: fadeUp 0.5s cubic-bezier(.4,0,.2,1);
+  }
+  .section.active { display: flex; flex-direction: column; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .eyebrow {
+    font-size: 10.5px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--vermillion-light);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  .heading {
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    color: var(--char-50);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .heading em {
+    font-style: normal;
+    color: var(--vermillion-light);
+    font-weight: 700;
+  }
+
+  .lede {
+    font-size: 15.5px;
+    color: var(--char-200);
+    margin-bottom: 22px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+  .lede + .lede { margin-top: -10px; }
+
+  .demo-note {
+    background: var(--char-900);
+    border-left: 2px solid var(--vermillion);
+    padding: 12px 14px;
+    margin-bottom: 18px;
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+    color: var(--char-200);
+    line-height: 1.5;
+  }
+  .demo-note strong { color: var(--char-50); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; font-size: 10.5px; display: block; margin-bottom: 4px; color: var(--char-400); }
+  .demo-note em { color: var(--ember); font-style: normal; font-weight: 500; }
+
+  /* Field group */
+  .field-group { margin-bottom: 20px; }
+
+  .field-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--char-50);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+  .field-label .req { color: var(--vermillion-light); margin-left: 4px; }
+
+  .field-hint {
+    font-size: 12px;
+    color: var(--char-400);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  textarea, input[type="text"], input[type="email"], input[type="tel"], input[type="url"] {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--char-900);
+    padding: 13px 15px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--char-50);
+    resize: vertical;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  textarea:focus, input:focus {
+    outline: none;
+    border-color: var(--vermillion-light);
+    box-shadow: 0 0 0 3px rgba(217,45,32,0.15);
+    background: var(--char-800);
+  }
+  textarea { min-height: 110px; line-height: 1.55; }
+  textarea::placeholder, input::placeholder { color: var(--char-500); }
+
+  /* Radio cards */
+  .radio-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .radio-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.18s;
+    background: var(--char-900);
+  }
+  .radio-card:hover { background: var(--char-800); border-color: var(--border-strong); }
+  .radio-card.checked {
+    border-color: var(--vermillion-light);
+    background: rgba(180,35,24,0.08);
+  }
+
+  .radio-card input { margin-top: 3px; cursor: pointer; accent-color: var(--vermillion-light); width: 14px; height: 14px; flex-shrink: 0; }
+
+  .radio-card .radio-label {
+    font-size: 14px;
+    color: var(--char-100);
+    line-height: 1.45;
+    flex: 1;
+  }
+  .radio-card .radio-label strong { color: var(--char-50); font-weight: 600; }
+  .radio-card .radio-label .muted { color: var(--char-400); font-size: 12.5px; display: block; margin-top: 2px; font-weight: 300; }
+
+  .radio-card .inline-input {
+    margin-top: 8px;
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--char-950);
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--char-50);
+    display: none;
+  }
+  .radio-card.checked .inline-input.show-when-checked { display: block; }
+
+  /* Checkbox row (multi-select) */
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--char-900);
+    margin-bottom: 6px;
+  }
+  .check-row input { accent-color: var(--vermillion-light); width: 15px; height: 15px; flex-shrink: 0; }
+  .check-row label { font-size: 13.5px; color: var(--char-100); flex-shrink: 0; min-width: 90px; font-weight: 500; }
+  .check-row input[type="text"], .check-row input[type="url"] {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 13px;
+    background: var(--char-950);
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  /* Mode toggle for type-or-voice */
+  .mode-toggle {
+    display: inline-flex;
+    gap: 2px;
+    background: var(--char-900);
+    padding: 3px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+  }
+  .mode-btn {
+    border: none;
+    background: transparent;
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--char-400);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .mode-btn.active {
+    background: var(--vermillion);
+    color: var(--char-50);
+  }
+
+  .voice-pane {
+    display: none;
+    border: 1px dashed var(--border-strong);
+    border-radius: 8px;
+    padding: 20px 16px;
+    text-align: center;
+    background: var(--char-900);
+  }
+  .voice-pane.show { display: block; }
+  .text-pane.hide { display: none; }
+
+  .voice-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: none;
+    background: var(--vermillion);
+    color: white;
+    cursor: pointer;
+    transition: transform 0.18s, background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(180,35,24,0.35);
+  }
+  .voice-btn svg { width: 24px; height: 24px; }
+  .voice-btn:hover { transform: scale(1.04); }
+  .voice-btn:active { transform: scale(0.96); }
+  .voice-btn.recording { background: var(--vermillion-dark); animation: pulse 1.4s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(145,32,24,0.55); }
+    50% { box-shadow: 0 0 0 18px rgba(145,32,24,0); }
+  }
+
+  .voice-status { margin-top: 12px; font-size: 12px; color: var(--char-400); letter-spacing: 0.05em; text-transform: uppercase; }
+  .voice-time { font-size: 22px; font-variant-numeric: tabular-nums; color: var(--char-50); margin-top: 4px; letter-spacing: 0.04em; font-weight: 600; }
+  .voice-playback { margin-top: 12px; width: 100%; }
+  .voice-playback audio { width: 100%; height: 36px; }
+  .voice-actions { margin-top: 10px; display: flex; gap: 8px; justify-content: center; }
+  .voice-action {
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--char-100);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .voice-action:hover { background: var(--char-800); }
+
+  /* Hours grid */
+  .hours-grid {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 6px 10px;
+    margin-bottom: 12px;
+    font-size: 13.5px;
+  }
+  .hours-grid .day { color: var(--char-400); padding-top: 4px; }
+  .hours-grid input { font-size: 13px; padding: 7px 10px; }
+
+  /* Two-column on wider */
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  @media (max-width: 480px) { .pair { grid-template-columns: 1fr; } }
+
+  /* Popular picks numbered list */
+  .ranked {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .ranked-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ranked-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--char-900);
+    color: var(--vermillion-light);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .ranked-row input { padding: 9px 12px; font-size: 13.5px; }
+
+  /* Nav */
+  .nav {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+  .btn {
+    padding: 13px 20px;
+    border-radius: 999px;
+    border: none;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .btn-primary { background: var(--vermillion); color: var(--char-50); flex: 1; }
+  .btn-primary:hover { background: var(--vermillion-light); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--char-100);
+    border: 1px solid var(--border-strong);
+    padding: 13px 18px;
+  }
+  .btn-secondary:hover { background: var(--char-900); }
+
+  /* Success */
+  .success-wrap {
+    text-align: center;
+    padding: 60px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .success-mark {
+    width: 76px; height: 76px;
+    border-radius: 50%;
+    background: var(--vermillion);
+    color: var(--char-50);
+    margin: 0 auto 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(180,35,24,0.35);
+  }
+  .success-mark svg { width: 32px; height: 32px; }
+
+  /* Loader */
+  .submitting-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(12,10,9,0.92);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    color: var(--char-50);
+    flex-direction: column;
+    gap: 18px;
+  }
+  .submitting-mask.show { display: flex; }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 2px solid rgba(250,250,249,0.15);
+    border-top-color: var(--vermillion-light);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .submitting-text { font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600; }
+
+  /* Footer */
+  .footer {
+    padding: 14px 0 20px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--char-500);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .footer .amp { color: var(--vermillion); }
+
+  /* Autosave */
+  .autosave {
+    position: fixed;
+    bottom: 12px;
+    right: 12px;
+    background: var(--char-800);
+    color: var(--char-50);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 50;
+    border: 1px solid var(--border);
+  }
+  .autosave.show { opacity: 0.9; }
+
+  /* Mobile */
+  @media (max-width: 480px) {
+    .heading { font-size: 24px; }
+    .wordmark { font-size: 22px; letter-spacing: 0.28em; }
+    .app { padding: 0 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="header">
+    <div class="wordmark">WOK<span class="amp"> &amp; </span>FLAME</div>
+    <div class="wordmark-sub">West Didsbury · Pre-launch sign-off</div>
+    <div class="progress" id="progress"></div>
+  </header>
+
+  <!-- ============ 0 · WELCOME ============ -->
+  <section class="section active" data-step="0">
+    <div class="eyebrow">Almost done</div>
+    <h1 class="heading">Site's built. A few details left.</h1>
+    <p class="lede">Three steps. Three minutes. Mostly tapping.</p>
+    <p class="lede">Skip anything you're not sure about. We'll guess and flag it for you to check before launch.</p>
+    <div class="nav">
+      <button class="btn btn-primary" data-action="next">Start →</button>
+    </div>
+  </section>
+
+  <!-- ============ 1 · THE BASICS ============ -->
+  <section class="section" data-step="1">
+    <div class="eyebrow">01 · The Basics</div>
+    <h1 class="heading">Six things only <em>you</em> know.</h1>
+    <p class="lede">These thread through the footer, the About section, and the Google "Find Us" card. Once they're right, the demo's placeholders disappear.</p>
+
+    <div class="field-group">
+      <label class="field-label">Legal trading name<span class="req">*</span></label>
+      <input type="text" data-field="legalName" placeholder="Wok &amp; Flame Ltd, or whatever's on the paperwork">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Owner / founder name<span class="req">*</span></label>
+      <input type="text" data-field="ownerName" placeholder="For the About section and press contact">
+    </div>
+
+    <div class="pair">
+      <div class="field-group">
+        <label class="field-label">Year founded<span class="req">*</span></label>
+        <input type="text" data-field="yearFounded" placeholder="e.g. 2014">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Food Hygiene Rating<span class="req">*</span></label>
+        <input type="text" data-field="hygiene" placeholder="e.g. 5 / 5">
+        <div class="field-hint">We'll display this on the site — a 5 is a credibility win worth surfacing.</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Full address with shop number<span class="req">*</span></label>
+      <input type="text" data-field="address" placeholder="e.g. 125 Burton Road, West Didsbury, Manchester, M20 2LW">
+      <div class="field-hint">Currently on site: "Burton Road, West Didsbury, Manchester, M20 2LW" — number missing.</div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Public email<span class="req">*</span></label>
+      <input type="email" data-field="emailPublic" placeholder="orders@wokandflame.co.uk">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Company / VAT number <span class="muted" style="font-weight:400">(optional — footer compliance)</span></label>
+      <input type="text" data-field="vatNumber" placeholder="Leave blank if not registered">
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-secondary" data-action="back">← Back</button>
+      <button class="btn btn-primary" data-action="next">Continue →</button>
+    </div>
+  </section>
+
+  <!-- ============ 2 · OPERATIONAL ============ -->
+  <section class="section" data-step="2">
+    <div class="eyebrow">02 · Operational</div>
+    <h1 class="heading">Four quick <em>decisions</em>.</h1>
+    <p class="lede">All taps, no typing. These shape how dishes are flagged, how Google reads your hours, and whether catering language even appears.</p>
+
+    <div class="field-group">
+      <label class="field-label">Halal status — how should we flag it?</label>
+      <div class="radio-group" data-radiogroup="halal">
+        <label class="radio-card"><input type="radio" name="halal" value="all"><span class="radio-label"><strong>All meat is halal</strong></span></label>
+        <label class="radio-card"><input type="radio" name="halal" value="some"><span class="radio-label"><strong>Some halal, some not</strong> <span class="muted">We'll add a per-dish flag.</span></span></label>
+        <label class="radio-card"><input type="radio" name="halal" value="none"><span class="radio-label"><strong>Not halal</strong></span></label>
+        <label class="radio-card"><input type="radio" name="halal" value="skip"><span class="radio-label"><strong>Don't flag it either way</strong></span></label>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Allergens</label>
+      <div class="radio-group" data-radiogroup="allergens">
+        <label class="radio-card"><input type="radio" name="allergens" value="pdf"><span class="radio-label"><strong>I have a PDF — will send</strong></span></label>
+        <label class="radio-card"><input type="radio" name="allergens" value="generic"><span class="radio-label"><strong>Use "Please ask when ordering"</strong></span></label>
+        <label class="radio-card"><input type="radio" name="allergens" value="perdish"><span class="radio-label"><strong>Build a per-dish allergen page</strong> <span class="muted">Data to follow.</span></span></label>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Hours, min order, delivery fee, collection time</label>
+      <div class="demo-note"><strong>On the demo</strong>Mon–Thu 16:55–22:00 · Fri–Sat 16:55–23:00 · Sunday 16:55–22:00 · Min £15 · Delivery £1.70 · Collection from 17:00</div>
+      <div class="radio-group" data-radiogroup="opsCorrect">
+        <label class="radio-card"><input type="radio" name="opsCorrect" value="all"><span class="radio-label"><strong>All correct as of today</strong></span></label>
+        <label class="radio-card"><input type="radio" name="opsCorrect" value="fix"><span class="radio-label"><strong>Something needs fixing</strong><input type="text" class="inline-input show-when-checked" data-field="opsCorrectFix" placeholder="What's changed"></span></label>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Catering / large orders — do you offer it?</label>
+      <div class="radio-group" data-radiogroup="catering">
+        <label class="radio-card"><input type="radio" name="catering" value="yes"><span class="radio-label"><strong>Yes</strong><input type="text" class="inline-input show-when-checked" data-field="cateringRoute" placeholder="Contact route — same number, email, separate enquiry?"></span></label>
+        <label class="radio-card"><input type="radio" name="catering" value="no"><span class="radio-label"><strong>No</strong> <span class="muted">We'll remove the language.</span></span></label>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-secondary" data-action="back">← Back</button>
+      <button class="btn btn-primary" data-action="next">Continue →</button>
+    </div>
+  </section>
+
+  <!-- ============ 3 · LAST BITS ============ -->
+  <section class="section" data-step="3">
+    <div class="eyebrow">03 · Last bits</div>
+    <h1 class="heading">And <em>finally</em>.</h1>
+    <p class="lede">Awards, socials, logo. Then send.</p>
+
+    <div class="field-group">
+      <label class="field-label">Awards, press, accolades — anything?</label>
+      <input type="text" data-field="awards" placeholder="MEN food awards · Time Out pick · local blog feature — leave blank if none">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Anything we've got wrong on the demo, or anything we'd never know unless you told us?</label>
+      <input type="text" data-field="anythingElse" placeholder="One line is plenty">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Social handles — leave blank for any you don't have</label>
+      <div class="check-row"><label style="min-width:90px">Instagram</label><input type="text" data-field="instagram" placeholder="@wokandflame"></div>
+      <div class="check-row"><label style="min-width:90px">Facebook</label><input type="url" data-field="facebook" placeholder="Page URL"></div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Logo file</label>
+      <div class="radio-group" data-radiogroup="logo">
+        <label class="radio-card"><input type="radio" name="logo" value="vector"><span class="radio-label"><strong>Yes — vector (.svg, .ai, .eps)</strong> <span class="muted">I'll email it.</span></span></label>
+        <label class="radio-card"><input type="radio" name="logo" value="raster"><span class="radio-label"><strong>Yes — high-res PNG</strong></span></label>
+        <label class="radio-card"><input type="radio" name="logo" value="signage"><span class="radio-label"><strong>Only on shopfront signage</strong> <span class="muted">We can vectorise it.</span></span></label>
+        <label class="radio-card"><input type="radio" name="logo" value="none"><span class="radio-label"><strong>No logo — use the wordmark as is</strong></span></label>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-secondary" data-action="back">← Back</button>
+      <button class="btn btn-primary" data-action="submit">Send it over →</button>
+    </div>
+  </section>
+
+  <!-- ============ 4 · SUCCESS ============ -->
+  <section class="section" data-step="4">
+    <div class="success-wrap">
+      <div class="success-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="eyebrow" style="margin-bottom:10px">Received</div>
+      <h1 class="heading">Cheers.</h1>
+      <p class="lede">All landed safely. I'll work through everything, replace every placeholder on the demo, and send a final preview link before anything goes live.</p>
+    </div>
+  </section>
+
+  <footer class="footer">WOK <span class="amp">&amp;</span> FLAME · M20</footer>
+</div>
+
+<div class="submitting-mask" id="submittingMask">
+  <div class="spinner"></div>
+  <div class="submitting-text">Sending — one moment</div>
+</div>
+
+<div class="autosave" id="autosave">SAVED</div>
+
+<script>
+/* ============================================================
+   WOK & FLAME ONBOARDING FORM
+   Configure the endpoint below after deploying the Apps Script.
+   Same backend pattern as Mercado — point at a new sheet/folder.
+   ============================================================ */
+
+const CONFIG = {
+  // Paste the deployed Apps Script web app URL here once it's set up.
+  // Until then the form falls back to a mailto: with the answers.
+  ENDPOINT_URL: 'https://script.google.com/macros/s/AKfycbxzuA_XSOBpsRfiiN2ASwwDqwIfxI2HBwpezNf9Y-dEfrL78io-lMu7fzQAF7c-7AaGcA/exec',
+  FALLBACK_EMAIL: 'william@wmfreelance.com',
+  STORAGE_KEY: 'wokflame-onboarding-v1',
+  TOTAL_STEPS: 4
+};
+
+const state = {
+  step: 0,
+  fields: {},
+  voiceClips: {}
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  buildProgress();
+  buildAllFields();
+  bindDirectInputs();
+  bindRadios();
+  loadFromStorage();
+  bindNav();
+  showStep(state.step);
+});
+
+/* Progress dots */
+function buildProgress() {
+  const el = document.getElementById('progress');
+  el.innerHTML = '';
+  for (let i = 0; i < CONFIG.TOTAL_STEPS; i++) {
+    const d = document.createElement('div');
+    d.className = 'progress-dot';
+    el.appendChild(d);
+  }
+  updateProgress();
+}
+function updateProgress() {
+  document.querySelectorAll('.progress-dot').forEach((d, i) => {
+    d.classList.remove('active', 'complete');
+    if (i < state.step) d.classList.add('complete');
+    else if (i === state.step) d.classList.add('active');
+  });
+}
+
+/* Type-or-voice fields (for narrative-only places) */
+function buildAllFields() {
+  document.querySelectorAll('[data-field]').forEach(host => {
+    if (host.tagName === 'INPUT' || host.tagName === 'TEXTAREA') return;
+    if (!host.dataset.placeholder) return; // only for the few narrative slots
+
+    const name = host.dataset.field;
+    const placeholder = host.dataset.placeholder;
+    host.innerHTML = `
+      <div class="mode-toggle">
+        <button type="button" class="mode-btn active" data-mode="type">Type</button>
+        <button type="button" class="mode-btn" data-mode="voice">Voice note</button>
+      </div>
+      <div class="text-pane">
+        <textarea data-textinput="${name}" placeholder="${placeholder}"></textarea>
+      </div>
+      <div class="voice-pane">
+        <button type="button" class="voice-btn" data-recordbtn="${name}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+        </button>
+        <div class="voice-status" data-recordstatus="${name}">Tap to record · max 5 minutes</div>
+        <div class="voice-time" data-recordtime="${name}">0:00</div>
+        <div class="voice-playback" data-playback="${name}"></div>
+        <div class="voice-actions" data-recordactions="${name}" style="display:none">
+          <button type="button" class="voice-action" data-clear="${name}">Discard</button>
+          <button type="button" class="voice-action" data-rerecord="${name}">Re-record</button>
+        </div>
+      </div>
+    `;
+
+    host.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        host.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const mode = btn.dataset.mode;
+        host.querySelector('.text-pane').classList.toggle('hide', mode !== 'type');
+        host.querySelector('.voice-pane').classList.toggle('show', mode === 'voice');
+      });
+    });
+
+    const ta = host.querySelector('textarea');
+    ta.addEventListener('input', () => {
+      state.fields[name] = ta.value;
+      saveToStorage();
+    });
+
+    bindRecorder(host, name);
+  });
+}
+
+/* Bind direct inputs (the bulk of the form) */
+function bindDirectInputs() {
+  document.querySelectorAll('input[data-field], textarea[data-field]').forEach(el => {
+    const handler = () => {
+      const k = el.dataset.field;
+      state.fields[k] = el.type === 'checkbox' ? el.checked : el.value;
+      saveToStorage();
+    };
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
+  });
+}
+
+/* Radio groups — set checked state + record choice */
+function bindRadios() {
+  document.querySelectorAll('[data-radiogroup]').forEach(group => {
+    const key = group.dataset.radiogroup;
+    group.querySelectorAll('input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        group.querySelectorAll('.radio-card').forEach(c => c.classList.remove('checked'));
+        radio.closest('.radio-card').classList.add('checked');
+        state.fields[key] = radio.value;
+        saveToStorage();
+      });
+    });
+  });
+}
+
+/* Voice recording */
+function bindRecorder(host, name) {
+  const btn = host.querySelector(`[data-recordbtn="${name}"]`);
+  const status = host.querySelector(`[data-recordstatus="${name}"]`);
+  const timeEl = host.querySelector(`[data-recordtime="${name}"]`);
+  const playback = host.querySelector(`[data-playback="${name}"]`);
+  const actions = host.querySelector(`[data-recordactions="${name}"]`);
+  const clearBtn = host.querySelector(`[data-clear="${name}"]`);
+  const rerecordBtn = host.querySelector(`[data-rerecord="${name}"]`);
+
+  let mediaRecorder = null, chunks = [], startTime = 0, timer = null, stream = null;
+
+  const reset = () => {
+    btn.classList.remove('recording');
+    status.textContent = 'Tap to record · max 5 minutes';
+    timeEl.textContent = '0:00';
+    playback.innerHTML = '';
+    actions.style.display = 'none';
+    delete state.voiceClips[name];
+    saveToStorage();
+  };
+
+  const startRecording = async () => {
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+    catch (e) { status.textContent = 'Microphone blocked — type instead.'; return; }
+    const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
+    mediaRecorder = new MediaRecorder(stream, { mimeType });
+    chunks = [];
+    mediaRecorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(chunks, { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      playback.innerHTML = `<audio controls src="${url}"></audio>`;
+      actions.style.display = 'flex';
+      state.voiceClips[name] = {
+        blob, mimeType,
+        name: `${name}-${Date.now()}.${mimeType.includes('webm') ? 'webm' : 'm4a'}`
+      };
+      stream.getTracks().forEach(t => t.stop());
+      saveToStorage();
+    };
+    mediaRecorder.start();
+    startTime = Date.now();
+    btn.classList.add('recording');
+    status.textContent = 'Recording — tap to stop';
+    timer = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const m = Math.floor(elapsed / 60);
+      const s = elapsed % 60;
+      timeEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+      if (elapsed >= 300) stopRecording();
+    }, 250);
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.stop();
+      clearInterval(timer);
+      btn.classList.remove('recording');
+      status.textContent = 'Recorded — review below';
+    }
+  };
+
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('recording')) stopRecording();
+    else startRecording();
+  });
+  clearBtn.addEventListener('click', reset);
+  rerecordBtn.addEventListener('click', () => { reset(); startRecording(); });
+}
+
+/* Navigation */
+function bindNav() {
+  document.body.addEventListener('click', e => {
+    const t = e.target.closest('[data-action]');
+    if (!t) return;
+    const action = t.dataset.action;
+    if (action === 'next') goNext();
+    if (action === 'back') goBack();
+    if (action === 'submit') submitForm();
+  });
+}
+function goNext() { if (state.step < CONFIG.TOTAL_STEPS) { state.step++; showStep(state.step); } }
+function goBack() { if (state.step > 0) { state.step--; showStep(state.step); } }
+function showStep(n) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const sec = document.querySelector(`.section[data-step="${n}"]`);
+  if (sec) sec.classList.add('active');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* Autosave */
+function saveToStorage() {
+  try {
+    localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify({ step: state.step, fields: state.fields }));
+    flashAutosave();
+  } catch (e) {}
+}
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    Object.assign(state.fields, saved.fields || {});
+    Object.keys(state.fields).forEach(key => {
+      const val = state.fields[key];
+      // direct inputs
+      const direct = document.querySelector(`[data-field="${key}"]`);
+      if (direct && (direct.tagName === 'INPUT' || direct.tagName === 'TEXTAREA')) {
+        if (direct.type === 'checkbox') direct.checked = !!val;
+        else direct.value = val || '';
+      }
+      // textarea inside type-or-voice
+      const ta = document.querySelector(`[data-textinput="${key}"]`);
+      if (ta) ta.value = val || '';
+      // radio
+      const radioGroup = document.querySelector(`[data-radiogroup="${key}"]`);
+      if (radioGroup) {
+        const radio = radioGroup.querySelector(`input[type="radio"][value="${val}"]`);
+        if (radio) {
+          radio.checked = true;
+          radio.closest('.radio-card').classList.add('checked');
+        }
+      }
+    });
+  } catch (e) {}
+}
+let autoFlashTimer;
+function flashAutosave() {
+  const el = document.getElementById('autosave');
+  el.classList.add('show');
+  clearTimeout(autoFlashTimer);
+  autoFlashTimer = setTimeout(() => el.classList.remove('show'), 1100);
+}
+
+/* Submit */
+async function submitForm() {
+  const mask = document.getElementById('submittingMask');
+  mask.classList.add('show');
+
+  try {
+    const payload = {
+      client: 'wokflame',
+      timestamp: new Date().toISOString(),
+      fields: { ...state.fields },
+      voiceClips: {}
+    };
+
+    for (const key of Object.keys(state.voiceClips)) {
+      const clip = state.voiceClips[key];
+      payload.voiceClips[key] = {
+        name: clip.name,
+        mimeType: clip.mimeType,
+        data: await blobToBase64(clip.blob)
+      };
+    }
+
+    if (CONFIG.ENDPOINT_URL && !CONFIG.ENDPOINT_URL.startsWith('PASTE_')) {
+      const res = await fetch(CONFIG.ENDPOINT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      await res.text();
+    } else {
+      const lines = Object.entries(state.fields).map(([k, v]) => `${k}: ${v}`);
+      const body = encodeURIComponent(
+        `Wok & Flame onboarding — endpoint not yet configured.\n\n` +
+        lines.join('\n') +
+        `\n\n(${Object.keys(state.voiceClips).length} voice note(s) recorded — configure the Apps Script endpoint to capture these.)`
+      );
+      window.location.href = `mailto:${CONFIG.FALLBACK_EMAIL}?subject=Wok%20%26%20Flame%20onboarding&body=${body}`;
+    }
+
+    try { localStorage.removeItem(CONFIG.STORAGE_KEY); } catch (e) {}
+    state.step = CONFIG.TOTAL_STEPS;
+    showStep(state.step);
+  } catch (err) {
+    alert('Hmm — something went wrong sending. Reply to Will\'s email and we\'ll sort it. Error: ' + err.message);
+  } finally {
+    mask.classList.remove('show');
+  }
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+</script>
+</body>
+</html>

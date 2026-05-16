@@ -12,8 +12,26 @@ export default function LoadingScreen() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 2800);
-    return () => clearTimeout(timer);
+    // Force first paint to land on the hero — defeats browser scroll
+    // restoration after reload and any hash-based jump from a deep link.
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+    // Lock body scroll while the loader is up so wheel/touch input can't
+    // scroll the page behind the overlay.
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      document.body.style.overflow = prevOverflow;
+      window.scrollTo(0, 0);
+    }, 2800);
+    return () => {
+      clearTimeout(timer);
+      document.body.style.overflow = prevOverflow;
+    };
   }, []);
 
   // Deterministic ember positions (avoid SSR hydration mismatch from Math.random)

@@ -1,6 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
+import {
+  JUST_EAT_RATING,
+  JUST_EAT_COUNT,
+  formatReviewCount,
+} from "../lib/review-stats";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -16,13 +22,19 @@ export default function About() {
     <section id="about" className="py-10 md:py-40">
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-20 items-center">
-          {/* Image */}
+          {/* Image — wok-fire shot (originally a Pexels remote, now pulled
+              local + WebP'd at q88). Loud flame on a dark backdrop, matches
+              the "wok-fired fresh" headline far better than the kitchen
+              interior did. */}
           <motion.div {...fadeUp} className="md:col-span-5 md:col-start-1">
             <div className="relative aspect-[16/9] md:aspect-[3/4] overflow-hidden rounded-2xl">
-              <img
-                src="https://images.pexels.com/photos/33145258/pexels-photo-33145258.jpeg?auto=compress&cs=tinysrgb&w=800&h=1067&dpr=2"
-                alt="Wok & Flame kitchen"
-                className="w-full h-full object-cover"
+              <Image
+                src="/images/about-wok.webp"
+                alt="Wok-fired Chinese cooking"
+                fill
+                sizes="(min-width: 768px) 42vw, 100vw"
+                quality={85}
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-char-950/40 to-transparent" />
             </div>
@@ -68,26 +80,27 @@ export default function About() {
               ingredients, real fire, no shortcuts.
             </motion.p>
 
-            {/* Stats */}
+            {/* Stats — sourced from app/lib/review-stats.ts so this tile
+                stays in lockstep with Hero + Reviews + JSON-LD. */}
             <motion.div
               {...fadeUp}
               transition={{ ...fadeUp.transition, delay: 0.4 }}
               className="grid grid-cols-3 gap-4 md:gap-6 border-t border-char-800 pt-8"
             >
               <div>
-                <p className="text-2xl md:text-3xl font-700 text-char-50 tracking-tight">
-                  5.0
+                <p className="text-2xl md:text-3xl font-700 text-char-50 tracking-tight tabular-nums">
+                  {JUST_EAT_RATING.toFixed(1)}
                 </p>
                 <p className="text-xs font-400 text-char-400 tracking-wider uppercase mt-1">
-                  Star Rating
+                  Just Eat Rating
                 </p>
               </div>
               <div>
-                <p className="text-2xl md:text-3xl font-700 text-char-50 tracking-tight">
-                  11,375
+                <p className="text-2xl md:text-3xl font-700 text-char-50 tracking-tight tabular-nums">
+                  {formatReviewCount(JUST_EAT_COUNT)}
                 </p>
                 <p className="text-xs font-400 text-char-400 tracking-wider uppercase mt-1">
-                  Just Eat Reviews
+                  Customer Reviews
                 </p>
               </div>
               <div>

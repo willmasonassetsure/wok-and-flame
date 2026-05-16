@@ -8,6 +8,7 @@ import MapSection from "./components/MapSection";
 import Footer from "./components/Footer";
 import LoadingScreen from "./components/LoadingScreen";
 import DragonTexture from "./components/DragonTexture";
+import MobileOrderBar from "./components/MobileOrderBar";
 
 export default function Home() {
   return (
@@ -16,14 +17,22 @@ export default function Home() {
       <DragonTexture />
       <Navbar />
       <main className="relative z-10">
+        {/* Section order:
+              Hero    — hook + CTAs (the "Jump to menu" CTA skips straight to #menu for high-intent takeaway visitors)
+              Gallery — cinematic plate showcase right after the hook, sells the food before anything else
+              Reviews — social proof for the still-considering visitor
+              Menu    — high-intent product reveal
+              About   — story / trust deepener
+              Map     — find-us close (collection & discovery) */}
         <Hero />
-        <Reviews />
-        <About />
-        <MenuHighlights />
         <Gallery />
+        <Reviews />
+        <MenuHighlights />
+        <About />
         <MapSection />
       </main>
       <Footer />
+      <MobileOrderBar />
     </>
   );
 }

@@ -13,11 +13,23 @@
   --color-vermillion: #b42318;
   --color-vermillion-dark: #912018;
   --color-vermillion-light: #d92d20;
+  /* Jade — single contrast accent. Sits at roughly 180° from vermillion on
+     the wheel without going clinical-cyan; reads as "ceramic / lacquer"
+     against the warm-dark palette, so it stays in the Chinese-restaurant
+     idiom rather than fighting it. Used sparingly — currently only on the
+     gallery card tag chips. */
+  --color-jade: #3aa884;
+  --color-jade-light: #5cc1a0;
 }
 
+/* overflow-x: hidden on html/body would break position: sticky for the
+   Gallery pinned-scroll. Using overflow-x: clip instead — same effect
+   (prevents horizontal scroll bleed from marquees / off-screen elements)
+   but does NOT create a scroll containing block, so sticky still pins
+   to the viewport as expected. */
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -26,7 +38,7 @@ body {
   font-family: var(--font-display);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Hide scrollbar on horizontal scroll containers */
@@ -69,10 +81,96 @@ body {
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marquee 50s linear infinite;
+  animation: marquee 150s linear infinite;
   will-change: transform;
 }
 
 .animate-marquee:hover {
   animation-play-state: paused;
+}
+
+/* Leaflet map — dark themed via filter so OSM tiles match the site theme.
+   Filter only the tile layer pane so markers / popups stay full colour. */
+.wf-tile-layer {
+  filter: invert(0.92) hue-rotate(180deg) saturate(0.35) brightness(0.7) contrast(0.95);
+}
+
+.leaflet-container {
+  background: var(--color-char-900) !important;
+  font-family: var(--font-display) !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(12, 10, 9, 0.7) !important;
+  color: var(--color-char-400) !important;
+  font-size: 10px !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--color-char-200) !important;
+}
+
+.leaflet-control-zoom a {
+  background-color: rgba(28, 25, 23, 0.85) !important;
+  color: var(--color-char-50) !important;
+  border-color: var(--color-char-800) !important;
+  backdrop-filter: blur(8px);
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: var(--color-vermillion) !important;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: rgba(28, 25, 23, 0.95) !important;
+  color: var(--color-char-50) !important;
+  border: 1px solid rgba(180, 35, 24, 0.25);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.6) !important;
+}
+
+.leaflet-popup-content {
+  margin: 12px 16px !important;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.leaflet-popup-close-button {
+  color: var(--color-char-400) !important;
+}
+
+/* Wok & Flame custom flame marker — burning glow + gentle flicker */
+.wf-flame-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.wf-marker {
+  position: relative;
+  filter: drop-shadow(0 0 14px rgba(217, 45, 32, 0.7))
+          drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
+  transform-origin: 50% 95%;
+  animation: wf-flame-flicker 2.2s ease-in-out infinite;
+}
+
+@keyframes wf-flame-flicker {
+  0%, 100% { transform: scale(1) rotate(-0.5deg); opacity: 1; }
+  35%      { transform: scale(1.04) rotate(0.6deg); opacity: 0.92; }
+  65%      { transform: scale(0.98) rotate(-0.8deg); opacity: 0.97; }
+}
+
+/* Respect OS-level reduced-motion preference. Kills the marquee, the flame
+   flicker, and tells framer-motion's whileInView/animate to settle instantly
+   via animation-duration:0. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee { animation: none !important; }
+  .wf-marker { animation: none !important; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

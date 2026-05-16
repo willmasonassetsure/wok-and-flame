@@ -1,6 +1,6 @@
 "use client";
 
-import { InstagramLogo, TiktokLogo, EnvelopeSimple } from "@phosphor-icons/react";
+import { Phone } from "@phosphor-icons/react";
 
 export default function Footer() {
   return (
@@ -54,29 +54,36 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Social */}
+          {/* Contact */}
           <div className="md:col-span-2 md:col-start-11">
             <p className="text-xs font-500 tracking-[0.2em] text-char-400 uppercase mb-4">
-              Follow
+              Call
             </p>
-            <div className="flex gap-4">
-              <a href="#" aria-label="Instagram" className="text-char-400 hover:text-char-50 transition-colors duration-300">
-                <InstagramLogo size={20} weight="regular" />
-              </a>
-              <a href="#" aria-label="TikTok" className="text-char-400 hover:text-char-50 transition-colors duration-300">
-                <TiktokLogo size={20} weight="regular" />
-              </a>
-              <a href="#" aria-label="Email" className="text-char-400 hover:text-char-50 transition-colors duration-300">
-                <EnvelopeSimple size={20} weight="regular" />
-              </a>
-            </div>
+            <a
+              href="tel:+441614346318"
+              className="inline-flex items-center gap-2 text-sm font-400 text-char-200 hover:text-vermillion transition-colors duration-300 tabular-nums"
+            >
+              <Phone size={14} weight="regular" />
+              0161 434 6318
+            </a>
           </div>
         </div>
 
         {/* Bottom */}
         <div className="mt-10 md:mt-16 pt-8 border-t border-char-800/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <p className="text-xs font-300 text-char-700">
-            2024 Wok & Flame. West Didsbury, Manchester.
+            &copy; {new Date().getFullYear()} Wok &amp; Flame. West Didsbury, Manchester.
+          </p>
+          <p className="text-xs font-300 text-char-700">
+            Designed and hosted by{" "}
+            <a
+              href="https://wmfreelance.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-char-400 hover:text-char-200 transition-colors duration-300"
+            >
+              @WMFREELANCE
+            </a>
           </p>
           <p className="text-xs font-300 text-char-700">
             Burton Road, M20 2LW
