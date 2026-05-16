@@ -17,7 +17,11 @@ const ease = [0.16, 1, 0.3, 1] as const;
 
 export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
   return (
-    <section className="relative min-h-[100dvh] flex items-end md:items-center overflow-hidden">
+    <section
+      id="top"
+      aria-label="Wok & Flame — Chinese takeaway in West Didsbury"
+      className="relative min-h-[100dvh] flex items-center overflow-hidden"
+    >
       {/* Background image — local stopgap (Pexels shot pulled local + WebP'd
           at q72 so it's same-origin + LCP-optimised). When the custom GPT
           Image 2 hero (see SEO_HANDOFF.md → "Hero image prompt") is generated
@@ -42,16 +46,21 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
           All four respect prefers-reduced-motion via globals.css. */}
       <HeroAtmosphere />
 
-      {/* Content */}
-      <div className="relative z-10 max-w-[1400px] mx-auto w-full px-6 md:px-10 pb-20 md:pb-0">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-end md:items-center">
+      {/* Content
+          Symmetric py-24 on mobile gives the eyebrow a guaranteed 96px
+          safe zone below the fixed navbar (~72px) and matches the bottom
+          gap so the CTAs don't kiss the viewport edge. items-center on
+          the section centres the stack vertically; on overflow the section
+          grows past 100dvh and the safe zone still holds. */}
+      <div className="relative z-10 max-w-[1400px] mx-auto w-full px-6 md:px-10 py-24 md:py-0">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
           <div className="md:col-span-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease }}
             >
-              <p className="text-vermillion text-xs md:text-sm font-500 tracking-[0.3em] uppercase mb-6 md:mb-8 inline-flex items-center gap-3 flex-wrap">
+              <p className="text-vermillion text-xs md:text-sm font-500 tracking-[0.3em] uppercase mb-5 md:mb-8 inline-flex items-center gap-3 flex-wrap">
                 <OpenStatus hours={hours} />
                 <span aria-hidden className="text-char-600">|</span>
                 <span>West Didsbury &middot; Manchester</span>
@@ -65,7 +74,7 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.35, ease }}
-              className="font-800 tracking-[-0.04em] leading-[0.85] text-char-50 mb-0 text-[clamp(4rem,12vw,11rem)]"
+              className="font-800 tracking-[-0.04em] leading-[0.85] text-char-50 mb-0 text-[clamp(5rem,24vw,11rem)]"
             >
               WOK &amp;
             </motion.h1>
@@ -73,7 +82,7 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.45, ease }}
-              className="font-800 tracking-[-0.04em] leading-[0.85] text-vermillion mb-8 md:mb-10 text-[clamp(4rem,12vw,11rem)]"
+              className="font-800 tracking-[-0.04em] leading-[0.85] text-vermillion mb-6 md:mb-10 text-[clamp(5rem,24vw,11rem)]"
             >
               FLAME
             </motion.h1>
@@ -96,7 +105,7 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.65, ease }}
-              className="group inline-flex items-center gap-2 mb-10 hover:opacity-80 transition-opacity duration-300"
+              className="group inline-flex items-center gap-2 mb-8 md:mb-10 hover:opacity-80 transition-opacity duration-300"
               aria-label={`See our ${formatReviewCount(JUST_EAT_COUNT)} reviews on Just Eat`}
             >
               <div className="flex gap-0.5">

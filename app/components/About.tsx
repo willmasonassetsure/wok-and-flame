@@ -19,7 +19,11 @@ const fadeUp = {
 
 export default function About() {
   return (
-    <section id="about" className="py-10 md:py-40">
+    <section
+      id="about"
+      aria-labelledby="about-title"
+      className="py-10 md:py-40"
+    >
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-20 items-center">
           {/* Image — wok-fire shot (originally a Pexels remote, now pulled
@@ -50,6 +54,7 @@ export default function About() {
             </motion.p>
 
             <motion.h2
+              id="about-title"
               {...fadeUp}
               transition={{ ...fadeUp.transition, delay: 0.1 }}
               className="text-3xl md:text-5xl font-700 tracking-tighter leading-tight text-char-50 mb-8"

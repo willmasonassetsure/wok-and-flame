@@ -360,7 +360,11 @@ export default function MenuHighlights() {
   const showScrollbar = scrollMetrics.visibleRatio < 0.999;
 
   return (
-    <section id="menu" className="py-10 md:py-40 border-t border-char-800/50">
+    <section
+      id="menu"
+      aria-labelledby="menu-title"
+      className="py-10 md:py-40 border-t border-char-800/50"
+    >
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
         {/* Header */}
         <motion.p
@@ -374,6 +378,7 @@ export default function MenuHighlights() {
         </motion.p>
 
         <motion.h2
+          id="menu-title"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}

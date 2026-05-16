@@ -10,7 +10,11 @@ const ease = [0.16, 1, 0.3, 1] as const;
 
 export default function MapSection() {
   return (
-    <section id="find-us" className="py-16 md:py-40 border-t border-char-800/50">
+    <section
+      id="find-us"
+      aria-labelledby="find-us-title"
+      className="py-16 md:py-40 border-t border-char-800/50"
+    >
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
         <motion.p
           initial={{ opacity: 0, y: 30 }}
@@ -23,6 +27,7 @@ export default function MapSection() {
         </motion.p>
 
         <motion.h2
+          id="find-us-title"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}

@@ -133,7 +133,11 @@ export default function ReviewsClient({
   isLive: boolean;
 }) {
   return (
-    <section className="py-10 md:py-16 border-t border-char-800/50 overflow-hidden">
+    <section
+      id="reviews"
+      aria-labelledby="reviews-title"
+      className="py-10 md:py-16 border-t border-char-800/50 overflow-hidden"
+    >
       {/* Header */}
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 mb-7 md:mb-10">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
@@ -148,6 +152,7 @@ export default function ReviewsClient({
               Reviews
             </motion.p>
             <motion.h2
+              id="reviews-title"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}

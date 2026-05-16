@@ -18,15 +18,15 @@ type GalleryImage = {
 };
 
 const galleryImages: GalleryImage[] = [
-  { src: "/images/counter.webp",             alt: "The counter at Wok & Flame, West Didsbury", variant: "wide",   tag: "The Room" },
-  { src: "/images/full-spread.webp",         alt: "A full Wok & Flame takeaway spread",         variant: "wide",   tag: "The Spread" },
+  { src: "/images/counter.webp",             alt: "The counter at Wok & Flame, West Didsbury", variant: "wide",   tag: "The Counter" },
+  { src: "/images/full-spread.webp",         alt: "A full Wok & Flame takeaway spread",         variant: "wide",   tag: "Full Spread" },
   { src: "/images/dish-plate-close.webp",    alt: "Close-up of a Wok & Flame plate",            variant: "tall",   tag: "Wok Hei" },
   { src: "/images/dish-chow-mein.webp",      alt: "Chow mein with prawn crackers",              variant: "square", tag: "Noodles" },
-  { src: "/images/friers-action.webp",       alt: "Fryers in action",                           variant: "wide",   tag: "The Kitchen" },
+  { src: "/images/friers-action.webp",       alt: "Fryers in action",                           variant: "wide",   tag: "Friers in Action" },
   { src: "/images/dish-chips-rice-curry.webp", alt: "Chips, fried rice, curry sauce",           variant: "square", tag: "The Classic" },
-  { src: "/images/chef-action.webp",         alt: "Chef working the fryer at Wok & Flame",      variant: "tall",   tag: "Wok" },
-  { src: "/images/full-plate.webp",          alt: "A full Chinese takeaway plate",              variant: "wide",   tag: "The Plate" },
-  { src: "/images/dish-prawn-toast.webp",    alt: "Prawn toast with curry sauce",               variant: "square", tag: "Starter" },
+  { src: "/images/chef-action.webp",         alt: "Chef working the fryer at Wok & Flame",      variant: "tall",   tag: "In Action" },
+  { src: "/images/full-plate.webp",          alt: "A full Chinese takeaway plate",              variant: "wide",   tag: "Friday Night" },
+  { src: "/images/dish-prawn-toast.webp",    alt: "Prawn toast with curry sauce",               variant: "square", tag: "Full Combo" },
 ];
 
 const variantClass: Record<Variant, string> = {
@@ -63,7 +63,11 @@ export default function Gallery() {
   );
 
   return (
-    <section id="gallery" className="border-t border-char-800/50">
+    <section
+      id="gallery"
+      aria-labelledby="gallery-title"
+      className="border-t border-char-800/50"
+    >
       {/* Pinned horizontal scroll — DESKTOP. Section height drives travel
           duration. h-[500vh] with 9 images gives ~55vh of scroll per photo
           — slow enough that each registers as a distinct frame, short enough
@@ -79,7 +83,7 @@ export default function Gallery() {
               <p className="text-vermillion text-xs font-500 tracking-[0.3em] uppercase mb-3">
                 Gallery
               </p>
-              <h2 className="text-4xl md:text-6xl font-700 tracking-tighter leading-[0.95] text-char-50 max-w-[16ch]">
+              <h2 id="gallery-title" className="text-4xl md:text-6xl font-700 tracking-tighter leading-[0.95] text-char-50 max-w-[16ch]">
                 Hot wok.
                 <br />
                 <span className="text-vermillion">Real fire.</span>
