@@ -102,7 +102,7 @@ When you spin up the next session and want it to run end-to-end without prompts,
 - Edit `.env.local` (so it can wire in the Google Places key once you supply it)
 - Run the `seo` / `seo-local` / `seo-geo` / `seo-schema` skills
 
-You can pre-authorize all of those with `/permissions` or by editing `.claude/settings.json`.
+You can pre-authorize all of those in your agent's permissions settings up front.
 
 ### 2g. Just Eat link
 The Just Eat URL `restaurants-wokandgo-m20/menu` is correct per your confirmation — kept as-is everywhere. No change.
