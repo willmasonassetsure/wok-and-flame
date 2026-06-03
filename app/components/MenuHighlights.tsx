@@ -261,19 +261,43 @@ export default function MenuHighlights() {
   // Motion value for wok X position — updates instantly on scroll, animated on click
   const wokX = useMotionValue(0);
   const [wokReady, setWokReady] = useState(false);
+  // Hides the wok when its active tab scrolls out of the slider's visible range
+  const [wokVisible, setWokVisible] = useState(true);
 
   // Custom iOS-style scrollbar metrics
   const [scrollMetrics, setScrollMetrics] = useState({ ratio: 0, visibleRatio: 1 });
 
-  // Compute the active tab's center X relative to wrapper
-  const computeTargetX = useCallback(() => {
+  // Half the wok SVG width — used to centre it and to inset it from the edges
+  const WOK_HALF = 18;
+
+  // Compute the wok's target X (clamped to the slider's visible range) and
+  // whether it should be shown. The wok is tethered to the active tab, but the
+  // tab can be scrolled out of the icon strip — without clamping the wok would
+  // drift outside the card. So we clamp X to the visible scroll viewport and
+  // fade the wok out once its tab's centre leaves that viewport entirely.
+  const computeWokTarget = useCallback(() => {
     const tab = tabRefs.current[activeIdx];
     const wrapper = wrapperRef.current;
-    if (!tab || !wrapper) return null;
+    const container = scrollRef.current;
+    if (!tab || !wrapper || !container) return null;
+
     const tabRect = tab.getBoundingClientRect();
     const wrapperRect = wrapper.getBoundingClientRect();
-    // Center of tab relative to wrapper, minus half the wok SVG width (18)
-    return tabRect.left - wrapperRect.left + tabRect.width / 2 - 18;
+    const containerRect = container.getBoundingClientRect();
+
+    // Tab centre + visible viewport edges, all in wrapper-local coordinates
+    const center = tabRect.left - wrapperRect.left + tabRect.width / 2;
+    const viewLeft = containerRect.left - wrapperRect.left;
+    const viewRight = containerRect.right - wrapperRect.left;
+
+    // Keep the wok a touch inside the rounded card edges
+    const inset = WOK_HALF + 6;
+    const clamped = Math.max(viewLeft + inset, Math.min(viewRight - inset, center));
+
+    // Fade out once the tab's centre has scrolled past either edge
+    const visible = center >= viewLeft && center <= viewRight;
+
+    return { x: clamped - WOK_HALF, visible };
   }, [activeIdx]);
 
   // Update scrollbar metrics
@@ -288,20 +312,21 @@ export default function MenuHighlights() {
 
   // Click transition: animate wok with spring to new tab
   useEffect(() => {
-    const target = computeTargetX();
+    const target = computeWokTarget();
     if (target === null) return;
+    setWokVisible(target.visible);
     if (!wokReady) {
-      wokX.set(target);
+      wokX.set(target.x);
       setWokReady(true);
       return;
     }
-    const controls = animate(wokX, target, {
+    const controls = animate(wokX, target.x, {
       type: "spring",
       stiffness: 380,
       damping: 32,
     });
     return () => controls.stop();
-  }, [activeIdx, computeTargetX, wokX, wokReady]);
+  }, [activeIdx, computeWokTarget, wokX, wokReady]);
 
   // Auto-center the active icon inside the slider card. Since Jump To is the
   // primary mobile nav, the slider becomes a "you are here" strip — when
@@ -325,17 +350,17 @@ export default function MenuHighlights() {
     const scrollEl = scrollRef.current;
     if (!scrollEl) return;
 
-    const onScroll = () => {
-      const x = computeTargetX();
-      if (x !== null) wokX.set(x);
+    const sync = () => {
+      const target = computeWokTarget();
+      if (target !== null) {
+        wokX.set(target.x);
+        setWokVisible(target.visible);
+      }
       updateScrollMetrics();
     };
 
-    const onResize = () => {
-      const x = computeTargetX();
-      if (x !== null) wokX.set(x);
-      updateScrollMetrics();
-    };
+    const onScroll = sync;
+    const onResize = sync;
 
     // Observe content size changes (e.g., font load, viewport change)
     const resizeObserver = new ResizeObserver(onResize);
@@ -352,7 +377,7 @@ export default function MenuHighlights() {
       window.removeEventListener("resize", onResize);
       resizeObserver.disconnect();
     };
-  }, [computeTargetX, wokX, updateScrollMetrics]);
+  }, [computeWokTarget, wokX, updateScrollMetrics]);
 
   // Scrollbar thumb sizing
   const thumbPct = Math.max(scrollMetrics.visibleRatio * 100, 18);
@@ -440,6 +465,35 @@ export default function MenuHighlights() {
           </motion.div>
         )}
 
+        {/* Active category title — pulled above the nav so the section name,
+            the category switcher, and the dishes read as a single unit. The
+            nav bar (desktop tabs / mobile Jump To grid) now sits directly
+            between this title and the menu it controls. Cross-fades on tap. */}
+        <div className="mb-5 md:mb-6">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeIdx}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.3, ease }}
+              className="flex flex-wrap items-baseline gap-2 md:gap-4"
+            >
+              <h3 className="text-base md:text-lg font-600 text-char-50 tracking-tight">
+                {category.title}
+              </h3>
+              {category.description && (
+                <p className="text-xs font-300 text-char-400 hidden sm:block">
+                  {category.description}
+                </p>
+              )}
+              <span className="text-xs font-400 text-char-700 tabular-nums ml-auto">
+                {category.items.length} items
+              </span>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
         {/* Tab bar wrapper — relative parent; wok sits in reserved pt-9 space on desktop */}
         <motion.div
           ref={wrapperRef}
@@ -455,6 +509,8 @@ export default function MenuHighlights() {
             <motion.div
               className="hidden md:block absolute pointer-events-none z-20 left-0"
               style={{ top: 0, x: wokX }}
+              animate={{ opacity: wokVisible ? 1 : 0 }}
+              transition={{ duration: 0.25, ease }}
             >
               <motion.div
                 animate={{ y: [0, -3, 0] }}
@@ -478,32 +534,12 @@ export default function MenuHighlights() {
             </motion.div>
           )}
 
-          {/* Glass tab bar — unified slider card. On mobile, the card also
-              contains a title row above the icon row (separated by a hairline
-              divider) so the active category name is never ambiguous — icons
-              alone don't read pre-click. Title row is hidden on desktop
-              where the floating wok tether does the same job. */}
+          {/* Glass tab bar — unified slider card. The active category name now
+              lives in the title above the nav, so this card is purely the
+              switcher: a scrollable icon strip on mobile (a "you are here"
+              confirmation, auto-centred) and the full labelled tab row with
+              the floating wok tether on desktop. */}
           <GlassCard className="rounded-xl overflow-hidden">
-            {/* Mobile-only title row — cross-fades as the user taps */}
-            <div className="md:hidden relative h-9 flex items-center justify-center overflow-hidden border-b border-char-50/[0.06] px-3">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeIdx}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.28, ease }}
-                  className="absolute inset-0 flex items-center justify-center gap-2"
-                >
-                  <div className="w-1 h-1 rounded-full bg-vermillion shadow-[0_0_5px_rgba(180,35,24,0.8)]" />
-                  <span className="text-[11px] font-500 tracking-[0.2em] uppercase text-char-50">
-                    {category.shortTitle}
-                  </span>
-                  <div className="w-1 h-1 rounded-full bg-vermillion shadow-[0_0_5px_rgba(180,35,24,0.8)]" />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
             {/* Icon scroll row — the only scrollable element */}
             <div ref={scrollRef} className="overflow-x-auto hide-scrollbar p-1">
               <div className="flex gap-0.5 min-w-max">
@@ -642,21 +678,6 @@ export default function MenuHighlights() {
             transition={{ duration: 0.35, ease }}
             className="mt-6 md:mt-8 scroll-mt-20"
           >
-            {/* Category title + description */}
-            <div className="flex flex-wrap items-baseline gap-2 md:gap-4 mb-6">
-              <h3 className="text-base md:text-lg font-600 text-char-50 tracking-tight">
-                {category.title}
-              </h3>
-              {category.description && (
-                <p className="text-xs font-300 text-char-400 hidden sm:block">
-                  {category.description}
-                </p>
-              )}
-              <span className="text-xs font-400 text-char-700 tabular-nums ml-auto">
-                {category.items.length} items
-              </span>
-            </div>
-
             {/* Bento grid of items — split into columns for large lists */}
             {category.items.length > 8 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
