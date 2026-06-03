@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...except the example template, which is meant to be committed
+!.env.local.example
 
 # vercel
 .vercel
@@ -42,3 +44,15 @@ next-env.d.ts
 
 # local agent state
 .claude/
+
+# scratch — Just Eat scrape artifacts, image eyeball-test outputs,
+# one-off scraping scripts (menu is finalised, no need to re-run)
+.justeat-*
+public/images/_test/
+scripts/extract-justeat*.js
+scripts/flatten-justeat.js
+
+# Excel temp/lock dirs (created when an .xlsx is open in Excel) + manual
+# timestamped backups dropped beside source files (e.g. menu.ts.bak.20260602_225052)
+.xlsx-tmp/
+*.bak.*
