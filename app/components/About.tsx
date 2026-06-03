@@ -57,39 +57,46 @@ export default function About() {
               id="about-title"
               {...fadeUp}
               transition={{ ...fadeUp.transition, delay: 0.1 }}
-              className="text-3xl md:text-5xl font-700 tracking-tighter leading-tight text-char-50 mb-8"
+              className="text-3xl md:text-5xl font-700 tracking-tighter leading-[1.1] text-char-50 mb-6"
             >
-              Wok-fired fresh
-              <br />
-              in Didsbury
+              &ldquo;There&rsquo;s no difference in what we sell and what we eat
+              &mdash; everything is made to be the very best.&rdquo;
             </motion.h2>
 
             <motion.p
               {...fadeUp}
               transition={{ ...fadeUp.transition, delay: 0.2 }}
-              className="text-base font-300 text-char-400 leading-relaxed max-w-[55ch] mb-8"
+              className="text-base font-500 text-char-200 leading-relaxed max-w-[55ch] mb-8"
             >
-              Wok & Flame is a proper Chinese takeaway in West Didsbury. Every
-              dish is cooked to order over high heat in a traditional wok,
-              keeping flavours sharp and ingredients fresh.
+              Hong Kong inspired, made in Manchester. For over 20 years, setting
+              the standard for Chinese food in Manchester.
             </motion.p>
 
             <motion.p
               {...fadeUp}
               transition={{ ...fadeUp.transition, delay: 0.3 }}
+              className="text-base font-300 text-char-400 leading-relaxed max-w-[55ch] mb-8"
+            >
+              Wok & Flame reflects the journey that Chinese food has taken in
+              Manchester, Didsbury and the surrounding areas — a reputation for
+              exceptional, sensibly priced food with great service.
+            </motion.p>
+
+            <motion.p
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: 0.4 }}
               className="text-base font-300 text-char-400 leading-relaxed max-w-[55ch] mb-10"
             >
-              Classic salt and pepper dishes, crispy aromatic duck, chow mein
-              and sweet & sour done right. A shorter Thai section sits
-              alongside — pad Thai, tom yum, green and red curries. Good
-              ingredients, real fire, no shortcuts.
+              We&rsquo;ve swayed away from gimmicks and expensive packaging to
+              keep costs low — while still using quality, fresh ingredients to
+              make affordable, delicious Chinese food for our customers.
             </motion.p>
 
             {/* Stats — sourced from app/lib/review-stats.ts so this tile
                 stays in lockstep with Hero + Reviews + JSON-LD. */}
             <motion.div
               {...fadeUp}
-              transition={{ ...fadeUp.transition, delay: 0.4 }}
+              transition={{ ...fadeUp.transition, delay: 0.5 }}
               className="grid grid-cols-3 gap-4 md:gap-6 border-t border-char-800 pt-8"
             >
               <div>
@@ -110,10 +117,10 @@ export default function About() {
               </div>
               <div>
                 <p className="text-2xl md:text-3xl font-700 text-char-50 tracking-tight">
-                  M20
+                  20+
                 </p>
                 <p className="text-xs font-400 text-char-400 tracking-wider uppercase mt-1">
-                  West Didsbury
+                  Years Serving Manchester
                 </p>
               </div>
             </motion.div>
