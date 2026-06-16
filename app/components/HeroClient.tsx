@@ -146,6 +146,18 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
                 View Menu
               </a>
             </motion.div>
+
+            {/* Mobile-only: the delivery/collection/min-order panel is desktop
+                (md+) only, so surface the order-relevant essentials here for the
+                phone users most likely to order. */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.85, ease }}
+              className="md:hidden text-xs font-300 text-char-400 tracking-wide"
+            >
+              Opens daily 16:55 &middot; Collection from 17:00 &middot; Min. order &pound;15
+            </motion.p>
           </div>
 
           <motion.div

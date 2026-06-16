@@ -45,6 +45,9 @@ next-env.d.ts
 # local agent state
 .claude/
 
+# client-supplied source images staged for import (originals; not served/shipped)
+/_source-images/
+
 # scratch — Just Eat scrape artifacts, image eyeball-test outputs,
 # one-off scraping scripts (menu is finalised, no need to re-run)
 .justeat-*

@@ -6,9 +6,9 @@ export default function Footer() {
   return (
     <footer className="relative z-10 border-t border-char-800/50 py-12 md:py-20">
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
-        <div className="grid grid-cols-2 md:grid-cols-12 gap-8 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 md:gap-8">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-4">
+          <div className="col-span-1 sm:col-span-2 md:col-span-4">
             <p className="text-2xl font-800 tracking-[0.15em] text-char-50 mb-4">
               WOK & FLAME
             </p>
@@ -24,10 +24,11 @@ export default function Footer() {
               Navigate
             </p>
             <div className="flex flex-col gap-3">
-              <a href="#about" className="text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300">About</a>
-              <a href="#menu" className="text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300">Menu</a>
-              <a href="#gallery" className="text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300">Gallery</a>
-              <a href="#find-us" className="text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300">Find Us</a>
+              <a href="#gallery" className="inline-block py-1.5 text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300">Gallery</a>
+              <a href="#reviews" className="inline-block py-1.5 text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300">Reviews</a>
+              <a href="#about" className="inline-block py-1.5 text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300">About</a>
+              <a href="#menu" className="inline-block py-1.5 text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300">Menu</a>
+              <a href="#find-us" className="inline-block py-1.5 text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300">Find Us</a>
             </div>
           </div>
 
@@ -41,11 +42,11 @@ export default function Footer() {
                 href="https://www.just-eat.co.uk/restaurants-wokandgo-m20/menu"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300"
+                className="inline-block py-1.5 text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300"
               >
                 Just Eat
               </a>
-              <a href="#find-us" className="text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300">
+              <a href="#find-us" className="inline-block py-1.5 text-sm font-300 text-char-400 hover:text-char-50 transition-colors duration-300">
                 Collection
               </a>
             </div>

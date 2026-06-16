@@ -4,10 +4,14 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { List, X } from "@phosphor-icons/react";
 
+// Order mirrors the on-page scroll order (see app/page.tsx): Gallery →
+// Reviews → About → Menu → Find Us. Keep these in sync so anchor links land
+// in the same sequence a visitor scrolls through.
 const navLinks = [
+  { label: "Gallery", href: "#gallery" },
+  { label: "Reviews", href: "#reviews" },
   { label: "About", href: "#about" },
   { label: "Menu", href: "#menu" },
-  { label: "Gallery", href: "#gallery" },
   { label: "Find Us", href: "#find-us" },
 ];
 
@@ -60,7 +64,7 @@ export default function Navbar() {
 
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden text-char-50 p-2"
+          className="md:hidden text-char-50 p-2.5 -mr-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center"
           aria-label="Toggle menu"
         >
           {mobileOpen ? <X size={24} weight="light" /> : <List size={24} weight="light" />}
@@ -74,13 +78,13 @@ export default function Navbar() {
           transition={{ duration: 0.3 }}
           className="md:hidden bg-char-950/95 backdrop-blur-xl border-t border-char-800/50 px-6 pb-8 pt-4"
         >
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="text-lg font-300 tracking-wider text-char-400 hover:text-char-50 transition-colors uppercase"
+                className="block py-2 text-lg font-300 tracking-wider text-char-400 hover:text-char-50 transition-colors uppercase"
               >
                 {link.label}
               </a>

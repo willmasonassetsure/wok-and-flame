@@ -1,58 +1,73 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDown, ArrowRight } from "@phosphor-icons/react";
 
-// 9 unique photos. Mix of square / portrait / landscape variants so the
-// track doesn't feel like a flat conveyor. Each card carries a small jade
-// tag + frame index — captions removed so the photos do the talking.
-type Variant = "tall" | "wide" | "square";
-
+// 9 photos. Venue/interior shots lead (shopfront → signature wall → photo
+// wall), then the food. Each card is sized to its OWN intrinsic aspect ratio
+// (w/h below) so nothing is cropped — including the shopfront, which now
+// shows whole (sign to pavement) at its native portrait ratio. Where `ar` is
+// set it forces a deliberate display ratio (cropped via object-cover) instead;
+// `position` nudges the object-cover focal point for those crops;
+// `feature` bumps a card slightly larger to give it emphasis.
 type GalleryImage = {
   src: string;
   alt: string;
-  variant: Variant;
+  w: number;
+  h: number;
   tag: string;
+  caption?: string;
+  ar?: string; // deliberate display aspect ratio (cropped via object-cover)
+  position?: string; // object-position focal point for cropped cards
+  feature?: boolean; // render slightly larger for emphasis
+  hero?: boolean; // the lead card — largest, fills most of the viewport height
 };
 
 const galleryImages: GalleryImage[] = [
-  { src: "/images/counter.webp",             alt: "The counter at Wok & Flame, West Didsbury", variant: "wide",   tag: "The Counter" },
-  { src: "/images/full-spread.webp",         alt: "A full Wok & Flame takeaway spread",         variant: "wide",   tag: "Full Spread" },
-  { src: "/images/dish-plate-close.webp",    alt: "Close-up of a Wok & Flame plate",            variant: "tall",   tag: "Wok Hei" },
-  { src: "/images/dish-chow-mein.webp",      alt: "Chow mein with prawn crackers",              variant: "square", tag: "Noodles" },
-  { src: "/images/friers-action.webp",       alt: "Fryers in action",                           variant: "wide",   tag: "Friers in Action" },
-  { src: "/images/dish-chips-rice-curry.webp", alt: "Chips, fried rice, curry sauce",           variant: "square", tag: "The Classic" },
-  { src: "/images/chef-action.webp",         alt: "Chef working the fryer at Wok & Flame",      variant: "tall",   tag: "In Action" },
-  { src: "/images/full-plate.webp",          alt: "A full Chinese takeaway plate",              variant: "wide",   tag: "Friday Night" },
-  { src: "/images/dish-prawn-toast.webp",    alt: "Prawn toast with curry sauce",               variant: "square", tag: "Full Combo" },
+  { src: "/images/shop-front.webp",            alt: "Wok & Flame shopfront on Burton Road, West Didsbury, at dusk",         w: 852,  h: 1611, tag: "The Shopfront", hero: true },
+  { src: "/images/local-signatures.webp",      alt: "The signature wall at Wok & Flame, covered in messages from regulars", w: 941,  h: 1672, tag: "Local Signatures", caption: "Regulars have been signing our back wall for two decades.", feature: true },
+  { src: "/images/inside-wall.webp",           alt: "Framed portrait gallery on the wall inside Wok & Flame",                w: 941,  h: 1672, tag: "Inside" },
+  { src: "/images/full-spread.webp",           alt: "A full Wok & Flame takeaway spread",                                    w: 1080, h: 1456, tag: "Full Spread" },
+  { src: "/images/dish-plate-close.webp",      alt: "Close-up of a Wok & Flame plate",                                       w: 1139, h: 1381, tag: "Wok Hei" },
+  { src: "/images/dish-chow-mein.webp",        alt: "Chow mein with prawn crackers",                                         w: 1212, h: 1297, tag: "Noodles" },
+  { src: "/images/dish-chips-rice-curry.webp", alt: "Chips, fried rice, curry sauce",                                        w: 1254, h: 1254, tag: "The Classic" },
+  { src: "/images/full-plate.webp",            alt: "A full Chinese takeaway plate",                                         w: 1209, h: 1300, tag: "Friday Night" },
+  { src: "/images/dish-prawn-toast.webp",      alt: "Prawn toast with curry sauce",                                          w: 1254, h: 1254, tag: "Full Combo" },
 ];
-
-const variantClass: Record<Variant, string> = {
-  tall: "w-[60vw] md:w-[40vw] aspect-[3/4]",
-  wide: "w-[80vw] md:w-[60vw] aspect-[16/10]",
-  square: "w-[68vw] md:w-[44vw] aspect-square",
-};
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
 export default function Gallery() {
   const trackRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
 
-  // Drives the desktop pinned scroll. With 9 images at the current sizes
-  // (variants: 40 / 60 / 44 vw) the summed track is ~452vw plus ~12vw of
-  // gaps ≈ 464vw. To land the last frame flush at the viewport's right
-  // edge we translate by -(464-100) = -364vw out of 464vw ≈ -78.4%, so
-  // -79% with a small safety buffer. Starts at 0% so the first photo
-  // anchors against the title area on the left, not floating in from
-  // the middle.
+  // Drives the desktop pinned scroll. Card widths now vary per image (native
+  // aspect ratio), so the total travel can't be a hard-coded %. We measure the
+  // track's real overflow (content width − viewport width) and translate by
+  // exactly that many pixels, recomputed on resize. Starts at 0 so the first
+  // photo anchors against the title on the left.
   const { scrollYProgress } = useScroll({
     target: trackRef,
     offset: ["start start", "end end"],
   });
 
-  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-79%"]);
+  const [overflow, setOverflow] = useState(0);
+  useEffect(() => {
+    const measure = () => {
+      const el = innerRef.current;
+      if (!el) return;
+      setOverflow(Math.max(0, el.scrollWidth - window.innerWidth));
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // Functional transform re-reads `overflow` on every render, so it picks up
+  // the measured value (and resize updates) without a stale closure.
+  const x = useTransform(scrollYProgress, (v) => -overflow * v);
   const titleY = useTransform(scrollYProgress, [0, 1], ["0px", "-40px"]);
   const titleOpacity = useTransform(scrollYProgress, [0.6, 0.9], [1, 0]);
   // Scroll cue fades in just after entry, fades out as the gallery wraps up.
@@ -77,9 +92,13 @@ export default function Gallery() {
           {/* Floating headline — drifts up + fades as the track advances */}
           <motion.div
             style={{ y: titleY, opacity: titleOpacity }}
-            className="absolute top-[12vh] left-0 right-0 z-10 pointer-events-none"
+            className="absolute top-[10vh] left-0 right-0 z-10 pointer-events-none"
           >
-            <div className="max-w-[1400px] mx-auto px-10">
+            {/* Left-aligned to the same px-10 as the card track so the title
+                squares with the section edge instead of floating in from a
+                centered max-width container (which read as bleeding over the
+                first card). */}
+            <div className="px-10">
               <p className="text-vermillion text-xs font-500 tracking-[0.3em] uppercase mb-3">
                 Gallery
               </p>
@@ -96,7 +115,7 @@ export default function Gallery() {
           {/* Basic scroll cue — bottom-center, animated bounce */}
           <motion.div
             style={{ opacity: scrollCueOpacity }}
-            className="absolute bottom-[6vh] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 pointer-events-none"
+            className="absolute bottom-[3vh] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 pointer-events-none"
           >
             <span className="text-[10px] font-500 tracking-[0.4em] uppercase text-char-400">
               Scroll
@@ -109,41 +128,42 @@ export default function Gallery() {
             </motion.div>
           </motion.div>
 
-          {/* The track — translates horizontally as scrollYProgress advances.
-              CRITICAL: `w-max` so the flex container's box matches the summed
-              child widths (~1200vw). Without it, the container sits at 100vw
-              and `x: -93%` only translates by 93vw, leaving 20 images off
-              the right edge forever. */}
+          {/* The track — translates horizontally by the measured pixel overflow.
+              `w-max` so the flex container's box matches the summed child widths
+              (the value we measure via scrollWidth). */}
           <motion.div
+            ref={innerRef}
             style={{ x }}
-            className="flex items-center gap-6 will-change-transform w-max"
+            className="flex items-center gap-6 will-change-transform w-max px-10"
           >
             {galleryImages.map((img, i) => (
               <motion.div
                 key={`${img.src}-${i}`}
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.4, ease }}
+                style={{ aspectRatio: img.ar ?? `${img.w} / ${img.h}` }}
                 className={`
                   relative shrink-0 overflow-hidden rounded-2xl
                   border border-char-50/[0.06]
                   shadow-[0_20px_60px_-20px_rgba(0,0,0,0.65)]
-                  ${variantClass[img.variant]}
+                  ${img.hero ? "h-[90vh]" : img.feature ? "h-[84vh]" : "h-[76vh]"}
                 `}
               >
                 <Image
                   src={img.src}
                   alt={img.alt}
                   fill
-                  sizes="(min-width: 768px) 50vw, 70vw"
+                  sizes="(min-width: 768px) 45vw, 82vw"
                   quality={82}
+                  style={{ objectPosition: img.position }}
                   className="object-cover"
                 />
                 {/* Caption gradient — heavier than a generic darken so the
                     tag + caption stay legible against any image. */}
                 <div className="absolute inset-0 bg-gradient-to-t from-char-950/85 via-char-950/20 to-transparent pointer-events-none" />
 
-                {/* Tag chip + frame index. Bottom-left, no pointer events so
-                    the card still receives whileHover scale. */}
+                {/* Tag chip + frame index + optional caption. Bottom-left, no
+                    pointer events so the card still receives whileHover scale. */}
                 <div className="absolute inset-x-0 bottom-0 p-5 md:p-6 pointer-events-none">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-600 tracking-[0.2em] uppercase bg-jade text-char-950">
@@ -153,6 +173,11 @@ export default function Gallery() {
                       {String(i + 1).padStart(2, "0")} / {String(galleryImages.length).padStart(2, "0")}
                     </span>
                   </div>
+                  {img.caption && (
+                    <p className="mt-2 max-w-[26ch] text-sm font-300 leading-snug text-char-100">
+                      {img.caption}
+                    </p>
+                  )}
                 </div>
               </motion.div>
             ))}
@@ -160,7 +185,9 @@ export default function Gallery() {
         </div>
       </div>
 
-      {/* MOBILE — native horizontal swipe with snap-x. */}
+      {/* MOBILE — native horizontal swipe with snap-x. Cards sized by width and
+          letterboxed via object-contain so portraits and squares alike show
+          whole, never cropped. */}
       <div className="md:hidden">
         <div className="max-w-[1400px] mx-auto px-6 py-10">
           <motion.p
@@ -202,29 +229,37 @@ export default function Gallery() {
               key={`${img.src}-${i}`}
               className={`
                 relative shrink-0 snap-start overflow-hidden rounded-xl
-                border border-char-50/[0.06]
-                ${variantClass[img.variant]}
+                border border-char-50/[0.06] bg-char-950
+                ${img.hero ? "w-[86vw] max-h-[64vh]" : "w-[78vw] max-h-[58vh]"}
               `}
+              style={{ aspectRatio: img.ar ?? `${img.w} / ${img.h}` }}
             >
               <Image
                 src={img.src}
                 alt={img.alt}
                 fill
-                sizes="70vw"
+                sizes="82vw"
                 quality={78}
-                className="object-cover"
+                style={{ objectPosition: img.position }}
+                // `ar` cards are a deliberate crop (cover); the rest show whole (contain).
+                className={img.ar ? "object-cover" : "object-contain"}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-char-950/85 via-char-950/20 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-char-950/85 via-char-950/10 to-transparent pointer-events-none" />
 
               <div className="absolute inset-x-0 bottom-0 p-4 pointer-events-none">
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-600 tracking-[0.2em] uppercase bg-jade text-char-950">
+                  <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-600 tracking-[0.2em] uppercase bg-jade text-char-950">
                     {img.tag}
                   </span>
-                  <span className="text-[9px] font-400 tracking-[0.2em] uppercase text-char-400 tabular-nums">
+                  <span className="text-[10px] font-400 tracking-[0.2em] uppercase text-char-400 tabular-nums">
                     {String(i + 1).padStart(2, "0")} / {String(galleryImages.length).padStart(2, "0")}
                   </span>
                 </div>
+                {img.caption && (
+                  <p className="mt-1.5 max-w-[26ch] text-xs font-400 leading-snug text-char-100">
+                    {img.caption}
+                  </p>
+                )}
               </div>
             </div>
           ))}
