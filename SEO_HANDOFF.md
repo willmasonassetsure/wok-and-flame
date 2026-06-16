@@ -39,7 +39,7 @@ This is the single source of truth for what's been changed in this pass and what
 - [x] **Restaurant JSON-LD** added inline in `<head>`. Includes:
   - `@type: Restaurant`, name, telephone, address, geo coords
   - `servesCuisine: [Chinese, Thai]`, `priceRange: ££`
-  - `openingHoursSpecification` for the two real opening blocks (Mon–Thu/Sun and Fri/Sat)
+  - `openingHoursSpecification` for the single 7-day opening block (Mon–Sun 17:00–23:00)
   - `potentialAction: OrderAction` pointing at the Just Eat URL
   - `areaServed` for West Didsbury, Didsbury, Withington, Chorlton, M20, M21
 - [x] **`app/robots.ts`** created (Next.js 16 file convention) — replaces a static robots.txt. Allows all major search and AI crawlers (GPTBot, OAI-SearchBot, ChatGPT-User, PerplexityBot, Google-Extended, ClaudeBot, anthropic-ai, CCBot, Bingbot, Applebot, Applebot-Extended). Disallows `/api/`.
@@ -184,14 +184,13 @@ AI search engines crawl differently from Google. They reward structured, citable
   ## Location & hours
   Burton Road, West Didsbury, Manchester, M20 2LW, UK
   Phone: +44 161 434 6318
-  Mon–Thu, Sun: 16:55–22:00
-  Fri–Sat: 16:55–23:00
+  Open daily: 17:00–23:00 (5–11pm)
 
   ## Area served
   West Didsbury, Didsbury, Withington, Chorlton, Manchester M20, M21
   ```
 - [ ] **FAQPage schema** — add an FAQ section to the page covering: "Do you deliver?", "Where are you based?", "What's your minimum order?", "Do you do collection?", "Are there vegetarian options?". Wrap in JSON-LD `@type: FAQPage`. AI Overviews favour FAQ markup heavily.
-- [ ] **"How to order" passage** — write a short, plain-prose paragraph on the homepage above the fold that an LLM can quote verbatim: "To order from Wok & Flame, call 0161 434 6318 from 16:55 daily, or order online through Just Eat for delivery. Collection is available from 17:00 at Burton Road, West Didsbury, M20 2LW." LLMs prefer self-contained, declarative sentences.
+- [ ] **"How to order" passage** — write a short, plain-prose paragraph on the homepage above the fold that an LLM can quote verbatim: "To order from Wok & Flame, call 0161 434 6318 from 5pm daily, or order online through Just Eat for delivery. Collection is available from 17:00 at Burton Road, West Didsbury, M20 2LW." LLMs prefer self-contained, declarative sentences.
 - [ ] **AggregateRating in JSON-LD** — currently omitted because numbers are unverified. Add `aggregateRating: { @type: AggregateRating, ratingValue, reviewCount }` as soon as the Google Places API integration in §3 lands. Critical for rich-result eligibility.
 
 ---

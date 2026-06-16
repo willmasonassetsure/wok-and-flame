@@ -156,7 +156,7 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
               transition={{ duration: 0.8, delay: 0.85, ease }}
               className="md:hidden text-xs font-300 text-char-400 tracking-wide"
             >
-              Opens daily 16:55 &middot; Collection from 17:00 &middot; Min. order &pound;15
+              Open daily 5&ndash;11pm &middot; Collection &amp; delivery &middot; Min. order &pound;15
             </motion.p>
           </div>
 
@@ -168,18 +168,18 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
           >
             <div className="border-r border-char-700 pr-6">
               <p className="text-xs font-400 tracking-[0.2em] text-char-400 uppercase mb-1">
-                Delivery
+                Open
               </p>
               <p className="text-sm font-300 text-char-200">
-                Opens daily at 16:55
+                Daily 5&ndash;11pm
               </p>
             </div>
             <div className="border-r border-char-700 pr-6">
               <p className="text-xs font-400 tracking-[0.2em] text-char-400 uppercase mb-1">
-                Collection
+                Collection &amp; Delivery
               </p>
               <p className="text-sm font-300 text-char-200">
-                From 17:00
+                7 days a week
               </p>
             </div>
             <div className="border-r border-char-700 pr-6">

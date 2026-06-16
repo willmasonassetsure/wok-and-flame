@@ -89,16 +89,8 @@ export default function MapSection() {
                   </p>
                   <div className="space-y-1.5 text-sm font-300 text-char-200">
                     <div className="flex justify-between gap-8">
-                      <span>Mon - Thu</span>
-                      <span className="text-char-400 tabular-nums">16:55 - 22:00</span>
-                    </div>
-                    <div className="flex justify-between gap-8">
-                      <span>Fri - Sat</span>
-                      <span className="text-char-400 tabular-nums">16:55 - 23:00</span>
-                    </div>
-                    <div className="flex justify-between gap-8">
-                      <span>Sunday</span>
-                      <span className="text-char-400 tabular-nums">16:55 - 22:00</span>
+                      <span>Every day</span>
+                      <span className="text-char-400 tabular-nums">17:00 - 23:00</span>
                     </div>
                   </div>
                 </div>

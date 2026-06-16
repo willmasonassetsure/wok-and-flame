@@ -37,7 +37,18 @@ type PlacesHoursResponse = {
   utcOffsetMinutes?: number;
 };
 
+// ⚑ FLAG FOR LATER (2026-06-16): hours are HARD-CODED to the owner-confirmed
+// schedule (5pm–11pm, 7 days — matches the Google Business Profile screenshot).
+// While this is true the Places API fetch is skipped entirely and every caller
+// gets FALLBACK_HOURS below. To restore live Google hours once the GBP listing
+// is trusted, set FORCE_HARDCODED_HOURS = false (and ensure the env vars are set).
+const FORCE_HARDCODED_HOURS = true;
+
 export async function getOpeningHours(): Promise<OpeningHoursData | null> {
+  if (FORCE_HARDCODED_HOURS) {
+    return null; // callers fall back to FALLBACK_HOURS (the hard-coded schedule)
+  }
+
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
   const placeId = process.env.GOOGLE_PLACE_ID;
 
@@ -91,22 +102,22 @@ export async function getOpeningHours(): Promise<OpeningHoursData | null> {
   }
 }
 
-// Fallback schedule used when the Places API isn't configured. Reflects the
-// current advertised hours: 16:55 daily opening (delivery), 17:00 collection,
-// 22:00 close. Days follow Places API convention: 0 = Sunday.
+// Hard-coded schedule (owner-confirmed 2026-06-16): 5pm–11pm, 7 days a week.
+// This is currently authoritative — see FORCE_HARDCODED_HOURS above.
+// Days follow Places API convention: 0 = Sunday.
 export const FALLBACK_HOURS: OpeningHoursData = {
   periods: [0, 1, 2, 3, 4, 5, 6].map((day) => ({
-    open: { day, hour: 16, minute: 55 },
-    close: { day, hour: 22, minute: 0 },
+    open: { day, hour: 17, minute: 0 },
+    close: { day, hour: 23, minute: 0 },
   })),
   weekdayDescriptions: [
-    "Monday: 16:55 – 22:00",
-    "Tuesday: 16:55 – 22:00",
-    "Wednesday: 16:55 – 22:00",
-    "Thursday: 16:55 – 22:00",
-    "Friday: 16:55 – 22:00",
-    "Saturday: 16:55 – 22:00",
-    "Sunday: 16:55 – 22:00",
+    "Monday: 5 – 11 pm",
+    "Tuesday: 5 – 11 pm",
+    "Wednesday: 5 – 11 pm",
+    "Thursday: 5 – 11 pm",
+    "Friday: 5 – 11 pm",
+    "Saturday: 5 – 11 pm",
+    "Sunday: 5 – 11 pm",
   ],
   utcOffsetMinutes: 0,
 };

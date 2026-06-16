@@ -27,7 +27,7 @@ export const GOOGLE_MAPS_SEARCH_URL =
   "https://www.google.com/maps/search/?api=1&query=Wok+%26+Flame+Burton+Road+M20+2LW";
 
 // --- Food Hygiene Rating ---
-//   [ONBOARDING Q11] — populate from the form answer.
+//   Set from the owner-confirmed FSA food hygiene rating (0–5).
 //   Set to null to hide the badge until the rating is confirmed.
 export const FOOD_HYGIENE_RATING: 0 | 1 | 2 | 3 | 4 | 5 | null = null;
 

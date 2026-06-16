@@ -20,11 +20,14 @@ export type MenuCategory = {
 // + independent structural audit. See `wokflame_menu_verified.xlsx` in repo root
 // for the full audited dataset and the open-item list.
 //
+// Owner-confirmed (Wing, 2026-06-16):
+//   - Hoi Sin Sauce + BBQ Sauce added as pots (£2.20) — orderable though not on the print.
+//   - Drinks (cans) kept — orderable; not on the printed menu, prices from Just Eat.
+//   - Assorted Vegetable Fried Rice removed — only the Singapore veg rice is kept.
+//
 // Open items still requiring client confirmation:
-//   - Beef Thai Green Curry £6.50 (printed as 6.50, sibling items all 6.90 — likely 6.90)
-//   - Drinks (cans) pricing — printed menu has no drinks section. Restored from
-//     the Just Eat listing with £1.20 placeholders; confirm in-store prices with owner.
-//   - Hoisin Sauce / BBQ Sauce as standalone pots (not on printed menu)
+//   - Beef Thai Green Curry £6.50 (printed as 6.50, sibling items all 6.90 — Wing may want 6.90)
+//   - Hoi Sin / BBQ Sauce price £2.20 (set to match the other pots) — confirm
 //   - Salt & Pepper Chicken (main portion) — only S&P Chicken Pieces (appetiser) on menu
 //
 // Category ordering follows the existing website navigation (value/signature first,
@@ -273,7 +276,8 @@ export const menuData: MenuCategory[] = [
       { name: "Beef Fried Rice", price: "7.00" },
       { name: "Singapore Style Fried Rice", price: "7.40", desc: "Chicken, char sui, shrimp in special curry paste", spicy: true },
       { name: "King Prawn Fried Rice", price: "7.40" },
-      { name: "Assorted Vegetable Fried Rice", price: "6.20", vegetarian: true },
+      // Owner (Wing) kept only the Singapore veg rice — printed menu also lists an
+      // "Assorted Vegetable Fried Rice" but it was dropped per his instruction (2026-06-16).
       { name: "Singapore Style Vegetable Fried Rice", price: "6.20", spicy: true, vegetarian: true },
     ],
   },
@@ -303,6 +307,10 @@ export const menuData: MenuCategory[] = [
       { name: "Curry Sauce", price: "2.20", spicy: true, vegetarian: true },
       { name: "Satay Sauce", price: "2.20", spicy: true, vegetarian: true },
       { name: "Cantonese Sauce", price: "2.20", desc: "Sweet appetising sauce", vegetarian: true },
+      // Owner-confirmed orderable (2026-06-16) though not on the printed menu.
+      // Price £2.20 to match the other pots — CONFIRM with Wing.
+      { name: "Hoi Sin Sauce", price: "2.20", vegetarian: true },
+      { name: "BBQ Sauce", price: "2.20", vegetarian: true },
     ],
   },
   {
