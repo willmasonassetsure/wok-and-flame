@@ -27,7 +27,7 @@ export default function LoadingScreen() {
       setIsLoading(false);
       document.body.style.overflow = prevOverflow;
       window.scrollTo(0, 0);
-    }, 2800);
+    }, 1600);
     return () => {
       clearTimeout(timer);
       document.body.style.overflow = prevOverflow;
@@ -55,7 +55,7 @@ export default function LoadingScreen() {
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.7, ease }}
+          transition={{ duration: 0.5, ease }}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-char-950 overflow-hidden"
         >
           {/* Radial ember glow — the warm heart of the scene */}
@@ -132,8 +132,8 @@ export default function LoadingScreen() {
                     initial={{ y: "110%", opacity: 0 }}
                     animate={{ y: "0%", opacity: 1 }}
                     transition={{
-                      duration: 0.9,
-                      delay: 0.25 + i * 0.07,
+                      duration: 0.6,
+                      delay: 0.15 + i * 0.05,
                       ease,
                     }}
                     className="inline-block text-[56px] md:text-[88px] leading-[0.95] font-800 tracking-tighter text-char-50"
@@ -147,7 +147,7 @@ export default function LoadingScreen() {
               <motion.div
                 initial={{ scaleX: 0, opacity: 0 }}
                 animate={{ scaleX: 1, opacity: 1 }}
-                transition={{ duration: 0.9, delay: 0.75, ease }}
+                transition={{ duration: 0.6, delay: 0.45, ease }}
                 style={{ transformOrigin: "center" }}
                 className="h-px w-28 md:w-36 bg-gradient-to-r from-transparent via-vermillion to-transparent"
               />
@@ -159,8 +159,8 @@ export default function LoadingScreen() {
                     initial={{ y: "110%", opacity: 0 }}
                     animate={{ y: "0%", opacity: 1 }}
                     transition={{
-                      duration: 0.9,
-                      delay: 0.85 + i * 0.07,
+                      duration: 0.6,
+                      delay: 0.55 + i * 0.05,
                       ease,
                     }}
                     className="inline-block text-[56px] md:text-[88px] leading-[0.95] font-800 tracking-tighter text-vermillion"
@@ -178,7 +178,7 @@ export default function LoadingScreen() {
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 1.45, ease }}
+              transition={{ duration: 0.5, delay: 0.85, ease }}
               className="mt-9 flex items-center gap-3"
             >
               <motion.div
@@ -215,7 +215,7 @@ export default function LoadingScreen() {
             <motion.div
               initial={{ x: "-100%" }}
               animate={{ x: "0%" }}
-              transition={{ duration: 2.3, delay: 0.4, ease }}
+              transition={{ duration: 1.4, delay: 0.2, ease }}
               className="h-full bg-gradient-to-r from-transparent via-vermillion to-transparent"
             />
           </motion.div>
