@@ -21,14 +21,14 @@ export default function Home() {
               Hero    — hook + CTAs (the "Jump to menu" CTA skips straight to #menu for high-intent takeaway visitors)
               Gallery — cinematic plate showcase right after the hook, sells the food before anything else
               Reviews — social proof for the still-considering visitor
-              Menu    — high-intent product reveal
               About   — story / trust deepener
+              Menu    — high-intent product reveal
               Map     — find-us close (collection & discovery) */}
         <Hero />
         <Gallery />
         <Reviews />
-        <MenuHighlights />
         <About />
+        <MenuHighlights />
         <MapSection />
       </main>
       <Footer />

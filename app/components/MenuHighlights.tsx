@@ -261,6 +261,16 @@ export default function MenuHighlights() {
   // Motion value for wok X position — updates instantly on scroll, animated on click
   const wokX = useMotionValue(0);
   const [wokReady, setWokReady] = useState(false);
+  // The inner, content-width tab row — observed for reflow (e.g. web-font swap
+  // widening the tabs) so the wok re-syncs. The scroll container's own box is
+  // width-locked by the card, so observing it alone misses content growth.
+  const trackRef = useRef<HTMLDivElement>(null);
+  // Single-owner guard for wokX. While an auto-centre is in flight the spring
+  // owns wokX end-to-end; the scroll handler stands down so it can't snap the
+  // wok back to a mid-scroll position. Cleared on scrollend (+ timeout fallback).
+  const wokControls = useRef<ReturnType<typeof animate> | null>(null);
+  const autoCentering = useRef(false);
+  const releaseTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   // Hides the wok when its active tab scrolls out of the slider's visible range
   const [wokVisible, setWokVisible] = useState(true);
 
@@ -270,12 +280,33 @@ export default function MenuHighlights() {
   // Half the wok SVG width — used to centre it and to inset it from the edges
   const WOK_HALF = 18;
 
+  // The scrollLeft that auto-centres the active tab inside the strip. Shared by
+  // the wok spring (to project where the tab WILL be) and the auto-centre scroll
+  // (to actually move there) so the two never disagree about the destination.
+  const getCenterScrollLeft = useCallback(() => {
+    const tab = tabRefs.current[activeIdx];
+    const container = scrollRef.current;
+    if (!tab || !container) return 0;
+    const max = container.scrollWidth - container.clientWidth;
+    const target = tab.offsetLeft - container.clientWidth / 2 + tab.offsetWidth / 2;
+    return Math.max(0, Math.min(max, target));
+  }, [activeIdx]);
+
   // Compute the wok's target X (clamped to the slider's visible range) and
   // whether it should be shown. The wok is tethered to the active tab, but the
   // tab can be scrolled out of the icon strip — without clamping the wok would
   // drift outside the card. So we clamp X to the visible scroll viewport and
   // fade the wok out once its tab's centre leaves that viewport entirely.
-  const computeWokTarget = useCallback(() => {
+  //
+  // `projectedScrollLeft` lets callers ask "where will the wok be once the strip
+  // has scrolled to this position?". On a tab change the auto-centre scroll and
+  // the wok spring run concurrently; framer-motion's animate() loop overwrites
+  // wokX every frame and so beats the scroll handler's instant set. If the
+  // spring aimed at the tab's CURRENT (pre-scroll) position it would park the
+  // wok where the tab used to be — i.e. over the neighbouring tab once the strip
+  // finishes centring. Projecting to the post-scroll position makes the spring
+  // and the scroll converge on the same spot.
+  const computeWokTarget = useCallback((projectedScrollLeft?: number) => {
     const tab = tabRefs.current[activeIdx];
     const wrapper = wrapperRef.current;
     const container = scrollRef.current;
@@ -286,7 +317,11 @@ export default function MenuHighlights() {
     const containerRect = container.getBoundingClientRect();
 
     // Tab centre + visible viewport edges, all in wrapper-local coordinates
-    const center = tabRect.left - wrapperRect.left + tabRect.width / 2;
+    let center = tabRect.left - wrapperRect.left + tabRect.width / 2;
+    // Shift the tab centre by the pending scroll delta when projecting forward.
+    if (projectedScrollLeft !== undefined) {
+      center -= projectedScrollLeft - container.scrollLeft;
+    }
     const viewLeft = containerRect.left - wrapperRect.left;
     const viewRight = containerRect.right - wrapperRect.left;
 
@@ -300,6 +335,25 @@ export default function MenuHighlights() {
     return { x: clamped - WOK_HALF, visible };
   }, [activeIdx]);
 
+  // Pin the wok to the active tab's true, live position (manual scroll / reflow).
+  const pinWok = useCallback(() => {
+    const target = computeWokTarget();
+    if (target !== null) {
+      wokX.set(target.x);
+      setWokVisible(target.visible);
+    }
+  }, [computeWokTarget, wokX]);
+
+  // Hand wokX back to the scroll handler once an auto-centre has come to rest,
+  // and reconcile to the real tab position. Safe to call repeatedly.
+  const releaseWok = useCallback(() => {
+    clearTimeout(releaseTimer.current);
+    autoCentering.current = false;
+    wokControls.current?.stop();
+    wokControls.current = null;
+    pinWok();
+  }, [pinWok]);
+
   // Update scrollbar metrics
   const updateScrollMetrics = useCallback(() => {
     const el = scrollRef.current;
@@ -310,9 +364,11 @@ export default function MenuHighlights() {
     setScrollMetrics({ ratio, visibleRatio });
   }, []);
 
-  // Click transition: animate wok with spring to new tab
+  // Click transition: animate wok with spring to where the active tab will land
+  // AFTER the auto-centre scroll (see computeWokTarget) so the spring and the
+  // scroll agree on the destination instead of fighting over wokX.
   useEffect(() => {
-    const target = computeWokTarget();
+    const target = computeWokTarget(getCenterScrollLeft());
     if (target === null) return;
     setWokVisible(target.visible);
     if (!wokReady) {
@@ -320,13 +376,22 @@ export default function MenuHighlights() {
       setWokReady(true);
       return;
     }
+    // Claim wokX for the duration of the auto-centre so the scroll handler
+    // doesn't fight the spring (see autoCentering / onScroll below).
+    wokControls.current?.stop();
+    autoCentering.current = true;
     const controls = animate(wokX, target.x, {
       type: "spring",
       stiffness: 380,
       damping: 32,
     });
+    wokControls.current = controls;
+    // Hard fallback: if the auto-centre scroll is a no-op (edge tab already at
+    // the clamp) no scroll/scrollend events fire, so release ownership here too.
+    clearTimeout(releaseTimer.current);
+    releaseTimer.current = setTimeout(releaseWok, 700);
     return () => controls.stop();
-  }, [activeIdx, computeWokTarget, wokX, wokReady]);
+  }, [activeIdx, computeWokTarget, getCenterScrollLeft, wokX, wokReady, releaseWok]);
 
   // Auto-center the active icon inside the slider card. Since Jump To is the
   // primary mobile nav, the slider becomes a "you are here" strip — when
@@ -334,50 +399,74 @@ export default function MenuHighlights() {
   // we scroll the container so the active icon is centred. Uses container
   // scrollTo (not scrollIntoView) to avoid scrolling the whole page.
   useEffect(() => {
-    const tab = tabRefs.current[activeIdx];
     const container = scrollRef.current;
-    if (!tab || !container) return;
-    const target =
-      tab.offsetLeft - container.clientWidth / 2 + tab.offsetWidth / 2;
+    if (!container) return;
     container.scrollTo({
-      left: Math.max(0, target),
+      left: getCenterScrollLeft(),
       behavior: "smooth",
     });
-  }, [activeIdx]);
+  }, [activeIdx, getCenterScrollLeft]);
 
   // Scroll tracking: instant update, no spring lag. Wok is visually tethered to the tab.
   useEffect(() => {
     const scrollEl = scrollRef.current;
     if (!scrollEl) return;
 
-    const sync = () => {
-      const target = computeWokTarget();
-      if (target !== null) {
-        wokX.set(target.x);
-        setWokVisible(target.visible);
+    const onScroll = () => {
+      // During a programmatic auto-centre the spring is authoritative — only
+      // keep the scrollbar in sync, and debounce the ownership handoff so it
+      // fires once the scroll settles (covers browsers without scrollend).
+      // Otherwise this is a user scroll: cancel any lingering spring and glue
+      // the wok to the finger instantly.
+      if (autoCentering.current) {
+        clearTimeout(releaseTimer.current);
+        releaseTimer.current = setTimeout(releaseWok, 120);
+      } else {
+        wokControls.current?.stop();
+        wokControls.current = null;
+        pinWok();
       }
       updateScrollMetrics();
     };
 
-    const onScroll = sync;
-    const onResize = sync;
-
-    // Observe content size changes (e.g., font load, viewport change)
-    const resizeObserver = new ResizeObserver(onResize);
-    resizeObserver.observe(scrollEl);
+    // Reflow (web-font swap, viewport change): re-pin only when the spring
+    // isn't mid-flight, so we don't stomp an in-progress click animation.
+    const onReflow = () => {
+      if (!autoCentering.current) pinWok();
+      updateScrollMetrics();
+    };
 
     scrollEl.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onResize);
+    scrollEl.addEventListener("scrollend", releaseWok);
+    window.addEventListener("resize", onReflow);
+
+    // Observe the content-width row (and the container) for reflow — the
+    // container's own box is width-locked by the card, so the inner row is
+    // what actually grows when web fonts widen the tabs.
+    const resizeObserver = new ResizeObserver(onReflow);
+    if (trackRef.current) resizeObserver.observe(trackRef.current);
+    resizeObserver.observe(scrollEl);
+
+    // Web fonts change tab widths after first paint — re-pin once they load.
+    let fontsActive = true;
+    if (typeof document !== "undefined" && "fonts" in document) {
+      document.fonts.ready.then(() => {
+        if (fontsActive && !autoCentering.current) pinWok();
+      });
+    }
 
     // Initial sync
     updateScrollMetrics();
 
     return () => {
+      fontsActive = false;
+      clearTimeout(releaseTimer.current);
       scrollEl.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
+      scrollEl.removeEventListener("scrollend", releaseWok);
+      window.removeEventListener("resize", onReflow);
       resizeObserver.disconnect();
     };
-  }, [computeWokTarget, wokX, updateScrollMetrics]);
+  }, [pinWok, releaseWok, updateScrollMetrics]);
 
   // Scrollbar thumb sizing
   const thumbPct = Math.max(scrollMetrics.visibleRatio * 100, 18);
@@ -542,7 +631,7 @@ export default function MenuHighlights() {
           <GlassCard className="rounded-xl overflow-hidden">
             {/* Icon scroll row — the only scrollable element */}
             <div ref={scrollRef} className="overflow-x-auto hide-scrollbar p-1">
-              <div className="flex gap-0.5 min-w-max">
+              <div ref={trackRef} className="flex gap-0.5 min-w-max">
                 {menuData.map((cat, idx) => (
                   <CategoryTab
                     key={cat.shortTitle}
