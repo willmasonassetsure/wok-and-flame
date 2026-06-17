@@ -2,28 +2,56 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence, useMotionValue, animate } from "framer-motion";
-import { Fire, Wine, CookingPot, Leaf, Star, BowlFood, ForkKnife, Pepper, Gift, Drop, Cookie, CaretRight } from "@phosphor-icons/react";
-import { menuData } from "../data/menu";
+import { Fire, Wine, CookingPot, Leaf, Star, BowlFood, BowlSteam, ForkKnife, Pepper, Drop, CaretRight, CaretDown, Tray, Sparkle, Orange, Flame, Spiral, Carrot, IceCream } from "@phosphor-icons/react";
+import { menuData, type MenuItem } from "../data/menu";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
+// One distinct, category-matched icon per section. Fire is reserved for the
+// inline "spicy" marker, so Curries uses a chilli Pepper to avoid colliding.
 const categoryIcons: Record<string, typeof Fire> = {
-  "Drinks": Wine,
-  "Soups": BowlFood,
-  "Appetisers": ForkKnife,
-  "Salt & Pepper": Pepper,
-  "Mains": CookingPot,
-  "Sweet & Sour": Star,
-  "Curries": Fire,
-  "Deep Fried": Fire,
-  "Specials": Gift,
+  "Set Meals": Tray,
+  Specials: Sparkle,
+  Appetisers: ForkKnife,
+  Soups: BowlSteam,
+  Mains: CookingPot,
+  "Sweet & Sour": Orange,
+  Curries: Pepper,
+  "Deep Fried": Flame,
+  Noodles: Spiral,
   "Fried Rice": BowlFood,
-  "Noodles": CookingPot,
-  "Sides": ForkKnife,
-  "Sauces": Drop,
-  "Set Meals": Gift,
-  "Desserts": Cookie,
+  Sides: Carrot,
+  Sauces: Drop,
+  Desserts: IceCream,
+  Drinks: Wine,
 };
+
+// The 23 Main Courses cooking styles (Phase 2 will move this into menu.ts).
+const mainsStyles: { name: string; spicy?: boolean }[] = [
+  { name: "Foo Yung (scrambled egg)" },
+  { name: "Spicy Peanut Satay Sauce", spicy: true },
+  { name: "Sweet Cantonese Sauce" },
+  { name: "Black Bean Sauce", spicy: true },
+  { name: "Black Pepper Sauce" },
+  { name: "Thai Sweet Chilli Sauce", spicy: true },
+  { name: "Szechuan Sauce", spicy: true },
+  { name: "Kung Po Sauce", spicy: true },
+  { name: "English White Mushroom" },
+  { name: "Cashew Nuts" },
+  { name: "Fresh Diced Tomato" },
+  { name: "Pineapple" },
+  { name: "Pineapple & Sweet Ginger" },
+  { name: "Spring Onion & Fresh Ginger" },
+  { name: "Beansprouts" },
+  { name: "Garlic Oyster Sauce" },
+  { name: "Babycorn" },
+  { name: "Bamboo Shoots & Water Chestnut" },
+  { name: "Broccoli" },
+  { name: "Garlic Sauce", spicy: true },
+  { name: "Lemon Honey Sauce" },
+  { name: "Orange Sauce" },
+  { name: "Plum Sauce" },
+];
 
 /* ─── Glass Card ─── */
 function GlassCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -199,6 +227,161 @@ function PopularPickChip({
   );
 }
 
+/* ─── Main Courses reference panel — static (no cart), used on mobile + desktop ─── */
+function MainsPanel({ proteins }: { proteins: MenuItem[] }) {
+  return (
+    <div className="space-y-6">
+      <p className="text-[13px] font-300 text-char-300 leading-relaxed">
+        Pick any protein, then choose how it&apos;s cooked. The protein sets the price —
+        any of the {mainsStyles.length} styles, no extra charge.
+      </p>
+      <div>
+        <p className="text-[10px] font-600 tracking-[0.25em] uppercase text-char-500 mb-3">Choose a protein</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {proteins.map((p) => (
+            <div
+              key={p.name}
+              className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 border border-char-50/[0.07] bg-char-50/[0.02]"
+            >
+              <span className="flex items-center gap-1.5 min-w-0">
+                <span className="text-[13px] font-500 text-char-50 truncate">{p.name}</span>
+                {p.vegetarian && <Leaf size={11} weight="fill" className="text-emerald-400 shrink-0" />}
+              </span>
+              <span className="text-[12px] font-600 text-char-300 tabular-nums shrink-0">£{p.price}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <p className="text-[10px] font-600 tracking-[0.25em] uppercase text-char-500 mb-3">Cooked your way</p>
+        <div className="flex flex-wrap gap-2">
+          {mainsStyles.map((s) => (
+            <span
+              key={s.name}
+              className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 border border-char-50/[0.07] bg-char-50/[0.02] text-[12px] font-400 text-char-200"
+            >
+              {s.name}
+              {s.spicy && <Fire size={11} weight="fill" className="text-vermillion/80 shrink-0" />}
+            </span>
+          ))}
+        </div>
+      </div>
+      <p className="text-[12px] font-300 text-char-400/80 leading-relaxed border-l-2 border-vermillion/40 pl-3">
+        e.g. <span className="text-char-200">Chicken in Black Bean Sauce</span> ·{" "}
+        <span className="text-char-200">Beef with Cashew Nuts</span> ·{" "}
+        <span className="text-char-200">Tofu in Szechuan Sauce</span>
+      </p>
+    </div>
+  );
+}
+
+/* ─── Mobile accordion row (static) ─── */
+function MobileDishLine({ item }: { item: MenuItem }) {
+  return (
+    <div className="py-3 first:pt-0 last:pb-0">
+      <div className="flex items-center justify-between gap-3 mb-0.5">
+        <div className="flex items-center gap-2 min-w-0">
+          <h4 className="text-[14px] font-500 text-char-50 truncate">{item.name}</h4>
+          {item.spicy && <Fire size={12} weight="fill" className="text-vermillion/80 shrink-0" />}
+          {item.vegetarian && <Leaf size={12} weight="fill" className="text-emerald-400 shrink-0" />}
+          {item.popular && (
+            <span className="shrink-0 text-[10px] font-500 tracking-wider uppercase text-vermillion/70 border border-vermillion/20 rounded px-1.5 py-0.5">
+              Popular
+            </span>
+          )}
+        </div>
+        <div className="flex-1 mx-2 border-b border-dotted border-char-800/40 min-w-[16px] translate-y-[-1px]" />
+        <span className="text-[13px] font-400 text-char-300 tabular-nums shrink-0">£{item.price}</span>
+      </div>
+      {item.desc && <p className="text-[12px] font-300 text-char-400/70 leading-relaxed pr-10">{item.desc}</p>}
+    </div>
+  );
+}
+
+/* ─── Mobile menu — collapsible accordion (replaces the Jump-To grid + tabs) ─── */
+function MobileMenu() {
+  const [open, setOpen] = useState<Set<string>>(new Set());
+  const allOpen = open.size === menuData.length;
+  const toggle = (k: string) =>
+    setOpen((prev) => {
+      const n = new Set(prev);
+      if (n.has(k)) n.delete(k);
+      else n.add(k);
+      return n;
+    });
+
+  return (
+    <div className="md:hidden">
+      <div className="flex items-center gap-4 mb-4">
+        <button
+          onClick={() => setOpen(allOpen ? new Set() : new Set(menuData.map((c) => c.shortTitle)))}
+          className="text-[12px] font-500 text-char-300 hover:text-vermillion transition-colors"
+        >
+          {allOpen ? "Collapse all" : "Expand all"}
+        </button>
+        <span className="text-[11px] font-300 text-char-600 tabular-nums">{menuData.length} sections</span>
+      </div>
+      <div className="space-y-3">
+        {menuData.map((cat) => {
+          const isOpen = open.has(cat.shortTitle);
+          const Icon = categoryIcons[cat.shortTitle] || ForkKnife;
+          const isMains = cat.shortTitle === "Mains";
+          return (
+            <GlassCard key={cat.shortTitle} className={isOpen ? "border-char-50/[0.12]" : ""}>
+              <button
+                onClick={() => toggle(cat.shortTitle)}
+                aria-expanded={isOpen}
+                className="w-full flex items-center gap-3 px-4 py-4 text-left"
+              >
+                <span
+                  className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center border transition-colors duration-300 ${
+                    isOpen ? "bg-vermillion/10 border-vermillion/30 text-vermillion" : "bg-char-50/[0.03] border-char-50/[0.08] text-char-400"
+                  }`}
+                >
+                  <Icon size={16} weight={isOpen ? "fill" : "regular"} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[15px] font-600 text-char-50 tracking-tight truncate">{cat.title}</span>
+                  {cat.description && (
+                    <span className="block text-[11px] font-300 text-char-500 truncate">{cat.description}</span>
+                  )}
+                </span>
+                <span className="shrink-0 text-[11px] font-400 text-char-600 tabular-nums">{cat.items.length}</span>
+                <CaretDown
+                  size={16}
+                  weight="bold"
+                  className={`shrink-0 text-char-500 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+              <div
+                className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+                  isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="px-4 pb-5 pt-1 border-t border-char-800/30">
+                    {isMains ? (
+                      <div className="pt-4">
+                        <MainsPanel proteins={cat.items} />
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-char-800/20 pt-1">
+                        {cat.items.map((item) => (
+                          <MobileDishLine key={item.name} item={item} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </GlassCard>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main Menu Component ─── */
 export default function MenuHighlights() {
   const [activeIdx, setActiveIdx] = useState(0);
@@ -208,14 +391,6 @@ export default function MenuHighlights() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const menuContentRef = useRef<HTMLDivElement>(null);
-
-  // Quick Browse / Jump To — now the primary mobile navigation point, so it
-  // surfaces ALL 15 categories. The icon bar above is demoted to a visual
-  // confirmation strip that auto-scrolls to whichever category is active.
-  const quickBrowseCategories = useMemo(
-    () => menuData.map((cat, idx) => ({ cat, idx })),
-    []
-  );
 
   // Cross-category popular picks — quick-access chips at the top of the menu
   const popularPicks = useMemo(() => {
@@ -558,7 +733,7 @@ export default function MenuHighlights() {
             the category switcher, and the dishes read as a single unit. The
             nav bar (desktop tabs / mobile Jump To grid) now sits directly
             between this title and the menu it controls. Cross-fades on tap. */}
-        <div className="mb-5 md:mb-6">
+        <div className="mb-5 md:mb-6 hidden md:block">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeIdx}
@@ -666,95 +841,9 @@ export default function MenuHighlights() {
           )}
         </motion.div>
 
-        {/* Jump To — mobile-only primary navigation. Full set of 15 named
-            categories in a 3-column grid, so every menu destination is one
-            tap away with no icon guessing. The slider card above becomes a
-            "you are here" strip that auto-scrolls to centre on whichever
-            tile is active. Active tile fills with a vermillion gradient
-            that slides between tiles via a shared layoutId, matching the
-            icon bar's own active-pill language. */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.6, delay: 0.1, ease }}
-          className="md:hidden mb-2"
-        >
-          <div className="flex items-center gap-2 mb-3.5">
-            <div className="w-1 h-1 rounded-full bg-vermillion shadow-[0_0_5px_rgba(180,35,24,0.8)]" />
-            <p className="text-[10px] font-600 tracking-[0.32em] uppercase text-char-300">
-              Jump to
-            </p>
-            <div className="flex-1 h-px bg-gradient-to-r from-char-700/60 via-char-800/30 to-transparent" />
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            {quickBrowseCategories.map(({ cat, idx }) => {
-              const isActive = activeIdx === idx;
-              const Icon = categoryIcons[cat.shortTitle] || ForkKnife;
-              return (
-                <motion.button
-                  key={cat.shortTitle}
-                  onClick={() => setActiveIdx(idx)}
-                  whileTap={{ scale: 0.95 }}
-                  className={`
-                    relative py-2.5 px-2 rounded-xl overflow-hidden
-                    flex items-center justify-center gap-1.5
-                    transition-colors duration-300
-                    ${isActive ? "text-char-50" : "text-char-300"}
-                  `}
-                >
-                  {/* Inactive glass layer — subtle vertical gradient + inset highlight */}
-                  {!isActive && (
-                    <div
-                      className="absolute inset-0 rounded-xl backdrop-blur-xl border border-char-50/[0.07]"
-                      style={{
-                        background:
-                          "linear-gradient(160deg, rgba(250,250,249,0.04) 0%, rgba(250,250,249,0.015) 55%, rgba(250,250,249,0.025) 100%)",
-                        boxShadow:
-                          "inset 0 1px 0 rgba(255,255,255,0.07), 0 2px 10px -4px rgba(0,0,0,0.35)",
-                      }}
-                    />
-                  )}
-
-                  {/* Active layer — vermillion gradient + glow, slides between tiles via layoutId */}
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeBrowseTile"
-                      className="absolute inset-0 rounded-xl"
-                      style={{
-                        background:
-                          "linear-gradient(135deg, #d92d20 0%, #b42318 60%, #912218 100%)",
-                        boxShadow:
-                          "0 8px 24px -8px rgba(217,45,32,0.7), 0 2px 6px -2px rgba(180,35,24,0.45), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.18)",
-                      }}
-                      transition={{ type: "spring", stiffness: 320, damping: 32 }}
-                    >
-                      {/* Soft highlight sheen on the top-left of the active tile */}
-                      <div
-                        className="absolute inset-0 rounded-xl pointer-events-none"
-                        style={{
-                          background:
-                            "radial-gradient(ellipse at top left, rgba(255,255,255,0.18) 0%, transparent 55%)",
-                        }}
-                      />
-                    </motion.div>
-                  )}
-
-                  <Icon
-                    size={12}
-                    weight={isActive ? "fill" : "regular"}
-                    className={`relative z-10 shrink-0 transition-colors duration-300 ${
-                      isActive ? "text-char-50" : "text-char-500"
-                    }`}
-                  />
-                  <span className="relative z-10 text-[11px] font-600 tracking-[0.02em] whitespace-nowrap">
-                    {cat.shortTitle}
-                  </span>
-                </motion.button>
-              );
-            })}
-          </div>
-        </motion.div>
+        {/* Mobile menu — collapsible accordion (replaces the old Jump-To grid).
+            Desktop keeps the interactive tab/wok switcher above. */}
+        <MobileMenu />
 
         {/* Category content */}
         <AnimatePresence mode="wait">
@@ -765,10 +854,14 @@ export default function MenuHighlights() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.35, ease }}
-            className="mt-6 md:mt-8 scroll-mt-20"
+            className="hidden md:block mt-6 md:mt-8 scroll-mt-20"
           >
-            {/* Bento grid of items — split into columns for large lists */}
-            {category.items.length > 8 ? (
+            {/* Main Courses → reference panel; everything else → bento dish list */}
+            {category.shortTitle === "Mains" ? (
+              <GlassCard className="p-4 md:p-8">
+                <MainsPanel proteins={category.items} />
+              </GlassCard>
+            ) : category.items.length > 8 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <GlassCard className="p-4 md:p-6">
                   <div className="divide-y divide-char-800/20">
