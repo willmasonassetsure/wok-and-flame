@@ -18,15 +18,28 @@
 
 import { useState } from "react";
 import {
-  Fire, Wine, CookingPot, Leaf, Star, BowlFood, ForkKnife, Pepper, Gift, Drop, Cookie, CaretDown,
+  Fire, Wine, CookingPot, Leaf, BowlFood, BowlSteam, ForkKnife, Pepper, Drop,
+  Tray, Sparkle, Orange, Flame, Spiral, Carrot, IceCream, CaretDown,
 } from "@phosphor-icons/react";
 import { menuData, type MenuItem } from "../../data/menu";
 
+// One distinct, category-matched icon per section. Fire is reserved for the
+// inline "spicy" marker, so Curries uses a chilli Pepper to avoid colliding.
 const categoryIcons: Record<string, typeof Fire> = {
-  Drinks: Wine, Soups: BowlFood, Appetisers: ForkKnife, "Salt & Pepper": Pepper,
-  Mains: CookingPot, "Sweet & Sour": Star, Curries: Fire, "Deep Fried": Fire,
-  Specials: Gift, "Fried Rice": BowlFood, Noodles: CookingPot, Sides: ForkKnife,
-  Sauces: Drop, "Set Meals": Gift, Desserts: Cookie,
+  "Set Meals": Tray,        // sharing platter / banquet
+  Specials: Sparkle,        // signature / featured
+  Appetisers: ForkKnife,    // starters
+  Soups: BowlSteam,         // steaming bowl
+  Mains: CookingPot,        // the wok
+  "Sweet & Sour": Orange,   // sweet/tangy citrus
+  Curries: Pepper,          // chilli
+  "Deep Fried": Flame,      // crispy fried
+  Noodles: Spiral,          // swirled noodles
+  "Fried Rice": BowlFood,   // bowl of rice
+  Sides: Carrot,            // veg / extras
+  Sauces: Drop,             // pot of sauce
+  Desserts: IceCream,       // dessert
+  Drinks: Wine,             // beverages
 };
 
 // The 23 cooking styles for Main Courses (Phase 2 moves this into menu.ts).

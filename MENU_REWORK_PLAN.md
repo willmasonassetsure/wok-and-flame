@@ -35,13 +35,14 @@ touched until approved. Live menu = `app/components/MenuHighlights.tsx`.
 
 ## Decisions
 
-### D1 — Menu architecture → **Accordion (collapsible categories)**
-15 collapsible category headers (icon + title + item count + chevron). **Collapsed by default**
-(≈15 rows of real estate — directly fixes the "whole menu at once is too much" worry); tap to
-expand items inline. Plus an **Expand all / Collapse all** toggle so scanners can still see
-everything in one go. Drops the horizontal scroll-tabs + floating wok entirely.
-- Alternatives considered: long-scroll + sticky jump-nav (max scannability, longest page);
-  improved one-at-a-time tabs (lowest risk, not "whole menu"). Accordion best balances both.
+### D1 — Menu architecture → **Responsive: desktop tabs (kept) / mobile accordion** (owner-confirmed 2026-06-17)
+- **Desktop (md+):** KEEP the existing MenuHighlights interactive tab switcher + floating wok —
+  it's a deliberate desktop selling point. Unchanged.
+- **Mobile:** collapsible accordion — category headers (icon + title + count + chevron),
+  **collapsed by default** (fixes "too much real estate"), tap to expand, plus Expand-all toggle.
+  Replaces the mobile "Jump To" grid + single-category content.
+- Accordion uses a CSS `grid-rows` 0fr→1fr reveal (content stays in DOM = better SEO/a11y).
+- Prototype saved at `/lab/menu` (commit c47c0b7).
 
 ### D2 — Mains presentation → **Static reference panel (no cart/builder)**
 Two blocks: **"Choose a protein"** (12 proteins + prices, compact grid) and **"Cooked your way"**
