@@ -17,13 +17,10 @@
  */
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Fire, Wine, CookingPot, Leaf, Star, BowlFood, ForkKnife, Pepper, Gift, Drop, Cookie, CaretDown,
 } from "@phosphor-icons/react";
 import { menuData, type MenuItem } from "../../data/menu";
-
-const ease = [0.16, 1, 0.3, 1] as const;
 
 const categoryIcons: Record<string, typeof Fire> = {
   Drinks: Wine, Soups: BowlFood, Appetisers: ForkKnife, "Salt & Pepper": Pepper,
@@ -179,60 +176,56 @@ function CategoryAccordion({
           )}
         </span>
         <span className="shrink-0 text-[11px] font-400 text-char-600 tabular-nums">{cat.items.length}</span>
-        <motion.span
-          className="shrink-0 text-char-500"
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.3, ease }}
-        >
-          <CaretDown size={16} weight="bold" />
-        </motion.span>
+        <CaretDown
+          size={16}
+          weight="bold"
+          className={`shrink-0 text-char-500 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            key="body"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.32, ease }}
-            className="overflow-hidden"
-          >
-            <div className="px-4 md:px-6 pb-5 pt-1 border-t border-char-800/30">
-              {isMains ? (
-                <div className="pt-4">
-                  <MainsPanel proteins={cat.items} />
-                </div>
-              ) : cat.items.length > 10 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 pt-1">
-                  <div className="divide-y divide-char-800/20">
-                    {cat.items.slice(0, Math.ceil(cat.items.length / 2)).map((item) => (
-                      <DishLine key={item.name} item={item} />
-                    ))}
-                  </div>
-                  <div className="divide-y divide-char-800/20">
-                    {cat.items.slice(Math.ceil(cat.items.length / 2)).map((item) => (
-                      <DishLine key={item.name} item={item} />
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="divide-y divide-char-800/20 pt-1">
-                  {cat.items.map((item) => (
+      {/* CSS grid-rows reveal: content stays in the DOM (good for SEO/a11y) and
+          collapses via 0fr→1fr; respects prefers-reduced-motion globally. */}
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="px-4 md:px-6 pb-5 pt-1 border-t border-char-800/30">
+            {isMains ? (
+              <div className="pt-4">
+                <MainsPanel proteins={cat.items} />
+              </div>
+            ) : cat.items.length > 10 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 pt-1">
+                <div className="divide-y divide-char-800/20">
+                  {cat.items.slice(0, Math.ceil(cat.items.length / 2)).map((item) => (
                     <DishLine key={item.name} item={item} />
                   ))}
                 </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <div className="divide-y divide-char-800/20">
+                  {cat.items.slice(Math.ceil(cat.items.length / 2)).map((item) => (
+                    <DishLine key={item.name} item={item} />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="divide-y divide-char-800/20 pt-1">
+                {cat.items.map((item) => (
+                  <DishLine key={item.name} item={item} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </Glass>
   );
 }
 
 /* ─── Page ─── */
 export default function MenuLabPage() {
+  // All sections collapsed by default (compact); "Expand all" reveals everything.
   const [open, setOpen] = useState<Set<string>>(new Set());
 
   const allOpen = open.size === menuData.length;

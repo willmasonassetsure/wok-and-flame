@@ -59,3 +59,7 @@ scripts/flatten-justeat.js
 # timestamped backups dropped beside source files (e.g. menu.ts.bak.20260602_225052)
 .xlsx-tmp/
 *.bak.*
+
+# local screenshot/preview scratch
+.shots/
+.chrome-prof/
