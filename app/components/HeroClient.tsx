@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowDown, Phone, Star } from "@phosphor-icons/react";
+import { ArrowDown, Phone, Star, Percent } from "@phosphor-icons/react";
 import OpenStatus from "./OpenStatus";
 import HeroAtmosphere from "./HeroAtmosphere";
 import type { OpeningHoursData } from "../lib/google-hours";
@@ -12,6 +12,12 @@ import {
   JUST_EAT_URL,
   formatReviewCount,
 } from "../lib/review-stats";
+import {
+  OFFER_ACTIVE,
+  OFFER_HEADLINE,
+  OFFER_TERMS,
+  OFFER_TAG,
+} from "../lib/offer";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -123,6 +129,26 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
               </span>
             </motion.a>
 
+            {/* Direct-order promo — reads from app/lib/offer.ts. Nudges the
+                phone route (the only channel the discount can be honoured on)
+                without demoting the Just Eat CTA. Hidden entirely when
+                OFFER_ACTIVE is false. */}
+            {OFFER_ACTIVE && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.7, ease }}
+                className="mb-6 md:mb-8"
+              >
+                <div className="inline-flex max-w-full flex-wrap items-center gap-x-2.5 gap-y-1 rounded-2xl sm:rounded-full bg-vermillion/10 border border-vermillion/30 px-4 py-2 backdrop-blur-sm">
+                  <Percent size={15} weight="bold" className="text-vermillion shrink-0" />
+                  <span className="text-sm font-500 text-char-50">{OFFER_HEADLINE}</span>
+                  <span aria-hidden className="hidden sm:inline text-vermillion/40">&middot;</span>
+                  <span className="w-full sm:w-auto text-xs font-300 text-char-400">{OFFER_TERMS}</span>
+                </div>
+              </motion.div>
+            )}
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -143,6 +169,11 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
               >
                 <Phone size={14} weight="regular" />
                 0161 434 6318
+                {OFFER_ACTIVE && (
+                  <span className="ml-1 rounded-full bg-vermillion/15 text-vermillion text-[10px] font-600 leading-none px-2 py-1 normal-case tracking-normal">
+                    {OFFER_TAG}
+                  </span>
+                )}
               </a>
               <a
                 href="#menu"

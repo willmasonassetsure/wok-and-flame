@@ -70,7 +70,7 @@ export default function MapSection() {
                     Address
                   </p>
                   <p className="text-sm font-300 text-char-200 leading-relaxed">
-                    Burton Road
+                    206 Burton Road
                     <br />
                     West Didsbury
                     <br />

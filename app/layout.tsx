@@ -134,7 +134,7 @@ function buildRestaurantSchema() {
     priceRange: "££",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Burton Road",
+      streetAddress: "206 Burton Road",
       addressLocality: "West Didsbury",
       addressRegion: "Manchester",
       postalCode: "M20 2LW",

@@ -84,7 +84,7 @@ export default function Footer() {
             </a>
           </p>
           <p className="text-xs font-300 text-char-700">
-            Burton Road, M20 2LW
+            206 Burton Road, M20 2LW
           </p>
         </div>
       </div>

@@ -154,7 +154,72 @@ Scores 1–5 against §1 weights. (Gate: all three can technically pass; Deliver
 
 ---
 
-## 7. Recommended build (the winner)
+## 7. Business case / ROI — what the client saves (the pitch math)
+
+The parameterised margin-capture argument — drop any client's real numbers in. This powers the Phase-2 pitch (handover-deck Slide 16).
+
+**Two numbers decide everything:** the **commission rate (r)** the restaurant escapes, and the **direct discount (d)** it gives back to win the switch.
+
+> **Net saving ≈ (r − d − ~1.5% card fee) × the platform sales that shift to direct.**
+
+If the discount is bigger than the commission, the restaurant *loses* money on every shifted order — so **`d` must stay comfortably below `r`.** (Approximate: the card fee applies to the discounted total, a rounding-level difference.)
+
+### Per £100 of order value a regular shifts to direct (at 30% commission)
+
+| Route | Restaurant nets | vs Just Eat |
+|---|---|---|
+| Just Eat | £70.00 | — |
+| Direct, 0% off | £98.50 | **+£28.50** |
+| Direct, 10% off | £88.65 | **+£18.65** |
+| Direct, 20% off | £78.80 | **+£8.80** |
+
+The customer pays *less* and the restaurant nets *more* — there's no 30% middleman. The discount is just how much of that £28.50 you hand back to trigger the habit. **Use the smallest discount that actually moves behaviour** — punchy early to drive adoption, then dial it down (or swap to loyalty) once the habit sticks.
+
+### Worked example: a business losing £100k/year in fees
+
+What £100k of fees implies about platform sales:
+
+| Commission rate | Implied annual platform sales |
+|---|---|
+| 30% (Deliveroo/Uber, or full JE delivery) | ~£333k |
+| ~17% (JE collection / self-delivery + VAT) | ~£590k |
+
+Annual claw-back at **£333k** platform GMV, by shift rate × discount depth:
+
+| Orders shifted to direct | 20% off | 10% off | 0% off |
+|---|---|---|---|
+| 20% (£67k) | ~£5.7k | ~£12.3k | ~£19.0k |
+| 35% (£117k) | ~£9.9k | ~£21.6k | ~£33.3k |
+| 50% (£167k) | ~£14.2k | ~£30.8k | ~£47.5k |
+
+Realistic middle (≈35% shift, 10–20% off): **~£10k–£22k/year recovered** — the £300/mo bundle (£3,600/yr) pays for itself **3–6× from saved commission alone**, before a single *new* customer from SEO/reviews.
+
+### Drop-in template (per client)
+
+```
+Inputs
+  r  = platform commission rate ............ ___%
+  G  = annual platform sales ............... £_______   (= annual fees ÷ r)
+  d  = direct-order discount ............... ___%
+  s  = expected share of sales that shift .. ___%
+
+Net annual saving ≈ (r − d − 1.5%) × (s × G)
+```
+
+### Two honest calibrations (keep these in front of the client)
+
+- **Discount must be < commission.** On collection orders where Just Eat charges only ~14–17%, a 20% direct discount is *net-negative*. For collection-heavy takeaways use ~10% or a non-cash perk (free side, loyalty stamp). The right discount is a per-client calc — confirm their real rate from their statements first.
+- **You never shift 100%.** Marketplace-discovery customers stay on the platform; the regulars are the shiftable base. **The MVP is what finally measures the real shift rate** — today it's invisible.
+
+### The upside *not* in the table
+
+The per-order math only counts commission saved. On top, and compounding:
+- **New customers** from SEO/Google/reviews who never touched Just Eat — pure incremental revenue, not a "saving".
+- **Customer ownership** — every direct order hands the restaurant the contact + consent Just Eat withholds, powering review requests, win-back and loyalty. That's what turns a one-off saving into a growing one.
+
+---
+
+## 8. Recommended build (the winner)
 
 **Phase 0 — Backbone (low-regret, do now):**
 - GHL Starter sub-account; connect the restaurant's Stripe; switch on **review automation** (post-collection SMS/email). This is billable bundle value *even if ordering volume disappoints* — it de-risks the "might be a one-off" worry.
@@ -172,7 +237,7 @@ Scores 1–5 against §1 weights. (Gate: all three can technically pass; Deliver
 
 ---
 
-## 8. Open items to verify before quoting a client
+## 9. Open items to verify before quoting a client
 
 These are the `[UNCERTAIN]` flags from the research — confirm before any number goes in front of Wing:
 
@@ -183,7 +248,7 @@ These are the `[UNCERTAIN]` flags from the research — confirm before any numbe
 
 ---
 
-## 9. Sources
+## 10. Sources
 
 **Deliverect:** deliverect.com/en/deliverect-direct · help.deliverect.com (Direct get-started, discounts, Stripe gateway, DMA app/printing) · developers.deliverect.com/docs · deliverect.com/en-gb/pricing (quote-only) · saasworthy legacy tiers · deliverect.com/en-gb/integrations/delivery-channels
 **Restolabs:** restolabs.com (paymentintegrations, pricing, online-ordering, white-label resellers) · capterra.co.uk/software/140085/restolabs · softwaresuggest.com/restolabs · deliverect.com/en/integrations/restolabs

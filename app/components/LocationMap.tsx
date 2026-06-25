@@ -89,7 +89,7 @@ export default function LocationMap() {
       L.marker([LAT, LON], { icon: flameIcon, title: "Wok & Flame" })
         .addTo(map)
         .bindPopup(
-          "<strong style='font-family:inherit;font-weight:600;color:#fafaf9;'>Wok &amp; Flame</strong><br/><span style='color:#a8a29e;font-size:12px;'>Burton Road, West Didsbury, M20 2LW</span>"
+          "<strong style='font-family:inherit;font-weight:600;color:#fafaf9;'>Wok &amp; Flame</strong><br/><span style='color:#a8a29e;font-size:12px;'>206 Burton Road, West Didsbury, M20 2LW</span>"
         );
 
       // Zoom control in bottom-right so it doesn't fight the address card
