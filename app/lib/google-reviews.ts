@@ -71,10 +71,10 @@ export async function getGoogleReviews(): Promise<GoogleReviewsData | null> {
         "X-Goog-Api-Key": apiKey,
         "X-Goog-FieldMask": FIELD_MASK,
       },
-      // Fetch once at build, cache forever. Reviews refresh whenever the
-      // site is redeployed — runtime API calls stay at zero, which keeps
-      // the Places API bill effectively £0.
-      cache: "force-cache",
+      // Cache the Places response and revalidate it at most once every 24h
+      // (ISR). At one refresh/day the Places API bill stays effectively £0,
+      // but new Google reviews now appear within a day without a redeploy.
+      next: { revalidate: 86400 },
     });
 
     if (!res.ok) {
