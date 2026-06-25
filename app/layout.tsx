@@ -2,13 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
-import { getGoogleReviews } from "./lib/google-reviews";
-import {
-  JUST_EAT_RATING,
-  JUST_EAT_COUNT,
-  GOOGLE_FALLBACK_RATING,
-  GOOGLE_FALLBACK_COUNT,
-} from "./lib/review-stats";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -26,8 +19,11 @@ export const metadata: Metadata = {
     default: "Wok & Flame | Chinese Takeaway in West Didsbury, Manchester",
     template: "%s | Wok & Flame",
   },
+  // ~160-char budget: location + cuisine first (Google bolds the query
+  // terms), then the CTA + phone, so both survive desktop truncation
+  // (~155 chars). Dishes trail at the end where a cut does no harm.
   description:
-    "Authentic Chinese takeaway, wok-fired in West Didsbury, Manchester. Salt & pepper, crispy duck, chow mein and a handful of Thai favourites. Delivery and collection — order online or call 0161 434 6318.",
+    "Wok-fired Chinese & Thai takeaway in West Didsbury, Manchester. Order online or call 0161 434 6318 for delivery & collection — salt & pepper, crispy duck, chow mein.",
   applicationName: "Wok & Flame",
   keywords: [
     "Chinese takeaway West Didsbury",
@@ -115,17 +111,17 @@ export const viewport: Viewport = {
 };
 
 // LocalBusiness / Restaurant JSON-LD — drives Google rich results for hours,
-// rating, address, and the AI Overviews citation surface (ChatGPT search,
-// Perplexity, Google AI Overviews all read this).
+// address, and the AI Overviews citation surface (ChatGPT search, Perplexity,
+// Google AI Overviews all read this).
 //
-// All review-stat constants now live in app/lib/review-stats.ts so the
-// schema's aggregateRating stays in lockstep with the visual surfaces.
-function buildRestaurantSchema(googleRating: number, googleCount: number) {
-  const totalCount = JUST_EAT_COUNT + googleCount;
-  const weightedRating = totalCount > 0
-    ? ((JUST_EAT_RATING * JUST_EAT_COUNT) + (googleRating * googleCount)) / totalCount
-    : JUST_EAT_RATING;
-
+// Deliberately NO aggregateRating: Google's review-snippet policy disallows
+// self-serving star markup, and aggregating third-party counts (Just Eat +
+// Google) into our own page is the exact pattern that risks the rich result
+// being dropped or a manual action. The business's real star rating is served
+// by Google Business Profile in the Map pack / knowledge panel, which this
+// markup neither controls nor should duplicate. Revisit only if/when we
+// collect genuine first-party reviews on this domain.
+function buildRestaurantSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Restaurant",
@@ -151,13 +147,6 @@ function buildRestaurantSchema(googleRating: number, googleCount: number) {
     },
     hasMap: "https://www.google.com/maps/search/?api=1&query=53.4266560,-2.2429775",
     acceptsReservations: false,
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: weightedRating.toFixed(2),
-      reviewCount: totalCount,
-      bestRating: "5",
-      worstRating: "1",
-    },
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
@@ -191,17 +180,12 @@ function buildRestaurantSchema(googleRating: number, googleCount: number) {
   };
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Pull live Google rating + count from Places API when configured. Falls
-  // back to the documented placeholder so the schema is always populated.
-  const googleData = await getGoogleReviews();
-  const googleRating = googleData?.rating ?? GOOGLE_FALLBACK_RATING;
-  const googleCount = googleData?.reviewCount ?? GOOGLE_FALLBACK_COUNT;
-  const restaurantSchema = buildRestaurantSchema(googleRating, googleCount);
+  const restaurantSchema = buildRestaurantSchema();
 
   // WebSite schema — enables Google's sitelinks search box and gives every
   // AI search engine a clear entity to bind to.
