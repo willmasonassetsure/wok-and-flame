@@ -23,7 +23,8 @@ export type MenuCategory = {
 // Owner-confirmed (Wing, 2026-06-16):
 //   - Hoi Sin Sauce + BBQ Sauce added as pots (£2.20) — orderable though not on the print.
 //   - Drinks (cans) kept — orderable; not on the printed menu, prices from Just Eat.
-//   - Assorted Vegetable Fried Rice removed — only the Singapore veg rice is kept.
+//   - Assorted Vegetable Fried Rice: dropped 2026-06-16, then RE-ADDED 2026-06-25
+//     at £6.20 (Wing, WhatsApp) — both it and the Singapore veg rice are now kept.
 //
 // Open items still requiring client confirmation:
 //   - Beef Thai Green Curry £6.50 (printed as 6.50, sibling items all 6.90 — Wing may want 6.90)
@@ -276,8 +277,10 @@ export const menuData: MenuCategory[] = [
       { name: "Beef Fried Rice", price: "7.00" },
       { name: "Singapore Style Fried Rice", price: "7.40", desc: "Chicken, char sui, shrimp in special curry paste", spicy: true },
       { name: "King Prawn Fried Rice", price: "7.40" },
-      // Owner (Wing) kept only the Singapore veg rice — printed menu also lists an
-      // "Assorted Vegetable Fried Rice" but it was dropped per his instruction (2026-06-16).
+      // Both veg fried rices are kept. Wing dropped the plain "Assorted Vegetable
+      // Fried Rice" on 2026-06-16, then re-added it on 2026-06-25 (£6.20, WhatsApp —
+      // confirmed it was the last missing item).
+      { name: "Assorted Vegetable Fried Rice", price: "6.20", vegetarian: true },
       { name: "Singapore Style Vegetable Fried Rice", price: "6.20", spicy: true, vegetarian: true },
     ],
   },

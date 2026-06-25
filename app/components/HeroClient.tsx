@@ -70,22 +70,27 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
             {/* Editorial wordmark — clamp keeps it readable on mobile and
                 lets it dominate on desktop without bleeding off the page.
                 Two-line stack with FLAME in vermillion mirrors the brand mark. */}
-            <motion.h1
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.35, ease }}
-              className="font-800 tracking-[-0.04em] leading-[0.85] text-char-50 mb-0 text-[clamp(5rem,24vw,11rem)]"
-            >
-              WOK &amp;
-            </motion.h1>
-            <motion.h1
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.45, ease }}
-              className="font-800 tracking-[-0.04em] leading-[0.85] text-vermillion mb-6 md:mb-10 text-[clamp(5rem,24vw,11rem)]"
-            >
-              FLAME
-            </motion.h1>
+            {/* Single semantic <h1> for the brand; the two colour-split lines
+                are block spans so the page has one H1, not two (SEO). Visual
+                output is unchanged. */}
+            <h1 className="font-800 tracking-[-0.04em] leading-[0.85] mb-6 md:mb-10 text-[clamp(5rem,24vw,11rem)]">
+              <motion.span
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.35, ease }}
+                className="block text-char-50"
+              >
+                WOK &amp;
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.45, ease }}
+                className="block text-vermillion"
+              >
+                FLAME
+              </motion.span>
+            </h1>
 
             <motion.p
               initial={{ opacity: 0, y: 30 }}

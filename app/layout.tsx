@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import { getGoogleReviews } from "./lib/google-reviews";
 import {
   JUST_EAT_RATING,
@@ -245,6 +246,7 @@ export default async function RootLayout({
           crossOrigin=""
           strategy="afterInteractive"
         />
+        <Analytics />
       </body>
     </html>
   );

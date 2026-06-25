@@ -26,10 +26,20 @@
    Gallery pinned-scroll. Using overflow-x: clip instead — same effect
    (prevents horizontal scroll bleed from marquees / off-screen elements)
    but does NOT create a scroll containing block, so sticky still pins
-   to the viewport as expected. */
+   to the viewport as expected.
+
+   overscroll-behavior-x: none kills the viewport's elastic horizontal
+   rubber-band — the slight left/right "pull" felt while reading tall
+   sections like the menu. overflow-x: clip already stops horizontal
+   *scrolling*, but a browser still bounces the page on a sideways drag
+   unless this is set; measured the menu at 360–414px (collapsed + expanded)
+   and it has zero horizontal overflow, so the pull was overscroll, not layout.
+   The Gallery's horizontal swipe is its own scroll container and is
+   untouched — it stays the one surface that intentionally moves left/right. */
 html {
   scroll-behavior: smooth;
   overflow-x: clip;
+  overscroll-behavior-x: none;
 }
 
 body {
@@ -39,6 +49,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: clip;
+  overscroll-behavior-x: none;
 }
 
 /* Hide scrollbar on horizontal scroll containers */

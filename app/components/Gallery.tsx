@@ -31,7 +31,7 @@ const galleryImages: GalleryImage[] = [
   { src: "/images/inside-wall.webp",           alt: "Framed portrait gallery on the wall inside Wok & Flame",                w: 941,  h: 1672, tag: "Inside" },
   { src: "/images/full-spread.webp",           alt: "A full Wok & Flame takeaway spread",                                    w: 1080, h: 1456, tag: "Full Spread" },
   { src: "/images/dish-plate-close.webp",      alt: "Close-up of a Wok & Flame plate",                                       w: 1139, h: 1381, tag: "Wok Hei" },
-  { src: "/images/dish-chow-mein.webp",        alt: "Chow mein with prawn crackers",                                         w: 1212, h: 1297, tag: "Noodles" },
+  { src: "/images/dish-noodles.webp",          alt: "A hand holding a willow-pattern plate of chow mein, salt & pepper balls and a spring roll with prawn crackers", w: 852, h: 1847, tag: "Noodles" },
   { src: "/images/dish-chips-rice-curry.webp", alt: "Chips, fried rice, curry sauce",                                        w: 1254, h: 1254, tag: "The Classic" },
   { src: "/images/full-plate.webp",            alt: "A full Chinese takeaway plate",                                         w: 1209, h: 1300, tag: "Friday Night" },
   { src: "/images/dish-prawn-toast.webp",      alt: "Prawn toast with curry sauce",                                          w: 1254, h: 1254, tag: "Full Combo" },
@@ -89,16 +89,27 @@ export default function Gallery() {
           that the section doesn't feel like a marathon. */}
       <div ref={trackRef} className="hidden md:block relative h-[500vh]">
         <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center">
+          {/* Legibility scrim behind the floating title — darkens the
+              top-left corner so the text reads cleanly over the lit shopfront,
+              fading to transparent toward the centre so the rest of the photo
+              (and the sign) stays bright. Fades out with the title on scroll so
+              it never dims the later frames. */}
+          <motion.div
+            style={{ opacity: titleOpacity }}
+            className="absolute inset-0 z-[5] pointer-events-none bg-gradient-to-br from-char-950/80 via-char-950/20 to-transparent"
+          />
+
           {/* Floating headline — drifts up + fades as the track advances */}
           <motion.div
             style={{ y: titleY, opacity: titleOpacity }}
-            className="absolute top-[10vh] left-0 right-0 z-10 pointer-events-none"
+            className="absolute top-[16vh] left-0 right-0 z-10 pointer-events-none"
           >
-            {/* Left-aligned to the same px-10 as the card track so the title
-                squares with the section edge instead of floating in from a
-                centered max-width container (which read as bleeding over the
-                first card). */}
-            <div className="px-10">
+            {/* Inset from the section edges (top-[16vh] + px-20) so the title
+                breathes instead of hugging the corner. It still overlays the
+                first card — the scrim above keeps it legible. Left-aligned
+                rather than dropped into a centered max-width container (which
+                read as bleeding over the first card). */}
+            <div className="px-20">
               <p className="text-vermillion text-xs font-500 tracking-[0.3em] uppercase mb-3">
                 Gallery
               </p>
@@ -185,9 +196,10 @@ export default function Gallery() {
         </div>
       </div>
 
-      {/* MOBILE — native horizontal swipe with snap-x. Cards sized by width and
-          letterboxed via object-contain so portraits and squares alike show
-          whole, never cropped. */}
+      {/* MOBILE — native horizontal swipe with snap-x. Cards are sized by
+          HEIGHT, with width derived from each image's native aspect ratio, so
+          the box always matches the image exactly — portraits and squares show
+          whole, never cropped and never letterboxed with side bands. */}
       <div className="md:hidden">
         <div className="max-w-[1400px] mx-auto px-6 py-10">
           <motion.p
@@ -230,7 +242,7 @@ export default function Gallery() {
               className={`
                 relative shrink-0 snap-start overflow-hidden rounded-xl
                 border border-char-50/[0.06] bg-char-950
-                ${img.hero ? "w-[86vw] max-h-[64vh]" : "w-[78vw] max-h-[58vh]"}
+                ${img.hero ? "h-[68vh]" : "h-[60vh]"}
               `}
               style={{ aspectRatio: img.ar ?? `${img.w} / ${img.h}` }}
             >

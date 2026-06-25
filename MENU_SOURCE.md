@@ -17,6 +17,12 @@ live code copy is [app/data/menu.ts](app/data/menu.ts).
 | Tagline | "For Fine Cantonese Cuisine" |
 | Owner quote | "There's no difference in what I sell and what I eat: everything is made to be the very best!" — *The Big Chinaman* |
 
+> ⚠️ **Domain flag (2026-06-25):** the printed menu advertises `www.wokandflame.co.uk`, but
+> that domain now **redirects to a spam survey site (`survey-smiles.com`) — it is squatted, not
+> owned by the business.** The live site is **`https://www.wokandflame.co`** (Vercel), which is
+> what every SEO/canonical/JSON-LD reference points to. **Action for Wing:** reclaim `.co.uk`
+> defensively and redirect it to `.co`, and use `.co` on any reprinted menus/signage.
+
 ## Photo set
 
 1. **Cover** — hours, delivery charge, address, phone, website, tagline, owner quote.
