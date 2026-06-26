@@ -47,9 +47,9 @@ export const ORDER_MODAL = {
   // Primary, highlighted choice — ordering direct from the restaurant.
   directHeading: "Order Direct",
   directBadge: DIRECT_SAVE_LABEL, // shown only while the offer is active
-  directBlurbActive: `Call the kitchen direct for collection or delivery and we'll take ${DIRECT_DISCOUNT_PCT}% off. There's no delivery-app commission, so more goes straight to the family running Wok & Flame — and you pay less.`,
+  directBlurbActive: `Order direct by phone for collection or delivery and save ${DIRECT_DISCOUNT_PCT}%. Skipping the delivery-app commission keeps more with the restaurant, so we can keep growing and looking after customers — and it costs you less.`,
   directBlurbInactive:
-    "Call the kitchen direct for collection or delivery. You deal with us straight, and more of what you pay supports the restaurant.",
+    "Order direct by phone for collection or delivery. Ordering straight with us keeps more with the restaurant, so we can keep growing and looking after customers.",
   directCta: `Call ${DIRECT_PHONE_DISPLAY}`,
 
   // Secondary choice — Just Eat (kept for customers who prefer to pay online).
@@ -58,5 +58,5 @@ export const ORDER_MODAL = {
   justEatCta: "Continue to Just Eat",
 
   // Quiet reassurance under the two choices.
-  footnote: "Same kitchen, same menu — ordering direct just saves everyone the middle-man.",
+  footnote: "Same kitchen, same menu — ordering direct just puts more back into serving you.",
 } as const;
