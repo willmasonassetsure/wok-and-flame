@@ -89,26 +89,17 @@ export default function Gallery() {
           that the section doesn't feel like a marathon. */}
       <div ref={trackRef} className="hidden md:block relative h-[500vh]">
         <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center">
-          {/* Legibility scrim behind the floating title — darkens the
-              top-left corner so the text reads cleanly over the lit shopfront,
-              fading to transparent toward the centre so the rest of the photo
-              (and the sign) stays bright. Fades out with the title on scroll so
-              it never dims the later frames. */}
-          <motion.div
-            style={{ opacity: titleOpacity }}
-            className="absolute inset-0 z-[5] pointer-events-none bg-gradient-to-br from-char-950/80 via-char-950/20 to-transparent"
-          />
-
-          {/* Floating headline — drifts up + fades as the track advances */}
+          {/* Floating headline — drifts up + fades as the track advances.
+              No image-darkening scrim: the first photo stays at full brightness;
+              the title holds its own legibility via a soft text drop-shadow. */}
           <motion.div
             style={{ y: titleY, opacity: titleOpacity }}
-            className="absolute top-[16vh] left-0 right-0 z-10 pointer-events-none"
+            className="absolute top-[16vh] left-0 right-0 z-10 pointer-events-none [text-shadow:0_2px_18px_rgba(12,10,9,0.85)]"
           >
             {/* Inset from the section edges (top-[16vh] + px-20) so the title
-                breathes instead of hugging the corner. It still overlays the
-                first card — the scrim above keeps it legible. Left-aligned
-                rather than dropped into a centered max-width container (which
-                read as bleeding over the first card). */}
+                breathes instead of hugging the corner. Left-aligned rather than
+                dropped into a centered max-width container (which read as
+                bleeding over the first card). */}
             <div className="px-20">
               <p className="text-vermillion text-xs font-500 tracking-[0.3em] uppercase mb-3">
                 Gallery

@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import LoadingScreen from "./components/LoadingScreen";
 import DragonTexture from "./components/DragonTexture";
 import MobileOrderBar from "./components/MobileOrderBar";
+import DirectOrderFloat from "./components/DirectOrderFloat";
 
 export default function Home() {
   return (
@@ -33,6 +34,7 @@ export default function Home() {
       </main>
       <Footer />
       <MobileOrderBar />
+      <DirectOrderFloat />
     </>
   );
 }

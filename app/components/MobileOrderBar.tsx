@@ -25,6 +25,12 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Phone } from "@phosphor-icons/react";
+import {
+  DIRECT_OFFER_ACTIVE,
+  DIRECT_PHONE_HREF,
+  DIRECT_PHONE_DISPLAY,
+  DIRECT_SAVE_LABEL,
+} from "../lib/direct-order";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const SHOW_AT_SCROLL_RATIO = 0.8; // 80% of viewport height past the hero
@@ -69,32 +75,42 @@ export default function MobileOrderBar() {
               shadow-[0_-12px_32px_-8px_rgba(0,0,0,0.5)]
             "
           >
+            {/* Direct call is now the primary action — it saves the ~30% Just
+                Eat commission (passed on as the 10% discount). Just Eat keeps a
+                clear secondary slot for visitors who prefer the basket flow. */}
+            <a
+              href={DIRECT_PHONE_HREF}
+              aria-label={`Call to order direct and ${DIRECT_SAVE_LABEL}: ${DIRECT_PHONE_DISPLAY}`}
+              className="
+                relative flex-1 py-3 rounded
+                bg-vermillion text-char-50
+                text-sm font-600 tracking-wider uppercase text-center
+                active:scale-[0.98] transition-transform duration-150
+                hover:bg-vermillion-light
+                inline-flex items-center justify-center gap-2
+              "
+            >
+              {DIRECT_OFFER_ACTIVE && (
+                <span className="absolute -top-2 right-2 px-1.5 py-0.5 rounded-full bg-jade text-char-950 text-[9px] font-700 tracking-[0.1em] uppercase shadow-[0_4px_12px_-2px_rgba(0,0,0,0.5)]">
+                  {DIRECT_SAVE_LABEL}
+                </span>
+              )}
+              <Phone size={16} weight="fill" />
+              {DIRECT_OFFER_ACTIVE ? "Call & Save" : "Call to Order"}
+            </a>
             <a
               href="https://www.just-eat.co.uk/restaurants-wokandgo-m20/menu"
               target="_blank"
               rel="noopener noreferrer"
               className="
-                flex-1 py-3 rounded
-                bg-vermillion text-char-50
-                text-sm font-500 tracking-wider uppercase text-center
-                active:scale-[0.98] transition-transform duration-150
-                hover:bg-vermillion-light
-              "
-            >
-              Order on Just Eat
-            </a>
-            <a
-              href="tel:+441614346318"
-              aria-label="Call to order: 0161 434 6318"
-              className="
-                shrink-0 w-12 h-12 rounded
-                flex items-center justify-center
+                shrink-0 px-4 py-3 rounded
                 border border-char-700 text-char-200
+                text-sm font-500 tracking-wider uppercase text-center
                 active:scale-[0.98] transition-all duration-150
                 hover:border-vermillion hover:text-char-50
               "
             >
-              <Phone size={18} weight="regular" />
+              Just Eat
             </a>
           </div>
         </motion.div>

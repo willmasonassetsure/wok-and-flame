@@ -12,6 +12,12 @@ import {
   JUST_EAT_URL,
   formatReviewCount,
 } from "../lib/review-stats";
+import {
+  DIRECT_OFFER_ACTIVE,
+  DIRECT_PHONE_DISPLAY,
+  DIRECT_PHONE_HREF,
+  DIRECT_SAVE_LABEL,
+} from "../lib/direct-order";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -129,20 +135,48 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
               transition={{ duration: 0.8, delay: 0.75, ease }}
               className="flex flex-col sm:flex-row gap-4"
             >
+              {/* Direct phone order is the lead CTA — every direct order saves
+                  Wing the ~30% Just Eat commission, passed on as the discount.
+                  Just Eat stays as the frictionless secondary path. */}
+              <a
+                href={DIRECT_PHONE_HREF}
+                className="wf-tracer relative px-8 py-3.5 rounded-[3px] bg-vermillion text-char-50 text-sm font-500 tracking-wider uppercase hover:bg-vermillion-light transition-all duration-300 active:scale-[0.98] text-center w-full sm:w-auto inline-flex items-center justify-center gap-2"
+              >
+                {/* White light tracer running the button edge (always-on) */}
+                <svg
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
+                >
+                  <rect
+                    className="wf-tracer-rect"
+                    x="0"
+                    y="0"
+                    width="100%"
+                    height="100%"
+                    rx="3"
+                    ry="3"
+                    fill="none"
+                    stroke="#ffffff"
+                    strokeWidth="1.5"
+                    pathLength={100}
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </svg>
+                {DIRECT_OFFER_ACTIVE && (
+                  <span className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full bg-jade text-char-950 text-[9px] font-700 tracking-[0.1em] uppercase shadow-[0_4px_12px_-2px_rgba(0,0,0,0.5)]">
+                    {DIRECT_SAVE_LABEL}
+                  </span>
+                )}
+                <Phone size={14} weight="fill" />
+                Order Direct
+              </a>
               <a
                 href={JUST_EAT_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-8 py-3.5 bg-vermillion text-char-50 text-sm font-500 tracking-wider uppercase hover:bg-vermillion-light transition-all duration-300 active:scale-[0.98] text-center w-full sm:w-auto"
+                className="px-8 py-3.5 border border-char-700 text-char-200 text-sm font-500 tracking-wider uppercase hover:border-vermillion hover:text-char-50 transition-all duration-300 active:scale-[0.98] text-center w-full sm:w-auto"
               >
                 Order on Just Eat
-              </a>
-              <a
-                href="tel:+441614346318"
-                className="px-8 py-3.5 border border-char-700 text-char-200 text-sm font-500 tracking-wider uppercase hover:border-vermillion hover:text-char-50 transition-all duration-300 active:scale-[0.98] text-center w-full sm:w-auto inline-flex items-center justify-center gap-2"
-              >
-                <Phone size={14} weight="regular" />
-                0161 434 6318
               </a>
               <a
                 href="#menu"
@@ -152,16 +186,35 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
               </a>
             </motion.div>
 
-            {/* Mobile-only: the delivery/collection/min-order panel is desktop
-                (md+) only, so surface the order-relevant essentials here for the
-                phone users most likely to order. */}
+            {/* Direct-order helper line — shows the dialable number on every
+                screen (desktop's primary CTA is a tel: link that does little on
+                a laptop) and spells out the saving + that delivery is included. */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.85, ease }}
-              className="md:hidden text-xs font-300 text-char-400 tracking-wide"
+              className="mt-5 text-xs font-300 text-char-400 tracking-wide"
             >
-              Open daily 5&ndash;11pm &middot; Collection &amp; delivery &middot; Min. order &pound;15
+              {DIRECT_OFFER_ACTIVE && (
+                <>
+                  <span className="text-char-200 font-500">{DIRECT_SAVE_LABEL} every time</span> you order direct &middot;{" "}
+                </>
+              )}
+              <a href={DIRECT_PHONE_HREF} className="text-char-200 font-500 tabular-nums hover:text-vermillion transition-colors">
+                {DIRECT_PHONE_DISPLAY}
+              </a>{" "}
+              &middot; collection or delivery
+            </motion.p>
+
+            {/* Mobile-only: the delivery/collection/min-order panel is desktop
+                (md+) only, so surface hours + min order here too. */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.9, ease }}
+              className="md:hidden mt-2 text-xs font-300 text-char-500 tracking-wide"
+            >
+              Open daily 5&ndash;11pm &middot; Min. order &pound;15
             </motion.p>
           </div>
 
