@@ -47,16 +47,16 @@ export const ORDER_MODAL = {
   // Primary, highlighted choice — ordering direct from the restaurant.
   directHeading: "Order Direct",
   directBadge: DIRECT_SAVE_LABEL, // shown only while the offer is active
-  directBlurbActive: `Save ${DIRECT_DISCOUNT_PCT}% on collection or delivery — ordered direct, so more stays with the kitchen to keep growing.`,
+  directBlurbActive: `Ring us direct for collection or delivery and save ${DIRECT_DISCOUNT_PCT}%. The app takes a cut; we'd rather give it to you.`,
   directBlurbInactive:
-    "Collection or delivery, ordered direct — so more stays with the kitchen to keep growing.",
+    "Ring us direct for collection or delivery. The app takes a cut, so come straight to us.",
   directCta: `Call ${DIRECT_PHONE_DISPLAY}`,
 
   // Secondary choice — Just Eat (kept for customers who prefer to pay online).
   justEatHeading: "Order on Just Eat",
-  justEatBlurb: "Rather pay online? You can still order through Just Eat as usual.",
+  justEatBlurb: "Pay online through Just Eat, same as always.",
   justEatCta: "Continue to Just Eat",
 
   // Quiet reassurance under the two choices.
-  footnote: "Same kitchen, same menu — ordering direct just puts more back into serving you.",
+  footnote: "Same food either way. Order direct and you pay less.",
 } as const;
