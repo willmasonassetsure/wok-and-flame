@@ -27,7 +27,7 @@ export type MenuCategory = {
 //     at £6.20 (Wing, WhatsApp) — both it and the Singapore veg rice are now kept.
 //
 // Owner-confirmed (Wing, 2026-07-04 client message):
-//   - Appetisers section retitled "Appetisers (Salt & Pepper)".
+//   - Appetisers section retitled "Appetisers & (Salt&Pepper)" (client's exact wording).
 //   - Added: Salt & Pepper Chicken & Chips Box £6.60 (Appetisers).
 //   - Appetisers now carries every salt & pepper dish: Salt & Pepper Chips
 //     £4.00 listed there as well as in Side Extras (intentional duplicate).
@@ -122,10 +122,11 @@ export const menuData: MenuCategory[] = [
     ],
   },
   {
-    // Retitled per Wing (2026-07-04) to flag the salt & pepper range. Keep
-    // shortTitle as "Appetisers" — it keys the categoryIcons map and the
-    // accordion/tab state in MenuHighlights.tsx.
-    title: "Appetisers (Salt & Pepper)",
+    // Retitled per Wing (2026-07-04) to flag the salt & pepper range — this
+    // exact wording/spacing is the client's. Keep shortTitle as "Appetisers"
+    // — it keys the categoryIcons map and the accordion/tab state in
+    // MenuHighlights.tsx.
+    title: "Appetisers & (Salt&Pepper)",
     shortTitle: "Appetisers",
     description: "Meat, seafood, vegetarian",
     items: [
@@ -155,7 +156,7 @@ export const menuData: MenuCategory[] = [
       { name: "Salt & Pepper Tofu", price: "5.50", spicy: true, vegetarian: true },
       { name: "Salt & Pepper Mock Chicken", price: "6.00", spicy: true, vegetarian: true },
       // Also listed under Side Extras — deliberately duplicated so the
-      // "(Salt & Pepper)" section carries every S&P dish (Wing, 2026-07-04).
+      // "(Salt&Pepper)" section carries every S&P dish (Wing, 2026-07-04).
       // `popular` stays on the Side Extras entry only, otherwise the dish
       // appears twice in the cross-category popular-picks strip.
       { name: "Salt & Pepper Chips", price: "4.00", spicy: true, vegetarian: true },
