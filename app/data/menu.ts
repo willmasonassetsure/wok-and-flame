@@ -29,6 +29,8 @@ export type MenuCategory = {
 // Owner-confirmed (Wing, 2026-07-04 client message):
 //   - Appetisers section retitled "Appetisers (Salt & Pepper)".
 //   - Added: Salt & Pepper Chicken & Chips Box £6.60 (Appetisers).
+//   - Appetisers now carries every salt & pepper dish: Salt & Pepper Chips
+//     £4.00 listed there as well as in Side Extras (intentional duplicate).
 //   - Added half-and-half combos (Side Extras): 1/2 fried rice & chips £4.00,
 //     1/2 fried rice, chips & curry £5.80, 1/2 boiled rice & chips £3.80,
 //     1/2 boiled rice, chips & curry £5.20.
@@ -152,6 +154,11 @@ export const menuData: MenuCategory[] = [
       { name: "Vegetable Spring Rolls", price: "4.00", vegetarian: true },
       { name: "Salt & Pepper Tofu", price: "5.50", spicy: true, vegetarian: true },
       { name: "Salt & Pepper Mock Chicken", price: "6.00", spicy: true, vegetarian: true },
+      // Also listed under Side Extras — deliberately duplicated so the
+      // "(Salt & Pepper)" section carries every S&P dish (Wing, 2026-07-04).
+      // `popular` stays on the Side Extras entry only, otherwise the dish
+      // appears twice in the cross-category popular-picks strip.
+      { name: "Salt & Pepper Chips", price: "4.00", spicy: true, vegetarian: true },
       { name: "Prawn Crackers", price: "1.50" },
     ],
   },
