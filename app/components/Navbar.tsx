@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { List, X } from "@phosphor-icons/react";
+import OrderChoiceModal from "./OrderChoiceModal";
 
 // Order mirrors the on-page scroll order (see app/page.tsx): Gallery →
 // Reviews → About → Menu → Find Us. Keep these in sync so anchor links land
@@ -18,6 +19,7 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [orderOpen, setOrderOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -26,6 +28,7 @@ export default function Navbar() {
   }, []);
 
   return (
+    <>
     <motion.nav
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -54,12 +57,12 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
-          <a
-            href="https://www.just-eat.co.uk/restaurants-wokandgo-m20/menu" target="_blank" rel="noopener noreferrer"
-            className="text-sm font-500 tracking-wider uppercase px-6 py-2.5 border border-vermillion text-vermillion hover:bg-vermillion hover:text-char-50 transition-all duration-300 active:scale-[0.98]"
+          <button
+            onClick={() => setOrderOpen(true)}
+            className="text-sm font-500 tracking-wider uppercase px-6 py-2.5 border border-vermillion text-vermillion hover:bg-vermillion hover:text-char-50 transition-all duration-300 active:scale-[0.98] cursor-pointer"
           >
             Order Now
-          </a>
+          </button>
         </div>
 
         <button
@@ -89,16 +92,20 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
-            <a
-              href="https://www.just-eat.co.uk/restaurants-wokandgo-m20/menu" target="_blank" rel="noopener noreferrer"
-              onClick={() => setMobileOpen(false)}
-              className="text-sm font-500 tracking-wider uppercase px-6 py-3 border border-vermillion text-vermillion hover:bg-vermillion hover:text-char-50 transition-all duration-300 text-center mt-2"
+            <button
+              onClick={() => {
+                setMobileOpen(false);
+                setOrderOpen(true);
+              }}
+              className="text-sm font-500 tracking-wider uppercase px-6 py-3 border border-vermillion text-vermillion hover:bg-vermillion hover:text-char-50 transition-all duration-300 text-center mt-2 cursor-pointer"
             >
               Order Now
-            </a>
+            </button>
           </div>
         </motion.div>
       )}
     </motion.nav>
+    <OrderChoiceModal open={orderOpen} onClose={() => setOrderOpen(false)} />
+    </>
   );
 }

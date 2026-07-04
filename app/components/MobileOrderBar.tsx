@@ -4,9 +4,9 @@
  * MobileOrderBar — fixed-bottom order CTA, mobile only.
  *
  * Friday-night phone-scroll conversion fix. Once the visitor scrolls past the
- * hero, the "Order on Just Eat" button leaves the viewport — this bar puts it
- * back. Two actions: Just Eat primary (the conversion event) and a phone-call
- * shortcut for direct collection orders.
+ * hero, the order CTAs leave the viewport — this bar puts them back. Two
+ * actions: a direct phone call as the primary (house menu pricing, no app
+ * commission) and Just Eat as the secondary for basket-flow customers.
  *
  * Visibility: hidden on first paint, slides up once `scrollY > 80vh`. That
  * threshold is high enough that the bar doesn't compete with the hero CTAs
@@ -25,6 +25,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Phone } from "@phosphor-icons/react";
+import { DIRECT_PHONE_HREF, DIRECT_PHONE_DISPLAY } from "../lib/direct-order";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const SHOW_AT_SCROLL_RATIO = 0.8; // 80% of viewport height past the hero
@@ -69,32 +70,37 @@ export default function MobileOrderBar() {
               shadow-[0_-12px_32px_-8px_rgba(0,0,0,0.5)]
             "
           >
+            {/* Direct call is the primary action — direct orders skip the app
+                commission and come off the house menu prices. Just Eat keeps a
+                clear secondary slot for visitors who prefer the basket flow. */}
+            <a
+              href={DIRECT_PHONE_HREF}
+              aria-label={`Call to order direct: ${DIRECT_PHONE_DISPLAY}`}
+              className="
+                relative flex-1 py-3 rounded
+                bg-vermillion text-char-50
+                text-sm font-600 tracking-wider uppercase text-center
+                active:scale-[0.98] transition-transform duration-150
+                hover:bg-vermillion-light
+                inline-flex items-center justify-center gap-2
+              "
+            >
+              <Phone size={16} weight="fill" />
+              Call to Order
+            </a>
             <a
               href="https://www.just-eat.co.uk/restaurants-wokandgo-m20/menu"
               target="_blank"
               rel="noopener noreferrer"
               className="
-                flex-1 py-3 rounded
-                bg-vermillion text-char-50
-                text-sm font-500 tracking-wider uppercase text-center
-                active:scale-[0.98] transition-transform duration-150
-                hover:bg-vermillion-light
-              "
-            >
-              Order on Just Eat
-            </a>
-            <a
-              href="tel:+441614346318"
-              aria-label="Call to order: 0161 434 6318"
-              className="
-                shrink-0 w-12 h-12 rounded
-                flex items-center justify-center
+                shrink-0 px-4 py-3 rounded
                 border border-char-700 text-char-200
+                text-sm font-500 tracking-wider uppercase text-center
                 active:scale-[0.98] transition-all duration-150
                 hover:border-vermillion hover:text-char-50
               "
             >
-              <Phone size={18} weight="regular" />
+              Just Eat
             </a>
           </div>
         </motion.div>

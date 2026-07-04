@@ -172,6 +172,84 @@ body {
   65%      { transform: scale(0.98) rotate(-0.8deg); opacity: 0.97; }
 }
 
+/* OrderChoiceModal's highlighted "Order Direct" card — rotating "ember"
+   gradient border + breathing glow. The animated angle drives a conic-gradient
+   hotspot around the capsule's perimeter; @property makes the angle
+   interpolable (frozen browsers just show a static gradient ring). Both
+   animations are killed by the reduced-motion blanket rule below, leaving a
+   clean static ring. */
+@property --wf-ember-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* Card border-glow. NOTE: must NOT be named `.wf-ember` — HeroAtmosphere uses
+   that class for its floating ember particles and injects a document-wide
+   `:global(.wf-ember){ animation-name: wf-ember-rise }` rule that translates any
+   matching element 100vh up the screen on a loop. An element sharing the class
+   inherits that "fly up the page" motion (this is exactly what made the old
+   offer popup impossible to pin). Keep this class name distinct. */
+.wf-ember-card {
+  position: relative;
+  isolation: isolate;
+  animation: wf-ember-glow 3.6s ease-in-out infinite;
+}
+.wf-ember-card::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  z-index: -1;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--wf-ember-angle),
+    var(--color-vermillion) 0deg,
+    #fbbf24 90deg,
+    var(--color-vermillion-light) 180deg,
+    var(--color-vermillion) 300deg,
+    var(--color-vermillion) 360deg
+  );
+  animation: wf-ember-spin 5s linear infinite;
+}
+
+@keyframes wf-ember-spin {
+  to { --wf-ember-angle: 360deg; }
+}
+@keyframes wf-ember-glow {
+  0%, 100% { box-shadow: 0 18px 44px -14px rgba(0, 0, 0, 0.7); }
+  50%      { box-shadow: 0 0 26px -4px rgba(217, 45, 32, 0.45), 0 18px 44px -14px rgba(0, 0, 0, 0.7); }
+}
+
+/* Hero primary CTA — white light "tracer" that runs around the button edge.
+   An SVG <rect> stroke with pathLength normalised to 100: a short dash (the
+   bright segment) with a long gap, animated via stroke-dashoffset so the
+   segment travels the perimeter on its own (no hover needed). drop-shadow gives
+   it the glow. Frozen to a static segment under the reduced-motion blanket
+   rule below. */
+.wf-tracer {
+  position: relative;
+  box-shadow: 0 0 16px -6px rgba(255, 255, 255, 0.4);
+}
+.wf-tracer-rect {
+  stroke-dasharray: 16 84; /* 16% lit segment, 84% gap (pathLength=100) */
+  animation: wf-tracer-run 5.6s linear infinite; /* slowed 50% from 2.8s */
+  filter: drop-shadow(0 0 2.5px rgba(255, 255, 255, 0.95));
+  /* The dash grows to wrap the whole perimeter on hover (see below). */
+  transition: stroke-dasharray 0.5s ease-out;
+}
+/* Mouse enter: freeze the travelling segment where it is, then grow the lit
+   dash from 16% to the full 100% so the SAME white (#ffffff) stroke
+   encapsulates the entire button. animation-play-state pauses the travel;
+   stroke-dasharray:100 0 = one solid dash, no gap = full outline. */
+.wf-tracer:hover .wf-tracer-rect,
+.wf-tracer:focus-visible .wf-tracer-rect {
+  animation-play-state: paused;
+  stroke-dasharray: 100 0;
+}
+@keyframes wf-tracer-run {
+  to { stroke-dashoffset: -100; }
+}
+
 /* Respect OS-level reduced-motion preference. Kills the marquee, the flame
    flicker, and tells framer-motion's whileInView/animate to settle instantly
    via animation-duration:0. */

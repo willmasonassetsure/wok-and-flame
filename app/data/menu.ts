@@ -26,6 +26,13 @@ export type MenuCategory = {
 //   - Assorted Vegetable Fried Rice: dropped 2026-06-16, then RE-ADDED 2026-06-25
 //     at £6.20 (Wing, WhatsApp) — both it and the Singapore veg rice are now kept.
 //
+// Owner-confirmed (Wing, 2026-07-04 client message):
+//   - Appetisers section retitled "Appetisers (Salt & Pepper)".
+//   - Added: Salt & Pepper Chicken & Chips Box £6.60 (Appetisers).
+//   - Added half-and-half combos (Side Extras): 1/2 fried rice & chips £4.00,
+//     1/2 fried rice, chips & curry £5.80, 1/2 boiled rice & chips £3.80,
+//     1/2 boiled rice, chips & curry £5.20.
+//
 // Open items still requiring client confirmation:
 //   - Beef Thai Green Curry £6.50 (printed as 6.50, sibling items all 6.90 — Wing may want 6.90)
 //   - Hoi Sin / BBQ Sauce price £2.20 (set to match the other pots) — confirm
@@ -113,7 +120,10 @@ export const menuData: MenuCategory[] = [
     ],
   },
   {
-    title: "Appetisers",
+    // Retitled per Wing (2026-07-04) to flag the salt & pepper range. Keep
+    // shortTitle as "Appetisers" — it keys the categoryIcons map and the
+    // accordion/tab state in MenuHighlights.tsx.
+    title: "Appetisers (Salt & Pepper)",
     shortTitle: "Appetisers",
     description: "Meat, seafood, vegetarian",
     items: [
@@ -126,6 +136,7 @@ export const menuData: MenuCategory[] = [
       { name: "Ribs in Honey", price: "7.20" },
       { name: "Chicken Spring Rolls (4)", price: "4.20" },
       { name: "Salt & Pepper Chicken Pieces", price: "6.00", spicy: true },
+      { name: "Salt & Pepper Chicken & Chips Box", price: "6.60", spicy: true },
       { name: "Salt & Pepper Chicken Wings", price: "5.90", spicy: true },
       { name: "Cantonese Chicken Wings", price: "5.90", desc: "Sweet, sticky, appetising sauce" },
       { name: "Satay Chicken Skewers (4)", price: "6.00", desc: "With sweet peanut sauce" },
@@ -298,6 +309,11 @@ export const menuData: MenuCategory[] = [
       { name: "Fried Bamboo Shoots & Water Chestnuts", price: "3.80", vegetarian: true },
       { name: "Chips", price: "2.60", vegetarian: true, popular: true },
       { name: "Salt & Pepper Chips", price: "4.00", spicy: true, vegetarian: true, popular: true },
+      // Half-and-half combos — added per Wing (2026-07-04 client message).
+      { name: "1/2 Fried Rice & Chips", price: "4.00", vegetarian: true },
+      { name: "1/2 Fried Rice, Chips & Curry Sauce", price: "5.80", spicy: true, vegetarian: true },
+      { name: "1/2 Boiled Rice & Chips", price: "3.80", vegetarian: true },
+      { name: "1/2 Boiled Rice, Chips & Curry Sauce", price: "5.20", spicy: true, vegetarian: true },
     ],
   },
   {
