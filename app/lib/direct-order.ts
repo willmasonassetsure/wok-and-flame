@@ -35,7 +35,7 @@ export const ORDER_MODAL = {
   directHeading: "Order Direct",
   directBadge: "House prices",
   directBlurb:
-    "Ring us for collection or delivery — you order off our house menu prices, not Just Eat's.",
+    "Ring us for collection or delivery — order from our house menu prices, not Just Eat's.",
   directCta: `Call ${DIRECT_PHONE_DISPLAY}`,
 
   // Secondary choice — Just Eat (kept for customers who prefer to pay online).
