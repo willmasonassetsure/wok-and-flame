@@ -129,30 +129,20 @@ export const menuData: MenuCategory[] = [
     title: "Appetisers & (Salt&Pepper)",
     shortTitle: "Appetisers",
     description: "Meat, seafood, vegetarian",
+    // Ordered as three runs so the list scans well on mobile: signature
+    // openers, then the full salt & pepper range together (second, echoing
+    // the section title), then the rest meat → seafood → veg.
     items: [
       { name: "Crispy Aromatic Duck (Quarter)", price: "9.50", desc: "Pancakes, hoisin sauce and garnish", popular: true },
       { name: "Crispy Aromatic Duck (Half)", price: "19.00", desc: "Pancakes, hoisin sauce and garnish" },
       { name: "Wok & Flame Mix for 2", price: "9.90", desc: "BBQ ribs, chicken rolls, prawn toast, seaweed and samosas", popular: true },
+      // — Salt & Pepper range —
       { name: "Salt & Pepper Ribs", price: "7.20", spicy: true, popular: true },
-      { name: "Ribs in Cantonese Sauce", price: "7.20", desc: "Sweet, sticky, appetising sauce" },
-      { name: "Ribs in BBQ Sauce", price: "7.20" },
-      { name: "Ribs in Honey", price: "7.20" },
-      { name: "Chicken Spring Rolls (4)", price: "4.20" },
       { name: "Salt & Pepper Chicken Pieces", price: "6.00", spicy: true },
       { name: "Salt & Pepper Chicken & Chips Box", price: "6.60", spicy: true },
       { name: "Salt & Pepper Chicken Wings", price: "5.90", spicy: true },
-      { name: "Cantonese Chicken Wings", price: "5.90", desc: "Sweet, sticky, appetising sauce" },
-      { name: "Satay Chicken Skewers (4)", price: "6.00", desc: "With sweet peanut sauce" },
-      { name: "Steamed Prawn & Meat Dumplings", price: "4.30" },
-      { name: "Curried Chicken Samosas (4)", price: "4.30", spicy: true },
-      { name: "Sesame Prawns on Toast", price: "4.30", popular: true },
-      { name: "Steamed Prawn Dumplings (Har Kau)", price: "4.30" },
-      { name: "King Prawn Batter Balls (6) with Dip", price: "4.30" },
       { name: "Salt & Pepper King Prawns", price: "6.60", spicy: true },
       { name: "Salt & Pepper Squid", price: "6.80", spicy: true },
-      { name: "Crispy Fried Cabbage (Seaweed)", price: "3.60", vegetarian: true },
-      { name: "Curried Vegetable Samosas", price: "4.00", spicy: true, vegetarian: true },
-      { name: "Vegetable Spring Rolls", price: "4.00", vegetarian: true },
       { name: "Salt & Pepper Tofu", price: "5.50", spicy: true, vegetarian: true },
       { name: "Salt & Pepper Mock Chicken", price: "6.00", spicy: true, vegetarian: true },
       // Also listed under Side Extras — deliberately duplicated so the
@@ -160,6 +150,21 @@ export const menuData: MenuCategory[] = [
       // `popular` stays on the Side Extras entry only, otherwise the dish
       // appears twice in the cross-category popular-picks strip.
       { name: "Salt & Pepper Chips", price: "4.00", spicy: true, vegetarian: true },
+      // — Everything else —
+      { name: "Ribs in Cantonese Sauce", price: "7.20", desc: "Sweet, sticky, appetising sauce" },
+      { name: "Ribs in BBQ Sauce", price: "7.20" },
+      { name: "Ribs in Honey", price: "7.20" },
+      { name: "Cantonese Chicken Wings", price: "5.90", desc: "Sweet, sticky, appetising sauce" },
+      { name: "Chicken Spring Rolls (4)", price: "4.20" },
+      { name: "Satay Chicken Skewers (4)", price: "6.00", desc: "With sweet peanut sauce" },
+      { name: "Curried Chicken Samosas (4)", price: "4.30", spicy: true },
+      { name: "Steamed Prawn & Meat Dumplings", price: "4.30" },
+      { name: "Sesame Prawns on Toast", price: "4.30", popular: true },
+      { name: "Steamed Prawn Dumplings (Har Kau)", price: "4.30" },
+      { name: "King Prawn Batter Balls (6) with Dip", price: "4.30" },
+      { name: "Crispy Fried Cabbage (Seaweed)", price: "3.60", vegetarian: true },
+      { name: "Curried Vegetable Samosas", price: "4.00", spicy: true, vegetarian: true },
+      { name: "Vegetable Spring Rolls", price: "4.00", vegetarian: true },
       { name: "Prawn Crackers", price: "1.50" },
     ],
   },
