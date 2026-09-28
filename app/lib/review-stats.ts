@@ -21,7 +21,7 @@ export const JUST_EAT_URL =
 
 // --- Google (fallback — live values come from Places API when configured) ---
 export const GOOGLE_FALLBACK_RATING = 4.2;
-export const GOOGLE_FALLBACK_COUNT = 256;
+export const GOOGLE_FALLBACK_COUNT = 261;
 
 export const GOOGLE_MAPS_SEARCH_URL =
   "https://www.google.com/maps/search/?api=1&query=Wok+%26+Flame+Burton+Road+M20+2LW";

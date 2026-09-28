@@ -21,7 +21,6 @@ export type ReviewCardData = {
   rating: number;
   reviewLink: string;
   photo: string | null;
-  isSample: boolean;
 };
 
 export type GoogleStats = {
@@ -41,7 +40,7 @@ function GoogleIcon() {
   );
 }
 
-function ReviewCard({ name, text, time, rating, reviewLink, photo, isSample }: ReviewCardData) {
+function ReviewCard({ name, text, time, rating, reviewLink, photo }: ReviewCardData) {
   const Wrapper = reviewLink ? "a" : "div";
   const wrapperProps = reviewLink
     ? {
@@ -76,16 +75,10 @@ function ReviewCard({ name, text, time, rating, reviewLink, photo, isSample }: R
             />
           ))}
         </div>
-        {isSample ? (
-          <span className="text-[10px] font-300 tracking-[0.18em] uppercase text-char-700">
-            Sample
-          </span>
-        ) : (
-          <div className="flex items-center gap-1.5">
-            <GoogleIcon />
-            <span className="text-[10px] font-300 text-char-700">Google</span>
-          </div>
-        )}
+        <div className="flex items-center gap-1.5">
+          <GoogleIcon />
+          <span className="text-[10px] font-300 text-char-700">Google</span>
+        </div>
       </div>
 
       {/* Review text */}
@@ -126,11 +119,9 @@ function ReviewCard({ name, text, time, rating, reviewLink, photo, isSample }: R
 export default function ReviewsClient({
   reviews,
   googleStats,
-  isLive,
 }: {
   reviews: ReviewCardData[];
   googleStats: GoogleStats;
-  isLive: boolean;
 }) {
   return (
     <section
@@ -211,14 +202,6 @@ export default function ReviewsClient({
             </a>
           </motion.div>
         </div>
-
-        {/* Live / sample status line — small, subtle. Disappears once the
-            Places API is wired and returning real reviews. */}
-        {!isLive && (
-          <p className="text-[10px] font-300 tracking-[0.18em] uppercase text-char-700 mt-3">
-            Sample reviews shown · Live Google reviews coming soon
-          </p>
-        )}
       </div>
 
       {/* Mobile: horizontal snap scroll */}
