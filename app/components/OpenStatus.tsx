@@ -46,6 +46,18 @@ function isOpenNow(periods: OpeningPeriod[]): boolean {
   return false;
 }
 
+// Always as wide as "Closed now", so the eyebrow doesn't re-wrap between states.
+function StatusLabel({ open }: { open: boolean }) {
+  return (
+    <span className="inline-grid">
+      <span aria-hidden className="invisible col-start-1 row-start-1">
+        Closed now
+      </span>
+      <span className="col-start-1 row-start-1">{open ? "Open now" : "Closed now"}</span>
+    </span>
+  );
+}
+
 export default function OpenStatus({ hours }: { hours: OpeningHoursData }) {
   const [open, setOpen] = useState<boolean | null>(null);
 
@@ -58,7 +70,16 @@ export default function OpenStatus({ hours }: { hours: OpeningHoursData }) {
   }, [hours.periods]);
 
   // Wait for the first client tick — server "now" and client "now" don't match.
-  if (open === null) return null;
+  // Hold the space meanwhile: rendering nothing here wrapped the eyebrow on
+  // mobile and shifted the centred hero when the status arrived (CLS).
+  if (open === null) {
+    return (
+      <span aria-hidden className="invisible inline-flex items-center gap-2">
+        <span className="inline-flex h-2 w-2" />
+        <StatusLabel open={false} />
+      </span>
+    );
+  }
 
   const dot = open ? "bg-emerald-400" : "bg-red-500";
   const ring = open ? "bg-emerald-400/50" : "bg-red-500/50";
@@ -83,7 +104,7 @@ export default function OpenStatus({ hours }: { hours: OpeningHoursData }) {
           transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
         />
       </span>
-      <span>{open ? "Open now" : "Closed now"}</span>
+      <StatusLabel open={open} />
     </span>
   );
 }

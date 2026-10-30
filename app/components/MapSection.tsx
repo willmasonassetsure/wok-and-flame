@@ -116,6 +116,9 @@ export default function MapSection() {
                   <p className="text-xs font-300 text-char-400">
                     Collection from 17:00
                   </p>
+                  <p className="text-xs font-300 text-char-400 mt-1.5">
+                    Delivering to West Didsbury, Didsbury, Withington &amp; Chorlton
+                  </p>
                 </div>
               </div>
             </div>

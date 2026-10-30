@@ -145,7 +145,8 @@ body {
 .leaflet-popup-content {
   margin: 12px 16px !important;
   font-size: 13px;
-  line-height: 1.45;
+  /* !important: leaflet.css loads with the map chunk, after this file. */
+  line-height: 1.45 !important;
 }
 
 .leaflet-popup-close-button {
@@ -250,12 +251,42 @@ body {
   to { stroke-dashoffset: -100; }
 }
 
+/* Hero entrance — CSS, so it runs from first paint rather than after hydration
+   (see HeroClient). `backwards` holds the start frame through each delay without
+   pinning the end state, so hover/transition styles still apply afterwards.
+   .wf-slide has no opacity step on purpose: it's for the LCP text, which the
+   browser can only count as painted once it's actually visible. */
+.wf-rise {
+  animation: wf-rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+.wf-slide {
+  animation: wf-slide 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+.wf-fade-in {
+  animation: wf-fade-in 1.2s ease-out backwards;
+}
+
+@keyframes wf-rise {
+  from { opacity: 0; transform: translateY(var(--wf-rise-y, 30px)); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes wf-slide {
+  from { transform: translateY(var(--wf-rise-y, 40px)); }
+  to   { transform: translateY(0); }
+}
+@keyframes wf-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 /* Respect OS-level reduced-motion preference. Kills the marquee, the flame
-   flicker, and tells framer-motion's whileInView/animate to settle instantly
+   flicker, the hero entrance (its delays would otherwise still hold content
+   hidden), and tells framer-motion's whileInView/animate to settle instantly
    via animation-duration:0. */
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee { animation: none !important; }
   .wf-marker { animation: none !important; }
+  .wf-rise, .wf-slide, .wf-fade-in { animation: none !important; }
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;

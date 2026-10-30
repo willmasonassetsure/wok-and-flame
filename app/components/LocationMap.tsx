@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+// Bundled here, not linked from a CDN in <head>, so it loads with this
+// ssr:false chunk and can never block first paint. Keep the npm version in step
+// with the CDN script below.
+import "leaflet/dist/leaflet.css";
 
-// Leaflet is loaded from CDN via app/layout.tsx — no npm install needed.
+// Leaflet's JS is loaded from CDN via app/layout.tsx.
 // This component initialises a map in a div ref using window.L once the
 // script tag has finished loading. Open-source tiles (OpenStreetMap),
 // recoloured via CSS filters to match the dark site theme, with a custom

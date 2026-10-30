@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowDown, Phone, Star } from "@phosphor-icons/react";
@@ -17,7 +18,14 @@ import {
   DIRECT_PHONE_HREF,
 } from "../lib/direct-order";
 
-const ease = [0.16, 1, 0.3, 1] as const;
+// Hero entrance runs in CSS (.wf-rise / .wf-slide / .wf-fade-in in globals.css)
+// so it starts at first paint instead of waiting for hydration. This is the
+// page's LCP: the framer-motion version cost about 4s on real mobile.
+const rise = (delayMs: number, y = 30) =>
+  ({
+    animationDelay: `${delayMs}ms`,
+    "--wf-rise-y": `${y}px`,
+  }) as CSSProperties;
 
 export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
   return (
@@ -59,62 +67,51 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
       <div className="relative z-10 max-w-[1400px] mx-auto w-full px-6 md:px-10 py-24 md:py-0">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
           <div className="md:col-span-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease }}
-            >
+            <div className="wf-rise" style={rise(200)}>
               <p className="text-vermillion text-xs md:text-sm font-500 tracking-[0.3em] uppercase mb-5 md:mb-8 inline-flex items-center gap-3 flex-wrap">
                 <OpenStatus hours={hours} />
                 <span aria-hidden className="text-char-600">|</span>
                 <span>West Didsbury &middot; Manchester</span>
               </p>
-            </motion.div>
+            </div>
 
             {/* Editorial wordmark — clamp keeps it readable on mobile and
                 lets it dominate on desktop without bleeding off the page.
                 Two-line stack with FLAME in vermillion mirrors the brand mark. */}
-            {/* Single semantic <h1> for the brand; the two colour-split lines
-                are block spans so the page has one H1, not two (SEO). Visual
-                output is unchanged. */}
-            <h1 className="font-800 tracking-[-0.04em] leading-[0.85] mb-6 md:mb-10 text-[clamp(5rem,24vw,11rem)]">
-              <motion.span
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.35, ease }}
-                className="block text-char-50"
-              >
+            {/* Single semantic <h1> for the brand plus what we are, so the page's
+                main heading carries the search term as well as the name. The
+                lines are block spans so the page has one H1, not two (SEO).
+                wf-slide, not wf-rise: no opacity fade on the LCP text. */}
+            <h1 className="font-800 tracking-[-0.04em] leading-[0.85] mb-3 md:mb-5 text-[clamp(5rem,24vw,11rem)]">
+              <span className="wf-slide block text-char-50" style={rise(350, 40)}>
                 WOK &amp;
-              </motion.span>
-              <motion.span
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.45, ease }}
-                className="block text-vermillion"
-              >
+              </span>
+              <span className="wf-slide block text-vermillion" style={rise(450, 40)}>
                 FLAME
-              </motion.span>
+              </span>
+              <span
+                className="wf-rise block mt-5 md:mt-8 text-xl md:text-3xl font-500 tracking-[-0.01em] leading-tight text-char-100"
+                style={rise(500)}
+              >
+                Chinese takeaway in West Didsbury
+              </span>
             </h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.55, ease }}
-              className="text-lg md:text-xl font-300 text-char-400 leading-relaxed max-w-[50ch] mb-4"
+            <p
+              className="wf-rise text-lg md:text-xl font-300 text-char-400 leading-relaxed max-w-[50ch] mb-4"
+              style={rise(550)}
             >
-              Authentic Chinese takeaway, wok-fired fresh in West Didsbury. Delivery and collection.
-            </motion.p>
+              Authentic and wok-fired fresh to order. Delivery and collection.
+            </p>
 
             {/* Rating line — aggregate stats sourced from app/lib/review-stats.ts.
                 Update the constants in that one file when the live numbers shift. */}
-            <motion.a
+            <a
               href={JUST_EAT_URL}
               target="_blank"
               rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.65, ease }}
-              className="group inline-flex items-center gap-2 mb-8 md:mb-10 hover:opacity-80 transition-opacity duration-300"
+              style={rise(650, 20)}
+              className="wf-rise group inline-flex items-center gap-2 mb-8 md:mb-10 hover:opacity-80 transition-opacity duration-300"
               aria-label={`See our ${formatReviewCount(JUST_EAT_COUNT)} reviews on Just Eat`}
             >
               <div className="flex gap-0.5">
@@ -125,14 +122,9 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
               <span className="text-sm font-400 text-char-400">
                 {JUST_EAT_RATING.toFixed(1)} &middot; {formatReviewCount(JUST_EAT_COUNT)} reviews on Just Eat
               </span>
-            </motion.a>
+            </a>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.75, ease }}
-              className="flex flex-col sm:flex-row gap-4"
-            >
+            <div className="wf-rise flex flex-col sm:flex-row gap-4" style={rise(750, 20)}>
               {/* Direct phone order is the lead CTA — direct orders skip the
                   delivery-app commission and come off our house menu prices.
                   Just Eat stays as the frictionless secondary path. */}
@@ -177,41 +169,29 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
               >
                 View Menu
               </a>
-            </motion.div>
+            </div>
 
             {/* Direct-order helper line — shows the dialable number on every
                 screen (desktop's primary CTA is a tel: link that does little on
                 a laptop) and points at house menu pricing for direct orders. */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.85, ease }}
-              className="mt-5 text-xs font-300 text-char-400 tracking-wide"
-            >
+            <p className="wf-rise mt-5 text-xs font-300 text-char-400 tracking-wide" style={rise(850, 20)}>
               <span className="text-char-200 font-500">House menu prices</span> when you order direct &middot;{" "}
               <a href={DIRECT_PHONE_HREF} className="text-char-200 font-500 tabular-nums hover:text-vermillion transition-colors">
                 {DIRECT_PHONE_DISPLAY}
               </a>{" "}
               &middot; collection or delivery
-            </motion.p>
+            </p>
 
             {/* Mobile-only: the delivery/collection/min-order panel is desktop
                 (md+) only, so surface hours + min order here too. */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.9, ease }}
-              className="md:hidden mt-2 text-xs font-300 text-char-500 tracking-wide"
-            >
+            <p className="wf-rise md:hidden mt-2 text-xs font-300 text-char-500 tracking-wide" style={rise(900, 20)}>
               Open daily 5&ndash;11pm &middot; Min. order &pound;15
-            </motion.p>
+            </p>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.2, delay: 0.8 }}
-            className="hidden md:flex md:col-span-4 flex-col items-end gap-8 text-right"
+          <div
+            className="wf-fade-in hidden md:flex md:col-span-4 flex-col items-end gap-8 text-right"
+            style={{ animationDelay: "800ms" }}
           >
             <div className="border-r border-char-700 pr-6">
               <p className="text-xs font-400 tracking-[0.2em] text-char-400 uppercase mb-1">
@@ -237,7 +217,7 @@ export default function HeroClient({ hours }: { hours: OpeningHoursData }) {
                 &pound;15.00
               </p>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 
